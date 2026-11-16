@@ -2,26 +2,30 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#08090b">
 <title>OMNIX</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#08090b;color:#f5eee5;font-family:Arial,sans-serif}
-header{padding:28px 20px;text-align:center;border-bottom:1px solid #60452b}
-.logo{font-size:43px;font-weight:900;letter-spacing:7px;color:#d9a45e;text-shadow:0 0 18px #9a642b}
-.sub{color:#9e8b76;font-size:11px;letter-spacing:4px;margin-top:8px}
-.top{display:flex;justify-content:space-between;align-items:center;padding:16px 20px}
-button{background:#21180f;color:#e5b77b;border:1px solid #946331;border-radius:12px;padding:10px 16px;font-weight:bold}
-main{padding:12px 18px}
-h2{color:#d9a45e;font-size:19px}
-.welcome{background:linear-gradient(120deg,#24190f,#111214);border:1px solid #79532e;border-radius:18px;padding:20px;margin-bottom:24px}
-.welcome p{color:#c3b5a5;font-size:13px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
-.item{background:linear-gradient(145deg,#191a1d,#101113);border:1px solid #493721;border-radius:17px;padding:20px 12px;min-height:112px;text-align:center}
-.item span{font-size:27px;display:block;margin-bottom:12px}
-.item b{font-size:14px;color:#e4c59d}
-footer{text-align:center;padding:30px;color:#75634e;font-size:11px}
+header{text-align:center;padding:25px;border-bottom:1px solid #60452b}
+.logo{font-size:40px;font-weight:900;letter-spacing:7px;color:#d9a45e}
+.sub{color:#9e8b76;font-size:11px;letter-spacing:4px;margin-top:7px}
+.top{display:flex;justify-content:space-between;align-items:center;padding:16px}
+button{background:#21180f;color:#e5b77b;border:1px solid #946331;border-radius:12px;padding:12px 16px;font-weight:bold}
+main{padding:15px}
+h2{color:#d9a45e}
+.welcome,.item,.surah{background:linear-gradient(145deg,#24190f,#111214);border:1px solid #79532e;border-radius:17px;padding:20px;margin-bottom:16px}
+.welcome p,.muted{color:#b8a895;font-size:13px;line-height:1.8}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.item{text-align:center;cursor:pointer;min-height:105px}
+.item span{display:block;font-size:25px;margin-bottom:12px}
+.item b{color:#e4c59d}
+#quran{display:none}
+.ayahs{font-family:serif;font-size:23px;line-height:2.2;text-align:center;color:#f0d5ad}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.status{color:#d9a45e;margin:15px 0}
+footer{text-align:center;padding:25px;color:#75634e;font-size:11px}
 </style>
 </head>
 <body>
@@ -34,30 +38,71 @@ footer{text-align:center;padding:30px;color:#75634e;font-size:11px}
 <button onclick="toggleLang()" id="lang">English</button>
 </div>
 <main>
+<section id="home">
 <div class="welcome">
-<h2 id="title">عالمك في مكان واحد</h2>
-<p id="desc">اكتشف أدواتك وتعلم والعب ونظّم يومك من تطبيق واحد.</p>
+<h2>عالمك في مكان واحد</h2>
+<p>اكتشف أدواتك وتعلم والعب ونظّم يومك من تطبيق واحد.</p>
 </div>
-<h2 id="sections">الأقسام الرئيسية</h2>
+<h2>الأقسام الرئيسية</h2>
 <div class="grid" id="grid"></div>
+</section>
+
+<section id="quran">
+<button onclick="goHome()">← الرئيسية</button>
+<div class="welcome">
+<h2>القرآن الكريم</h2>
+<p>ابدأ رحلتك في الحفظ والمراجعة خطوة بخطوة.</p>
+</div>
+<div class="surah">
+<h2 style="text-align:center">سورة الفاتحة</h2>
+<p class="ayahs">
+بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ<br>
+الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ<br>
+الرَّحْمَٰنِ الرَّحِيمِ<br>
+مَالِكِ يَوْمِ الدِّينِ<br>
+إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ<br>
+اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ<br>
+صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ
+</p>
+</div>
+<div class="welcome">
+<h2>متابعة الحفظ</h2>
+<p class="muted">علّم هنا عند إتمام مراجعة سورة الفاتحة.</p>
+<label><input type="checkbox" id="done"> أتممت مراجعة السورة</label>
+<div class="status" id="status">لم يتم تسجيل المراجعة بعد</div>
+</div>
+</section>
 </main>
 <footer>OMNIX © 2026 • BEYOND LIMITS</footer>
 <script>
 let en=false;
 const ar=['الحساب والأدوات','التعليم','الألعاب','القرآن الكريم','الإنتاجية','اللغات والترجمة','إدارة الملفات','لوحة الإدارة'];
 const eng=['Accounts & Tools','Education','Games','Holy Quran','Productivity','Languages & Translation','File Manager','Admin Panel'];
-const icons=['⚙️','📚','🎮','📖','📅','🌐','📁','👑'];
+const icons=['⚙','▤','◈','۞','▦','文','▣','♛'];
 function render(){
-document.documentElement.lang=en?'en':'ar';
-document.documentElement.dir=en?'ltr':'rtl';
+document.getElementById('grid').innerHTML=(en?eng:ar).map((x,i)=>
+`<div class="item" onclick="${i===3?'openQuran()':'coming()'}"><span>${icons[i]}</span><b>${x}</b></div>`).join('');
 document.getElementById('welcome').textContent=en?'Welcome to OMNIX':'مرحباً بك في OMNIX';
-document.getElementById('title').textContent=en?'Your world in one place':'عالمك في مكان واحد';
-document.getElementById('desc').textContent=en?'Discover tools, learn, play and organize your day.':'اكتشف أدواتك وتعلم والعب ونظّم يومك من تطبيق واحد.';
-document.getElementById('sections').textContent=en?'Main Sections':'الأقسام الرئيسية';
 document.getElementById('lang').textContent=en?'العربية':'English';
-document.getElementById('grid').innerHTML=(en?eng:ar).map((x,i)=>`<div class="item"><span>${icons[i]}</span><b>${x}</b></div>`).join('');
 }
-function toggleLang(){en=!en;render()}
+function openQuran(){
+document.getElementById('home').style.display='none';
+document.getElementById('quran').style.display='block';
+}
+function goHome(){
+document.getElementById('quran').style.display='none';
+document.getElementById('home').style.display='block';
+}
+function coming(){alert(en?'Coming soon':'هذا القسم قريباً');}
+function toggleLang(){en=!en;render();}
+const done=document.getElementById('done');
+done.checked=localStorage.getItem('fatihaDone')==='yes';
+function updateStatus(){
+localStorage.setItem('fatihaDone',done.checked?'yes':'no');
+document.getElementById('status').textContent=done.checked?'تم تسجيل مراجعة سورة الفاتحة ✓':'لم يتم تسجيل المراجعة بعد';
+}
+done.addEventListener('change',updateStatus);
+updateStatus();
 render();
 </script>
 </body>
