@@ -4,7 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#08090b">
-<title>OMNIX</title>
+<meta name="description" content="OMNIX — أدواتك وتعلمك ومساعدك الذكي في مكان واحد.">
+<link rel="manifest" href="manifest.webmanifest">
+<title>OMNIX 1.2</title>
 <style>
 :root{--bg:#08090b;--panel:#141416;--panel2:#20170f;--copper:#d9a45e;--soft:#f0d5ad;--muted:#aa9a87;--line:#60452b;--white:#f5eee5}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#21180f 0,#08090b 42%);color:var(--white);font-family:Arial,sans-serif;min-height:100vh}
@@ -25,12 +27,25 @@ input[type=checkbox]{width:auto;vertical-align:middle;margin-inline-end:7px}text
 .ayahs{font-family:serif;font-size:22px;line-height:2.2;text-align:center;color:var(--soft)}.status{color:var(--copper);font-size:13px;margin-top:10px}
 .big{font-size:25px;color:var(--copper);font-weight:bold}.answer{display:block;width:100%;text-align:right;margin:7px 0}
 footer{text-align:center;color:#75634e;padding:18px;font-size:11px}
+.tile{position:relative;overflow:hidden;transition:transform .22s,border-color .22s,box-shadow .22s}
+.tile:hover{transform:translateY(-3px);border-color:#e2a65a;box-shadow:0 8px 28px #d8792822}
+.tile:before{content:"";position:absolute;inset:-60% auto auto -30%;width:70%;height:180%;transform:rotate(28deg);background:linear-gradient(90deg,transparent,#ffb45b12,transparent);pointer-events:none}
+.mark{box-shadow:0 0 18px #e39a4430, inset 0 0 14px #e39a4420;cursor:pointer;user-select:none}
+.logo{text-shadow:0 0 20px #df8d3b55}
+.ai-orb{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;margin:4px auto 14px;color:#fff1d8;font-size:26px;background:radial-gradient(circle at 35% 30%,#ffdc9b,#bd6928 45%,#28160d 75%);box-shadow:0 0 18px #ed8a3e77,0 0 42px #ed8a3e33;animation:orbPulse 2.8s ease-in-out infinite}
+@keyframes orbPulse{0%,100%{box-shadow:0 0 18px #ed8a3e77,0 0 42px #ed8a3e33}50%{box-shadow:0 0 25px #ffc078aa,0 0 58px #ed8a3e55}}
+.chat-log{height: min(48vh,420px);overflow:auto;background:#0b0c0e;border:1px solid #49331f;border-radius:13px;padding:12px;margin:12px 0}
+.chat-msg{max-width:90%;padding:10px 12px;border-radius:13px;margin:8px 0;line-height:1.7;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}
+.chat-msg.user{background:#352313;border:1px solid #8e5c2c;margin-right:auto}
+.chat-msg.bot{background:#171719;border:1px solid #514332;margin-left:auto}
+.chat-compose{display:flex;gap:8px;align-items:stretch}.chat-compose input{margin:0;min-width:0}.chat-compose button{flex:0 0 auto}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
 small{color:var(--muted)}.note{background:#101113;padding:12px;border-radius:10px;color:var(--muted);font-size:12px;line-height:1.7}
 </style>
 </head>
 <body>
 <header>
- <div class="mark"><span>✦</span></div>
+ <div class="mark" id="secretMark" title="OMNIX"><span>✦</span></div>
  <div class="logo">OMNIX</div><div class="sub">BEYOND LIMITS</div>
 </header>
 <div class="top"><strong id="welcome">مرحباً بك في OMNIX</strong><button id="langBtn" onclick="toggleLang()">English</button></div>
@@ -49,7 +64,7 @@ small{color:var(--muted)}.note{background:#101113;padding:12px;border-radius:10p
 <script>
 const $=id=>document.getElementById(id);
 let en=localStorage.getItem('omnixLang')==='en', current='';
-const names=[['الحساب والأدوات','Accounts & Tools','⌗'],['التعليم','Education','▤'],['الألعاب','Games','◇'],['القرآن الكريم','Holy Quran','۞'],['الإنتاجية','Productivity','▦'],['اللغات والترجمة','Languages','文'],['إدارة الملفات','File Manager','▣'],['لوحة الإدارة','Admin Panel','⚙']];
+const names=[['الحساب والأدوات','Accounts & Tools','⌗'],['التعليم','Education','▤'],['الألعاب','Games','◇'],['القرآن الكريم','Holy Quran','۞'],['الإنتاجية','Productivity','▦'],['اللغات والترجمة','Languages','文'],['إدارة الملفات','File Manager','▣'],['OMNIX AI','OMNIX AI','✧']];
 const get=(k,d='')=>localStorage.getItem('om_'+k)??d;
 const set=(k,v)=>localStorage.setItem('om_'+k,v);
 function toggleLang(){en=!en;localStorage.setItem('omnixLang',en?'en':'ar');renderHome();if(current)openSection(current)}
@@ -65,7 +80,16 @@ function renderHome(){
  $('grid').innerHTML=names.map((n,i)=>`<button class="tile" onclick="openSection('${i}')"><span class="ico">${n[2]}</span>${n[en?1:0]}</button>`).join('');
 }
 function goHome(){current='';$('section').classList.add('hidden');$('home').classList.remove('hidden');renderHome()}
-function openSection(i){current=String(i);$('home').classList.add('hidden');$('section').classList.remove('hidden');$('sectionTitle').textContent=names[+i][en?1:0];const f=[tools,education,games,quran,productivity,languages,files,admin];$('content').innerHTML=f[+i]()}
+function openSection(i){current=String(i);$('home').classList.add('hidden');$('section').classList.remove('hidden');$('sectionTitle').textContent=names[+i][en?1:0];const f=[tools,education,games,quran,productivity,languages,files,omnixAI];$('content').innerHTML=f[+i]()}
+function omnixAI(){return `<div class="panel" style="text-align:center"><div class="ai-orb">✦</div><h3>OMNIX AI</h3><p>${en?'Your smart assistant for learning, coding, translation and ideas.':'مساعدك الذكي للتعلم والبرمجة والترجمة والأفكار.'}</p></div>
+<div class="panel"><div class="chat-log" id="aiChat"><div class="chat-msg bot">${en?'Hello! I am OMNIX AI. The chat interface is ready. Connect a secure AI server to enable real answers.':'أهلًا! أنا OMNIX AI. واجهة المحادثة جاهزة. لبدء الردود الذكية الحقيقية نحتاج ربط خادم AI آمن.'}</div></div>
+<div class="chat-compose"><input id="aiInput" placeholder="${en?'Ask OMNIX AI...':'اسأل OMNIX AI...'}" onkeydown="if(event.key==='Enter')sendAI()"><button onclick="sendAI()">${en?'Send':'إرسال'}</button></div>
+<p class="note">${en?'Connection status: UI ready · AI server not connected yet.':'حالة الاتصال: الواجهة جاهزة · خادم الذكاء الاصطناعي لم يتم ربطه بعد.'}</p></div>
+<div class="panel"><h3>${en?'Quick prompts':'اقتراحات سريعة'}</h3><div class="row"><button class="secondary" onclick="aiPrompt('${en?'Explain a school lesson simply':'اشرح لي درسًا دراسيًا ببساطة'}')">${en?'Study':'الدراسة'}</button><button class="secondary" onclick="aiPrompt('${en?'Help me write code':'ساعدني في كتابة كود'}')">${en?'Coding':'البرمجة'}</button><button class="secondary" onclick="aiPrompt('${en?'Translate a sentence':'ترجم لي جملة'}')">${en?'Translate':'الترجمة'}</button></div></div>`}
+function aiPrompt(t){$('aiInput').value=t;sendAI()}
+async function sendAI(){let input=$('aiInput'),chat=$('aiChat');if(!input||!input.value.trim())return;let msg=input.value.trim();chat.innerHTML+=`<div class="chat-msg user">${escapeHtml(msg)}</div>`;input.value='';chat.scrollTop=chat.scrollHeight;
+try{let r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg})});if(!r.ok)throw new Error('not-connected');let d=await r.json();chat.innerHTML+=`<div class="chat-msg bot">${escapeHtml(d.reply||'')}</div>`}
+catch{chat.innerHTML+=`<div class="chat-msg bot">${en?'AI server is not connected yet. The interface is working; the next step is to connect a secure backend.':'خادم الذكاء الاصطناعي غير متصل حاليًا. الواجهة تعمل، والخطوة التالية ربطها بخادم آمن.'}</div>`}chat.scrollTop=chat.scrollHeight}
 function tools(){return `<div class="panel"><h3>${en?'Calculator':'آلة حاسبة'}</h3><input id="calcInput" placeholder="مثال: (12+8)*3" inputmode="decimal"><button onclick="calculate()">${en?'Calculate':'احسب'}</button><div class="status" id="calcResult"></div><p class="note">${en?'Allowed: numbers and + − × ÷ parentheses.':'استخدم الأرقام والعمليات الحسابية والأقواس فقط.'}</p></div><div class="panel"><h3>${en?'Quick tools':'أدوات سريعة'}</h3><div class="row"><button onclick="copyText(location.href)">${en?'Copy app address':'نسخ عنوان الصفحة'}</button><button class="secondary" onclick="showToast('${en?'OMNIX is ready':'تطبيق OMNIX جاهز'}')">${en?'Test button':'تجربة الزر'}</button></div></div>`}
 function calculate(){let s=$('calcInput').value;if(!/^[0-9+\-*/().\s]+$/.test(s)){ $('calcResult').textContent=en?'Invalid expression':'عملية غير صالحة';return}try{let v=Function('"use strict";return ('+s+')')();$('calcResult').textContent=Number.isFinite(v)?String(v):(en?'Invalid result':'نتيجة غير صالحة')}catch{$('calcResult').textContent=en?'Check the expression':'راجع العملية الحسابية'}}
 const quiz=[{q:'ما ناتج 7 × 8؟',a:['54','56','64'],c:1},{q:'ما عاصمة مصر؟',a:['القاهرة','الإسكندرية','أسوان'],c:0},{q:'أي كلمة فعل؟',a:['مدرسة','يكتب','قلم'],c:1}];
@@ -91,13 +115,17 @@ function filterPhrases(){let q=$('phraseSearch').value.toLowerCase();$('phraseLi
 function files(){return `<div class="panel"><h3>${en?'Import a text file':'استيراد ملف نصي'}</h3><input type="file" id="textFile" accept=".txt,.md,.csv,text/plain,text/markdown,text/csv"><button onclick="readTextFile()">${en?'Open file':'فتح الملف'}</button><textarea id="fileText" placeholder="${en?'File content will appear here':'سيظهر محتوى الملف هنا'}"></textarea><button onclick="downloadText()">${en?'Export text':'تصدير النص'}</button></div><div class="note">${en?'The app only reads files you choose.':'التطبيق يقرأ الملفات التي تختارها بنفسك فقط.'}</div>`}
 function readTextFile(){let f=$('textFile').files[0];if(!f)return showToast(en?'Choose a file first':'اختر ملفًا أولاً');let r=new FileReader();r.onload=()=>{$('fileText').value=r.result};r.readAsText(f)}
 function downloadText(){let b=new Blob([$('fileText').value],{type:'text/plain;charset=utf-8'});let a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='omnix-notes.txt';a.click();URL.revokeObjectURL(a.href)}
-function admin(){return `<div class="panel"><h3>${en?'App settings':'إعدادات التطبيق'}</h3><p>${en?'Language and local data controls.':'اللغة والتحكم في البيانات المحلية.'}</p><button onclick="toggleLang()">${en?'Switch language':'تغيير اللغة'}</button><button class="secondary" onclick="backupData()">${en?'Export backup':'تصدير نسخة احتياطية'}</button><div style="margin-top:12px"><label>${en?'Restore backup file':'استعادة نسخة احتياطية'}</label><input type="file" id="backupFile" accept="application/json,.json"><button onclick="restoreData()">${en?'Restore':'استعادة'}</button></div></div><div class="panel"><h3>${en?'About OMNIX':'حول OMNIX'}</h3><p>OMNIX · BEYOND LIMITS</p><small>${en?'Version 1.1 · Data stored locally on this device.':'الإصدار 1.1 · البيانات محفوظة محليًا على هذا الجهاز.'}</small></div><div class="note">${en?'Admin panel controls this app on this device; it is not a remote server dashboard.':'لوحة الإدارة تتحكم في التطبيق على هذا الجهاز، وليست لوحة تحكم بخادم خارجي.'}</div>`}
+function admin(){return `<div class="panel"><h3>${en?'App settings':'إعدادات التطبيق'}</h3><p>${en?'Language and local data controls.':'اللغة والتحكم في البيانات المحلية.'}</p><button onclick="toggleLang()">${en?'Switch language':'تغيير اللغة'}</button><button class="secondary" onclick="backupData()">${en?'Export backup':'تصدير نسخة احتياطية'}</button><div style="margin-top:12px"><label>${en?'Restore backup file':'استعادة نسخة احتياطية'}</label><input type="file" id="backupFile" accept="application/json,.json"><button onclick="restoreData()">${en?'Restore':'استعادة'}</button></div></div><div class="panel"><h3>${en?'About OMNIX':'حول OMNIX'}</h3><p>OMNIX · BEYOND LIMITS</p><small>${en?'Version 1.2 · Data stored locally on this device.':'الإصدار 1.2 · البيانات محفوظة محليًا على هذا الجهاز.'}</small></div><div class="note">${en?'Admin panel controls this app on this device; it is not a remote server dashboard.':'لوحة الإدارة تتحكم في التطبيق على هذا الجهاز، وليست لوحة تحكم بخادم خارجي.'}</div>`}
 function backupData(){let data={};for(let i=0;i<localStorage.length;i++){let k=localStorage.key(i);if(k.startsWith('om_'))data[k]=localStorage.getItem(k)}let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download='omnix-backup.json';a.click();URL.revokeObjectURL(a.href)}
 function restoreData(){let f=$('backupFile').files[0];if(!f)return showToast(en?'Choose a backup':'اختر نسخة احتياطية');let r=new FileReader();r.onload=()=>{try{let d=JSON.parse(r.result);Object.keys(d).forEach(k=>{if(k.startsWith('om_'))localStorage.setItem(k,d[k])});showToast(en?'Backup restored':'تمت استعادة النسخة');setTimeout(()=>location.reload(),700)}catch{showToast(en?'Invalid backup file':'ملف النسخة غير صالح')}};r.readAsText(f)}
 function copyText(t){if(navigator.clipboard)navigator.clipboard.writeText(t).then(()=>showToast(en?'Copied':'تم النسخ')).catch(()=>showToast(en?'Copy unavailable':'تعذر النسخ'));else showToast(en?'Copy unavailable':'النسخ غير متاح')}
 function showToast(t){alert(t)}
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 $('content').addEventListener('change',e=>{if(e.target.id==='qAudio'&&e.target.files[0]){$('audioPlayer').src=URL.createObjectURL(e.target.files[0]);$('audioPlayer').classList.remove('hidden')}});
+let secretTapCount=0,secretTapTimer=null;
+$('secretMark').addEventListener('click',()=>{secretTapCount++;clearTimeout(secretTapTimer);secretTapTimer=setTimeout(()=>secretTapCount=0,1800);if(secretTapCount>=5){secretTapCount=0;openAdminSecret()}});
+function openAdminSecret(){let pin=prompt(en?'Set or enter your local admin PIN:':'أنشئ أو أدخل رمز لوحة الإدارة المحلية:');if(pin===null||!pin.trim())return;let saved=get('adminPin');if(!saved){if(pin.trim().length<4)return alert(en?'PIN must be at least 4 characters':'يجب أن يكون الرمز 4 خانات على الأقل');set('adminPin',pin.trim());alert(en?'Local admin PIN saved':'تم حفظ رمز الإدارة على هذا الجهاز');}else if(pin.trim()!==saved){alert(en?'Incorrect PIN':'الرمز غير صحيح');return;}current='admin';$('home').classList.add('hidden');$('section').classList.remove('hidden');$('sectionTitle').textContent=en?'Hidden Admin':'لوحة الإدارة المخفية';$('content').innerHTML=admin();}
+if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}
 renderHome();
 </script>
 </body></html>
