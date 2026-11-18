@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#070912">
 <meta name="description" content="OMNIX — أدواتك وتعلمك ومساعدك الذكي في مكان واحد.">
 <link rel="manifest" href="manifest.webmanifest">
-<title>OMNIX 1.3</title>
+<title>OMNIX 1.5</title>
 <style>
 :root{--bg:#070912;--panel:#111626;--panel2:#17152b;--copper:#55c8ff;--soft:#d8eaff;--muted:#9aaac4;--line:#293b61;--white:#edf4ff}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#111a30 0,#070912 42%);color:var(--white);font-family:Arial,sans-serif;min-height:100vh}
@@ -150,17 +150,384 @@ input,textarea,select{
 footer{color:#7185a8}
 .status{color:#71d5ff}
 
+
+/* OMNIX 1.5 — NEXT GEN INTERFACE */
+:root{
+ --bg:#080b16;
+ --panel:#111a2b;
+ --panel2:#19243a;
+ --copper:#64d8ff;
+ --soft:#e5f3ff;
+ --muted:#9aabc4;
+ --line:#293b59;
+ --white:#f1f6ff;
+ --violet:#a78bfa;
+ --blue:#38bdf8;
+}
+html{scroll-behavior:smooth}
+body{
+ background:
+ radial-gradient(ellipse at 10% 0%,#17345a 0,transparent 38%),
+ radial-gradient(ellipse at 95% 18%,#30204f 0,transparent 34%),
+ linear-gradient(145deg,#080b16,#0b1020 65%,#111027);
+ background-attachment:fixed;
+ color:var(--white);
+}
+header{
+ padding:26px 16px 19px;
+ border-bottom:1px solid #30476a;
+ background:linear-gradient(180deg,#111d33ee,#0b1020bb);
+}
+.mark{
+ border-color:var(--copper);
+ background:linear-gradient(145deg,#183b5c,#29204c);
+ box-shadow:0 0 25px #38bdf855,inset 0 0 15px #a78bfa33;
+}
+.logo{
+ color:#8ce4ff;
+ text-shadow:0 0 14px #38bdf888,0 0 32px #8b5cf655;
+}
+.sub{color:#a9bad3}
+.top{
+ max-width:850px;
+ margin:auto;
+ padding:16px 18px;
+}
+main{max-width:900px;padding:0 16px 35px}
+h2{color:#8cddff}
+h3{color:#c9baff}
+.panel{
+ background:linear-gradient(145deg,#15223aee,#101629f5);
+ border:1px solid #304767;
+ border-radius:19px;
+ box-shadow:0 10px 30px #0004,inset 0 1px #ffffff0c;
+ backdrop-filter:blur(14px);
+}
+#home>.panel:first-child{
+ padding:23px 19px;
+ border-color:#42618a;
+ background:
+ radial-gradient(ellipse at 95% 0%,#3b4d8b55,transparent 55%),
+ linear-gradient(135deg,#172d4a,#17172f);
+}
+#heroTitle{font-size:23px;line-height:1.6}
+#heroText{font-size:14px}
+.grid{gap:13px}
+.tile{
+ min-height:125px;
+ padding:19px 14px;
+ border-radius:18px;
+ border-color:#344c70;
+ background:linear-gradient(145deg,#192944ee,#15172cf5);
+ box-shadow:0 8px 25px #0004,inset 0 1px #ffffff0c;
+ transition:transform .2s,border-color .2s,box-shadow .2s;
+}
+.tile .ico{
+ color:#8de3ff;
+ text-shadow:0 0 17px #38bdf899;
+}
+.tile:hover{
+ transform:translateY(-4px);
+ border-color:#78dfff;
+ box-shadow:0 12px 30px #249bdf25;
+}
+button,.btn{
+ border:1px solid #4b79a7;
+ border-radius:12px;
+ background:linear-gradient(120deg,#1a3655,#29234b);
+ color:#e6f5ff;
+ transition:transform .15s,filter .15s;
+}
+button:hover,.btn:hover{filter:brightness(1.2)}
+button.secondary{
+ background:#151d30;
+ border-color:#3c506f;
+ color:#e5efff;
+}
+button.danger{
+ background:#351d2a;
+ border-color:#94516a;
+ color:#ffc0c8;
+}
+input,textarea,select{
+ background:#0b1324;
+ border-color:#354c70;
+ color:#f1f6ff;
+ border-radius:12px;
+}
+input:focus,textarea:focus,select:focus{
+ outline:2px solid #38bdf877;
+ border-color:#64d8ff;
+}
+.itemline{border-color:#293b59}
+.chat-log{background:#090f1d;border-color:#344a6d}
+.chat-msg.user{background:#183454;border-color:#3979b9}
+.chat-msg.bot{background:#211c3a;border-color:#51447e}
+.ai-orb{
+ background:radial-gradient(circle at 35% 30%,#e0f7ff,#38bdf8 42%,#7155ce 75%,#17152b);
+ box-shadow:0 0 25px #38bdf888,0 0 50px #8b5cf644;
+}
+.note{background:#152139;color:#b5c5dc}
+.status{color:#78ddff}
+footer{color:#8b9db9}
+@media(min-width:650px){
+ .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:380px){
+ .logo{font-size:26px}
+ .tile{min-height:112px;padding:14px 9px}
+ #heroTitle{font-size:20px}
+}
+@media(prefers-reduced-motion:reduce){
+ *,*:before,*:after{scroll-behavior:auto!important;transition:none!important}
+}
+
+/* OMNIX 1.5 — COMMAND CENTER */
+.command-center{padding:18px;margin:15px 0 20px}
+.cc-heading{display:flex;justify-content:space-between;margin-bottom:14px}
+.cc-heading h3{margin:0;color:#8ce4ff}
+.cc-label,.cc-quiz{font-size:11px;color:#9aabc4}
+.cc-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.cc-stat{padding:13px 5px;text-align:center;border:1px solid #344c70;border-radius:13px;background:#192944}
+.cc-number{font-size:22px;font-weight:bold;color:#8ce4ff;margin-bottom:5px}
+.cc-stat small{font-size:11px}
+.cc-quick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:15px}
+.cc-action{padding:12px 5px;font-size:12px}
+.cc-quiz{margin-top:12px}
+@media(max-width:380px){.cc-number{font-size:19px}}
+
+/* OMNIX APPLE DESIGN */
+:root{
+ --bg:#0b0c0f;
+ --panel:#17191e;
+ --panel2:#20232a;
+ --copper:#9bcaff;
+ --soft:#f3f5f9;
+ --muted:#9a9da7;
+ --line:#30343c;
+ --white:#f5f6fa;
+}
+body{
+ background:
+ radial-gradient(ellipse at 50% -15%,#28354b 0,transparent 48%),
+ #0b0c0f;
+ color:#f5f6fa;
+ font-family:Arial,sans-serif;
+}
+.apple-header{
+ height:82px;
+ padding:0 30px;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ background:#111318dd;
+ border-bottom:1px solid #ffffff12;
+ backdrop-filter:blur(24px);
+}
+.brand{display:flex;align-items:center;gap:13px}
+.apple-header .mark{
+ width:43px;height:43px;margin:0;
+ border:1px solid #91bfff88;
+ border-radius:14px;
+ transform:none;
+ display:grid;place-items:center;
+ background:linear-gradient(145deg,#26364c,#171d29);
+ box-shadow:0 4px 18px #4b8bda22;
+ color:#d8eaff;
+}
+.apple-header .mark span{transform:none;font-size:29px}
+.apple-header .logo{
+ font-size:26px;letter-spacing:5px;
+ color:#f4f6fa;text-shadow:none;
+}
+.header-meta{font-size:10px;letter-spacing:2px;color:#858b98}
+.apple-top{
+ max-width:1100px;
+ padding:20px 25px;
+ margin:0 auto;
+}
+.apple-top strong{font-size:15px;font-weight:600}
+.apple-lang{
+ background:#252932!important;
+ border:1px solid #ffffff18!important;
+ border-radius:20px!important;
+ padding:9px 17px!important;
+}
+#appleNav{
+ position:fixed;
+ z-index:20;
+ top:110px;right:20px;
+ width:185px;
+ padding:15px 10px;
+ border:1px solid #ffffff12;
+ border-radius:20px;
+ background:#17191edb;
+ backdrop-filter:blur(24px);
+ box-shadow:0 12px 35px #0005;
+}
+.nav-caption{
+ padding:8px 12px;
+ color:#777f8c;
+ font-size:10px;
+ letter-spacing:1.5px;
+}
+.nav-item{
+ display:flex;
+ align-items:center;
+ gap:12px;
+ width:100%;
+ padding:12px;
+ margin:3px 0;
+ text-align:right;
+ border:0!important;
+ border-radius:12px!important;
+ background:transparent!important;
+ color:#b9bec9!important;
+ font-weight:500;
+}
+.nav-item span{font-size:19px;color:#9ebde8;width:23px}
+.nav-item:hover,.nav-item.active{
+ background:#ffffff0d!important;
+ color:#fff!important;
+}
+.nav-bottom-caption{margin-top:20px}
+#mobileNav{display:none}
+main{
+ max-width:1050px;
+ margin:0 auto 0 0;
+ padding:0 25px 45px;
+}
+.panel,.tile{
+ background:linear-gradient(145deg,#1b1e25,#15171c)!important;
+ border:1px solid #ffffff12!important;
+ border-radius:20px!important;
+ box-shadow:0 8px 30px #0003,inset 0 1px #ffffff08!important;
+ backdrop-filter:blur(20px);
+}
+#home>.panel:first-child{
+ padding:25px;
+ background:linear-gradient(120deg,#202a39,#171a21)!important;
+}
+h2{color:#e8edf5!important;font-size:20px}
+h3{color:#e0e7f2!important}
+#heroTitle{font-size:25px}
+#heroText,.panel p{color:#aeb5c2}
+.grid{gap:14px}
+.tile{
+ min-height:118px;
+ color:#eef2f8!important;
+ text-align:center!important;
+ background:#1a1d23!important;
+}
+.tile:before,.tile:after{display:none!important}
+.tile .ico{
+ color:#a8c9f4!important;
+ text-shadow:none!important;
+}
+.tile:hover{
+ transform:translateY(-2px);
+ border-color:#7296c5!important;
+}
+button,.btn{
+ background:#29313e!important;
+ border:1px solid #ffffff16!important;
+ color:#f0f3f9!important;
+ border-radius:13px!important;
+}
+button.secondary{background:#20232a!important}
+input,textarea,select{
+ background:#11141a!important;
+ border:1px solid #ffffff1c!important;
+ color:#f4f6fa!important;
+ border-radius:13px!important;
+}
+.command-center{padding:21px}
+.cc-stat{
+ background:#20252e!important;
+ border-color:#ffffff12!important;
+ border-radius:15px!important;
+}
+.cc-number{color:#b7d5ff!important}
+.cc-heading h3{color:#eef3fb!important}
+.cc-label,.cc-quiz{color:#9da8b8}
+footer{color:#777f8c!important}
+@media(min-width:900px){
+ main{margin-right:215px;margin-left:auto}
+ .apple-top{margin-right:215px;margin-left:auto}
+}
+@media(max-width:899px){
+ #appleNav{display:none}
+ #mobileNav{
+  display:flex;
+  position:fixed;
+  z-index:50;
+  bottom:0;left:10px;right:10px;
+  justify-content:space-around;
+  padding:9px 4px calc(9px + env(safe-area-inset-bottom));
+  background:#1b1e24ed;
+  border:1px solid #ffffff18;
+  border-radius:20px 20px 12px 12px;
+  backdrop-filter:blur(25px);
+  box-shadow:0 -5px 30px #0005;
+ }
+ #mobileNav button{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+  padding:6px 2px!important;
+  background:transparent!important;
+  border:0!important;
+  color:#b9c2d0!important;
+  font-size:10px;
+ }
+ #mobileNav button span{font-size:20px;color:#b5d2fa}
+ main{padding-bottom:110px}
+ footer{padding-bottom:100px}
+ .apple-header{height:72px;padding:0 17px}
+ .apple-header .logo{font-size:23px}
+ .apple-top{padding:15px 17px}
+}
+@media(max-width:380px){
+ .cc-number{font-size:18px}
+ .tile{min-height:105px}
+}
+
 </style>
 </head>
 <body>
-<header>
- <div class="mark" id="secretMark" title="OMNIX"><span>✦</span></div>
- <div class="logo">OMNIX</div><div class="sub">منصة للتعلم والترفيه</div>
+<header class="apple-header">
+ <div class="brand">
+  <div class="mark" id="secretMark" title="OMNIX"><span>∞</span></div>
+  <div class="logo">OMNIX</div>
+ </div>
+ <div class="header-meta">VERSION 1.5</div>
 </header>
-<div class="top"><strong id="welcome">مرحباً بك في OMNIX</strong><button id="langBtn" onclick="toggleLang()">English</button></div>
+<div class="top apple-top">
+ <strong id="welcome">مرحباً بك في OMNIX</strong>
+ <button id="langBtn" class="apple-lang" onclick="toggleLang()">English</button>
+</div>
+<nav id="appleNav" aria-label="التنقل الرئيسي">
+ <div class="nav-caption">WORKSPACE</div>
+ <button onclick="goHome()" class="nav-item active"><span>⌂</span> الرئيسية</button>
+ <button onclick="openSection('1')" class="nav-item"><span>▤</span> التعليم</button>
+ <button onclick="openSection('3')" class="nav-item"><span>۞</span> القرآن الكريم</button>
+ <button onclick="openSection('4')" class="nav-item"><span>▦</span> الإنتاجية</button>
+ <button onclick="openSection('7')" class="nav-item"><span>✧</span> OMNIX AI</button>
+ <div class="nav-caption nav-bottom-caption">OMNIX 1.5</div>
+</nav>
+<nav id="mobileNav" aria-label="التنقل السفلي">
+ <button onclick="goHome()"><span>⌂</span>الرئيسية</button>
+ <button onclick="openSection('1')"><span>▤</span>التعليم</button>
+ <button onclick="openSection('3')"><span>۞</span>القرآن</button>
+ <button onclick="openSection('4')"><span>▦</span>المهام</button>
+ <button onclick="openSection('7')"><span>✧</span>AI</button>
+</nav>
 <main>
 <section id="home">
  <div class="panel"><h2 id="heroTitle">كل ما تحتاجه في مكان واحد</h2><p id="heroText">التعليم والترفيه والأدوات اليومية.</p><div class="status" id="progressSummary"></div></div>
+ <div id="commandCenter" class="panel command-center"></div>
  <h2 id="sectionsTitle">الأقسام الرئيسية</h2><div class="grid" id="grid"></div>
 </section>
 
@@ -176,6 +543,49 @@ let en=localStorage.getItem('omnixLang')==='en', current='';
 const names=[['الحساب والأدوات','Accounts & Tools','⌗'],['التعليم','Education','▤'],['الألعاب','Games','◇'],['القرآن الكريم','Holy Quran','۞'],['الإنتاجية','Productivity','▦'],['اللغات والترجمة','Languages','文'],['إدارة الملفات','File Manager','▣'],['OMNIX AI','OMNIX AI','✧'],['التقويم والمناسبات','Calendar & Events','▦']];
 const get=(k,d='')=>localStorage.getItem('om_'+k)??d;
 const set=(k,v)=>localStorage.setItem('om_'+k,v);
+
+function renderDashboard(){
+ let tasks=[];
+ try{
+  const data=JSON.parse(get('tasks','[]'));
+  if(Array.isArray(data))tasks=data;
+ }catch(e){}
+
+ const completed=tasks.filter(t=>t&&t.done).length;
+ const notes=['mainNote','studyNote']
+  .filter(k=>String(get(k,'')).trim()).length;
+ const reviewed=get('fatihaDone')==='yes';
+ const quizResult=get('lastQuiz','—');
+
+ $('commandCenter').innerHTML=`
+ <div class="cc-heading">
+  <h3>${en?'Command Center':'مركز التحكم'}</h3>
+  <span class="cc-label">LIVE OVERVIEW</span>
+ </div>
+ <div class="cc-stats">
+  <div class="cc-stat">
+   <div class="cc-number">${completed}/${tasks.length}</div>
+   <small>${en?'Completed tasks':'المهام المكتملة'}</small>
+  </div>
+  <div class="cc-stat">
+   <div class="cc-number">${notes}</div>
+   <small>${en?'Saved notes':'الملاحظات المحفوظة'}</small>
+  </div>
+  <div class="cc-stat">
+   <div class="cc-number">${reviewed?'✓':'—'}</div>
+   <small>${en?'Al-Fatiha review':'مراجعة الفاتحة'}</small>
+  </div>
+ </div>
+ <div class="cc-quick">
+  <button class="cc-action" onclick="openSection('4')">${en?'Tasks':'المهام'}</button>
+  <button class="cc-action" onclick="openSection('1')">${en?'Education':'التعليم'}</button>
+  <button class="cc-action" onclick="openSection('3')">${en?'Quran':'القرآن'}</button>
+  <button class="cc-action" onclick="openSection('8')">${en?'Calendar':'التقويم'}</button>
+ </div>
+ <div class="cc-quiz">${en?'Last quiz result: ':'آخر نتيجة اختبار: '}${escapeHtml(quizResult)}</div>
+ `;
+}
+
 function toggleLang(){en=!en;localStorage.setItem('omnixLang',en?'en':'ar');renderHome();if(current)openSection(current)}
 function renderHome(){
  document.documentElement.lang=en?'en':'ar';document.documentElement.dir=en?'ltr':'rtl';
@@ -186,6 +596,7 @@ function renderHome(){
  $('sectionsTitle').textContent=en?'Main sections':'الأقسام الرئيسية';
  $('backBtn').textContent=en?'← Home':'← الرئيسية';
  $('progressSummary').textContent=en?'Your data is saved on this device.':'بياناتك تُحفظ على هذا الجهاز.';
+ renderDashboard();
  $('grid').innerHTML=names.map((n,i)=>`<button class="tile" onclick="openSection('${i}')"><span class="ico">${n[2]}</span>${n[en?1:0]}</button>`).join('');
 }
 function goHome(){current='';$('section').classList.add('hidden');$('home').classList.remove('hidden');renderHome()}
