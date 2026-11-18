@@ -173,7 +173,7 @@ footer{color:#7185a8}
 <script>
 const $=id=>document.getElementById(id);
 let en=localStorage.getItem('omnixLang')==='en', current='';
-const names=[['الحساب والأدوات','Accounts & Tools','⌗'],['التعليم','Education','▤'],['الألعاب','Games','◇'],['القرآن الكريم','Holy Quran','۞'],['الإنتاجية','Productivity','▦'],['اللغات والترجمة','Languages','文'],['إدارة الملفات','File Manager','▣'],['OMNIX AI','OMNIX AI','✧']];
+const names=[['الحساب والأدوات','Accounts & Tools','⌗'],['التعليم','Education','▤'],['الألعاب','Games','◇'],['القرآن الكريم','Holy Quran','۞'],['الإنتاجية','Productivity','▦'],['اللغات والترجمة','Languages','文'],['إدارة الملفات','File Manager','▣'],['OMNIX AI','OMNIX AI','✧'],['التقويم والمناسبات','Calendar & Events','▦']];
 const get=(k,d='')=>localStorage.getItem('om_'+k)??d;
 const set=(k,v)=>localStorage.setItem('om_'+k,v);
 function toggleLang(){en=!en;localStorage.setItem('omnixLang',en?'en':'ar');renderHome();if(current)openSection(current)}
@@ -189,7 +189,7 @@ function renderHome(){
  $('grid').innerHTML=names.map((n,i)=>`<button class="tile" onclick="openSection('${i}')"><span class="ico">${n[2]}</span>${n[en?1:0]}</button>`).join('');
 }
 function goHome(){current='';$('section').classList.add('hidden');$('home').classList.remove('hidden');renderHome()}
-function openSection(i){current=String(i);$('home').classList.add('hidden');$('section').classList.remove('hidden');$('sectionTitle').textContent=names[+i][en?1:0];const f=[tools,education,games,quran,productivity,languages,files,omnixAI];$('content').innerHTML=f[+i]()}
+function openSection(i){current=String(i);$('home').classList.add('hidden');$('section').classList.remove('hidden');$('sectionTitle').textContent=names[+i][en?1:0];const f=[tools,education,games,quran,productivity,languages,files,omnixAI,calendar];$('content').innerHTML=f[+i]()}
 function omnixAI(){return `<div class="panel" style="text-align:center"><div class="ai-orb">✦</div><h3>OMNIX AI</h3><p>${en?'Your smart assistant for learning, coding, translation and ideas.':'مساعدك الذكي للتعلم والبرمجة والترجمة والأفكار.'}</p></div>
 <div class="panel"><div class="chat-log" id="aiChat"><div class="chat-msg bot">${en?'Hello! I am OMNIX AI. The chat interface is ready. Connect a secure AI server to enable real answers.':'أهلًا! أنا OMNIX AI. واجهة المحادثة جاهزة. لبدء الردود الذكية الحقيقية نحتاج ربط خادم AI آمن.'}</div></div>
 <div class="chat-compose"><input id="aiInput" placeholder="${en?'Ask OMNIX AI...':'اسأل OMNIX AI...'}" onkeydown="if(event.key==='Enter')sendAI()"><button onclick="sendAI()">${en?'Send':'إرسال'}</button></div>
@@ -224,6 +224,115 @@ function filterPhrases(){let q=$('phraseSearch').value.toLowerCase();$('phraseLi
 function files(){return `<div class="panel"><h3>${en?'Import a text file':'استيراد ملف نصي'}</h3><input type="file" id="textFile" accept=".txt,.md,.csv,text/plain,text/markdown,text/csv"><button onclick="readTextFile()">${en?'Open file':'فتح الملف'}</button><textarea id="fileText" placeholder="${en?'File content will appear here':'سيظهر محتوى الملف هنا'}"></textarea><button onclick="downloadText()">${en?'Export text':'تصدير النص'}</button></div><div class="note">${en?'The app only reads files you choose.':'التطبيق يقرأ الملفات التي تختارها بنفسك فقط.'}</div>`}
 function readTextFile(){let f=$('textFile').files[0];if(!f)return showToast(en?'Choose a file first':'اختر ملفًا أولاً');let r=new FileReader();r.onload=()=>{$('fileText').value=r.result};r.readAsText(f)}
 function downloadText(){let b=new Blob([$('fileText').value],{type:'text/plain;charset=utf-8'});let a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='omnix-notes.txt';a.click();URL.revokeObjectURL(a.href)}
+
+function calendar(){
+ const today=new Date();
+ const fmt=new Intl.DateTimeFormat(en?'en-US':'ar-SA',{dateStyle:'full'});
+ let hijri='';
+ try{
+  hijri=new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura',{dateStyle:'full'}).format(today);
+ }catch(e){
+  hijri=en?'Hijri calendar unavailable':'التاريخ الهجري غير متاح على هذا الجهاز';
+ }
+ const personal=JSON.parse(get('personalEvents','[]'));
+ const fixed=[
+  {name:'يوم التأسيس السعودي',month:2,day:22,type:'national'},
+  {name:'اليوم الوطني السعودي',month:9,day:23,type:'national'}
+ ];
+ function nextGregorian(m,d){
+  let x=new Date(today.getFullYear(),m-1,d);
+  x.setHours(0,0,0,0);
+  if(x<new Date(today.getFullYear(),today.getMonth(),today.getDate()))x.setFullYear(x.getFullYear()+1);
+  return x;
+ }
+ function nextHijri(m,d,label){
+  try{
+   for(let i=0;i<=370;i++){
+    let x=new Date(today.getFullYear(),today.getMonth(),today.getDate()+i);
+    let parts=new Intl.DateTimeFormat('en-u-ca-islamic-umalqura',{month:'numeric',day:'numeric'}).formatToParts(x);
+    let month=Number(parts.find(p=>p.type==='month').value);
+    let day=Number(parts.find(p=>p.type==='day').value);
+    if(month===m&&day===d)return {name:label,date:x,type:'islamic'};
+   }
+  }catch(e){}
+  return null;
+ }
+ let events=[
+  ...fixed.map(e=>({...e,date:nextGregorian(e.month,e.day)})),
+  nextHijri(9,1,'بداية شهر رمضان'),
+  nextHijri(10,1,'عيد الفطر'),
+  nextHijri(12,9,'يوم عرفة'),
+  nextHijri(12,10,'عيد الأضحى'),
+  nextHijri(1,1,'رأس السنة الهجرية'),
+  nextHijri(3,12,'المولد النبوي')
+ ].filter(Boolean);
+ personal.forEach((e,i)=>{
+  let d=new Date(e.date+'T00:00:00');
+  if(!isNaN(d)&&d>=new Date(today.getFullYear(),today.getMonth(),today.getDate()))
+   events.push({name:e.name,date:d,type:'personal',index:i});
+ });
+ events.sort((a,b)=>a.date-b.date);
+ const cards=events.map(e=>{
+  let days=Math.ceil((new Date(e.date.getFullYear(),e.date.getMonth(),e.date.getDate())-new Date(today.getFullYear(),today.getMonth(),today.getDate()))/86400000);
+  let dateText=new Intl.DateTimeFormat(en?'en-US':'ar-SA',{dateStyle:'medium'}).format(e.date);
+  return `<div class="itemline"><div><b>${escapeHtml(e.name)}</b><br><small>${dateText}</small><br><span class="status">${days===0?(en?'Today':'اليوم'):(en?'In ':'بعد ')+days+(en?' days':' يوم')}</span></div>${e.type==='personal'?`<button class="danger" onclick="deleteCalendarEvent(${e.index})">×</button>`:''}</div>`;
+ }).join('');
+ return `<div class="panel">
+ <h3>${en?'Today':'تاريخ اليوم'}</h3>
+ <p>${fmt.format(today)}</p><p class="status">${hijri}</p>
+ </div>
+ <div class="panel">
+ <h3>${en?'Upcoming occasions':'المناسبات القادمة'}</h3>
+ ${cards||`<p>${en?'No upcoming occasions':'لا توجد مناسبات قادمة'}</p>`}
+ </div>
+ <div class="panel">
+ <h3>${en?'Add a personal occasion':'إضافة مناسبة شخصية'}</h3>
+ <input id="eventName" placeholder="${en?'Occasion name':'اسم المناسبة'}" maxlength="60">
+ <input id="eventDate" type="date">
+ <button onclick="addCalendarEvent()">${en?'Add occasion':'إضافة المناسبة'}</button>
+ <p class="note">${en?'Your personal occasions are saved on this device.':'مناسباتك الشخصية تُحفظ على هذا الجهاز.'}</p>
+ </div>
+ <div class="panel">
+ <h3>${en?'Notifications':'التنبيهات'}</h3>
+ <p>${en?'Allow notifications to receive a reminder when you open the calendar.':'اسمح بالإشعارات لتلقي تذكير عند فتح التقويم.'}</p>
+ <button onclick="notifyCalendar()">${en?'Enable notifications':'تفعيل الإشعارات'}</button>
+ <p class="note">${en?'Notifications are not scheduled while the app is closed yet.':'لا يتم جدولة الإشعارات حتى الآن عندما يكون التطبيق مغلقًا.'}</p>
+ </div>`;
+}
+function addCalendarEvent(){
+ let name=$('eventName').value.trim(),date=$('eventDate').value;
+ if(!name||!date)return showToast(en?'Enter a name and date':'اكتب اسم المناسبة وتاريخها');
+ let d=new Date(date+'T00:00:00');
+ if(isNaN(d)||d<new Date(new Date().getFullYear(),new Date().getMonth(),new Date().getDate()))return showToast(en?'Choose a future date':'اختر تاريخًا اليوم أو بعده');
+ let a=JSON.parse(get('personalEvents','[]'));
+ a.push({name,date});
+ set('personalEvents',JSON.stringify(a));
+ $('content').innerHTML=calendar();
+ showToast(en?'Occasion saved':'تم حفظ المناسبة');
+}
+function deleteCalendarEvent(i){
+ let a=JSON.parse(get('personalEvents','[]'));
+ a.splice(i,1);
+ set('personalEvents',JSON.stringify(a));
+ $('content').innerHTML=calendar();
+}
+async function notifyCalendar(){
+ if(!('Notification' in window))return showToast(en?'Notifications are not supported':'الإشعارات غير مدعومة على هذا الجهاز');
+ let permission=Notification.permission;
+ if(permission==='default')permission=await Notification.requestPermission();
+ if(permission!=='granted')return showToast(en?'Notification permission not granted':'لم يتم السماح بالإشعارات');
+ let a=JSON.parse(get('personalEvents','[]'));
+ let today=new Date();today.setHours(0,0,0,0);
+ let soon=a.filter(e=>{
+  let d=new Date(e.date+'T00:00:00');
+  let days=Math.ceil((d-today)/86400000);
+  return days>=0&&days<=1;
+ });
+ if(!soon.length)return showToast(en?'Notifications enabled':'تم تفعيل الإشعارات');
+ soon.forEach(e=>new Notification('OMNIX · '+e.name,{body:en?'An occasion is coming up':'اقترب موعد مناسبتك'}));
+ showToast(en?'Notifications enabled':'تم تفعيل الإشعارات');
+}
+
 function admin(){return `<div class="panel"><h3>${en?'App settings':'إعدادات التطبيق'}</h3><p>${en?'Language and local data controls.':'اللغة والتحكم في البيانات المحلية.'}</p><button onclick="toggleLang()">${en?'Switch language':'تغيير اللغة'}</button><button class="secondary" onclick="backupData()">${en?'Export backup':'تصدير نسخة احتياطية'}</button><div style="margin-top:12px"><label>${en?'Restore backup file':'استعادة نسخة احتياطية'}</label><input type="file" id="backupFile" accept="application/json,.json"><button onclick="restoreData()">${en?'Restore':'استعادة'}</button></div></div><div class="panel"><h3>${en?'About OMNIX':'حول OMNIX'}</h3><p>OMNIX · منصة للتعلم والترفيه</p><small>${en?'Version 1.3 · Data stored locally on this device.':'الإصدار 1.3 · البيانات محفوظة محليًا على هذا الجهاز.'}</small></div><div class="note">${en?'Admin panel controls this app on this device; it is not a remote server dashboard.':'لوحة الإدارة تتحكم في التطبيق على هذا الجهاز، وليست لوحة تحكم بخادم خارجي.'}</div>`}
 function backupData(){let data={};for(let i=0;i<localStorage.length;i++){let k=localStorage.key(i);if(k.startsWith('om_'))data[k]=localStorage.getItem(k)}let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download='omnix-backup.json';a.click();URL.revokeObjectURL(a.href)}
 function restoreData(){let f=$('backupFile').files[0];if(!f)return showToast(en?'Choose a backup':'اختر نسخة احتياطية');let r=new FileReader();r.onload=()=>{try{let d=JSON.parse(r.result);Object.keys(d).forEach(k=>{if(k.startsWith('om_'))localStorage.setItem(k,d[k])});showToast(en?'Backup restored':'تمت استعادة النسخة');setTimeout(()=>location.reload(),700)}catch{showToast(en?'Invalid backup file':'ملف النسخة غير صالح')}};r.readAsText(f)}
