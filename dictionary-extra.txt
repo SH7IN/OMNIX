@@ -1,0 +1,340 @@
+أب|Father
+أم|Mother
+أخ|Brother
+أخت|Sister
+جد|Grandfather
+جدة|Grandmother
+ابن|Son
+ابنة|Daughter
+عائلة|Family
+طفل|Child
+أطفال|Children
+صديق|Friend
+صديقة|Female friend
+رجل|Man
+امرأة|Woman
+ولد|Boy
+بنت|Girl
+زوج|Husband
+زوجة|Wife
+جار|Neighbor
+مدرسة|School
+فصل|Classroom
+معلم|Teacher
+معلمة|Female teacher
+طالب|Student
+طالبة|Female student
+كتاب|Book
+دفتر|Notebook
+قلم|Pen
+ممحاة|Eraser
+مسطرة|Ruler
+حقيبة|Bag
+سبورة|Board
+كرسي|Chair
+طاولة|Table
+درس|Lesson
+واجب|Homework
+امتحان|Exam
+سؤال|Question
+إجابة|Answer
+لغة|Language
+كلمة|Word
+جملة|Sentence
+حرف|Letter
+رقم|Number
+رياضيات|Mathematics
+علوم|Science
+تاريخ|History
+جغرافيا|Geography
+حاسوب|Computer
+منزل|House
+غرفة|Room
+باب|Door
+نافذة|Window
+مطبخ|Kitchen
+حمام|Bathroom
+سرير|Bed
+وسادة|Pillow
+مصباح|Lamp
+مفتاح|Key
+ساعة|Clock
+هاتف|Phone
+تلفاز|Television
+ثلاجة|Refrigerator
+فرن|Oven
+حديقة|Garden
+شارع|Street
+مدينة|City
+قرية|Village
+مبنى|Building
+جدار|Wall
+أرضية|Floor
+سقف|Ceiling
+درج|Stairs
+مرآة|Mirror
+طعام|Food
+ماء|Water
+خبز|Bread
+أرز|Rice
+لحم|Meat
+دجاج|Chicken
+سمك|Fish
+بيض|Eggs
+حليب|Milk
+جبن|Cheese
+زبدة|Butter
+تفاح|Apple
+موز|Banana
+برتقال|Orange
+عنب|Grapes
+فراولة|Strawberry
+ليمون|Lemon
+بطيخ|Watermelon
+مانجو|Mango
+تمر|Dates
+بطاطس|Potatoes
+طماطم|Tomato
+خيار|Cucumber
+جزر|Carrot
+بصل|Onion
+ثوم|Garlic
+سلطة|Salad
+حساء|Soup
+سكر|Sugar
+ملح|Salt
+فلفل|Pepper
+عصير|Juice
+شاي|Tea
+قهوة|Coffee
+وجبة|Meal
+فطور|Breakfast
+غداء|Lunch
+عشاء|Dinner
+طبق|Plate
+ملعقة|Spoon
+شوكة|Fork
+سكين|Knife
+كوب|Cup
+لون|Color
+أحمر|Red
+أزرق|Blue
+أخضر|Green
+أصفر|Yellow
+أسود|Black
+أبيض|White
+برتقالي|Orange
+وردي|Pink
+بنفسجي|Purple
+بني|Brown
+رمادي|Gray
+واحد|One
+اثنان|Two
+ثلاثة|Three
+أربعة|Four
+خمسة|Five
+ستة|Six
+سبعة|Seven
+ثمانية|Eight
+تسعة|Nine
+عشرة|Ten
+اليوم|Today
+غداً|Tomorrow
+أمس|Yesterday
+صباح|Morning
+مساء|Evening
+ليل|Night
+أسبوع|Week
+شهر|Month
+سنة|Year
+دقيقة|Minute
+ثانية|Second
+ربيع|Spring
+صيف|Summer
+خريف|Autumn
+شتاء|Winter
+رأس|Head
+عين|Eye
+أذن|Ear
+أنف|Nose
+فم|Mouth
+يد|Hand
+ذراع|Arm
+قدم|Foot
+ساق|Leg
+قلب|Heart
+شعر|Hair
+وجه|Face
+أسنان|Teeth
+ظهر|Back
+بطن|Stomach
+شمس|Sun
+قمر|Moon
+نجمة|Star
+سماء|Sky
+أرض|Earth
+بحر|Sea
+نهر|River
+جبل|Mountain
+شجرة|Tree
+زهرة|Flower
+حيوان|Animal
+قطة|Cat
+كلب|Dog
+حصان|Horse
+أسد|Lion
+فيل|Elephant
+طائر|Bird
+سمكة|Fish
+طقس|Weather
+مطر|Rain
+ثلج|Snow
+رياح|Wind
+سحابة|Cloud
+نار|Fire
+هواء|Air
+يأكل|Eat
+يشرب|Drink
+ينام|Sleep
+يستيقظ|Wake up
+يذهب|Go
+يأتي|Come
+يرى|See
+يسمع|Hear
+يتكلم|Speak
+يقرأ|Read
+يكتب|Write
+يتعلم|Learn
+يدرس|Study
+يلعب|Play
+يعمل|Work
+يفتح|Open
+يغلق|Close
+يجلس|Sit
+يقف|Stand
+يمشي|Walk
+يجري|Run
+يشتري|Buy
+يبيع|Sell
+يعطي|Give
+يأخذ|Take
+يساعد|Help
+يحب|Love
+يفكر|Think
+يعرف|Know
+يفهم|Understand
+يسأل|Ask
+يجيب|Reply
+يطبخ|Cook
+يغسل|Wash
+يسبح|Swim
+يقود|Drive
+يسافر|Travel
+يصل|Arrive
+ينتظر|Wait
+يبدأ|Start
+ينتهي|Finish
+يضحك|Laugh
+يبكي|Cry
+جميل|Beautiful
+كبير|Big
+صغير|Small
+طويل|Tall
+قصير|Short
+سريع|Fast
+بطيء|Slow
+سهل|Easy
+صعب|Difficult
+جديد|New
+قديم|Old
+سعيد|Happy
+حزين|Sad
+قوي|Strong
+ضعيف|Weak
+نظيف|Clean
+متسخ|Dirty
+ساخن|Hot
+بارد|Cold
+قريب|Near
+بعيد|Far
+مفتوح|Open
+مغلق|Closed
+مهم|Important
+ممتاز|Excellent
+جميل جداً|Very beautiful
+مطار|Airport
+محطة|Station
+مستشفى|Hospital
+صيدلية|Pharmacy
+مطعم|Restaurant
+فندق|Hotel
+سوق|Market
+متجر|Shop
+مسجد|Mosque
+مكتبة|Library
+بنك|Bank
+شرطة|Police
+سيارة|Car
+حافلة|Bus
+قطار|Train
+طائرة|Airplane
+دراجة|Bicycle
+تذكرة|Ticket
+جواز سفر|Passport
+خريطة|Map
+طريق|Road
+يمين|Right
+يسار|Left
+أمام|In front
+خلف|Behind
+فوق|Above
+تحت|Below
+هنا|Here
+هناك|There
+أين؟|Where?
+متى؟|When?
+لماذا؟|Why?
+كيف؟|How?
+من؟|Who?
+ماذا؟|What?
+كم؟|How much?
+أنا بخير|I am fine
+اسمي ...|My name is ...
+ما اسمك؟|What is your name?
+أين الحمام؟|Where is the bathroom?
+أين المدرسة؟|Where is the school?
+أريد المساعدة|I need help
+لا أعرف|I don't know
+أنا أفهم|I understand
+أنا لا أفهم|I don't understand
+هل تتكلم الإنجليزية؟|Do you speak English?
+كم السعر؟|How much is it?
+أريد هذا|I want this
+أين أقرب مستشفى؟|Where is the nearest hospital?
+من فضلك انتظر|Please wait
+أنا جائع|I am hungry
+أنا عطشان|I am thirsty
+أنا متعب|I am tired
+الجو جميل|The weather is nice
+سعيد بلقائك|Nice to meet you
+تصبح على خير|Good night
+إلى اللقاء|See you later
+يوم سعيد|Have a nice day
+شكراً جزيلاً|Thank you very much
+على الرحب والسعة|You're welcome
+آسف|Sorry
+لا بأس|It's okay
+بالتوفيق|Good luck
+أحسنت|Well done
+أنا أحب القراءة|I love reading
+أحتاج إلى ماء|I need water
+أين أنت؟|Where are you?
+أنا في المنزل|I am at home
+أنا في المدرسة|I am at school
+هذا صحيح|That is correct
+هذا خطأ|That is wrong
+افتح الباب|Open the door
+أغلق النافذة|Close the window
+انتبه|Be careful
+تعال هنا|Come here
+هيا بنا|Let's go

@@ -537,6 +537,10 @@ footer{color:#777f8c!important}
 </section>
 </main>
 <footer>OMNIX © 2026 · منصة للتعلم والترفيه</footer>
+<script src="./quran-data.js"></script>
+<script src="./quran-names.js"></script>
+<script src="./dictionary-data.js"></script>
+<script src="./dictionary-extra.js"></script>
 <script>
 const $=id=>document.getElementById(id);
 let en=localStorage.getItem('omnixLang')==='en', current='';
@@ -621,17 +625,124 @@ function answerQuiz(i){if(i===quiz[qIndex].c)qPoints++;qIndex++;nextQuestion()}
 function games(){return `<div class="panel"><h3>${en?'Quick mental math':'تحدي الحساب الذهني'}</h3><p id="gameQuestion">اضغط ابدأ لعرض السؤال.</p><input id="gameAnswer" type="number" inputmode="numeric" placeholder="${en?'Your answer':'إجابتك'}"><div class="row"><button onclick="newGame()">${en?'New question':'سؤال جديد'}</button><button class="secondary" onclick="checkGame()">${en?'Check':'تحقق'}</button></div><div id="gameResult" class="status"></div></div>`}
 let gameValue=0;function newGame(){let a=Math.floor(Math.random()*12)+1,b=Math.floor(Math.random()*12)+1;gameValue=a*b;$('gameQuestion').textContent=`${a} × ${b} = ؟`;$('gameAnswer').value='';$('gameResult').textContent=''}
 function checkGame(){if($('gameAnswer').value==='')return;$('gameResult').textContent=Number($('gameAnswer').value)===gameValue?(en?'Correct ✓':'إجابة صحيحة ✓'):(en?'Try again':'حاول مرة أخرى')}
-function quran(){return `<div class="panel"><h3>${en?'Surah Al-Fatiha':'سورة الفاتحة'}</h3><div class="ayahs">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ<br>الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ<br>الرَّحْمَٰنِ الرَّحِيمِ<br>مَالِكِ يَوْمِ الدِّينِ<br>إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ<br>اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ<br>صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ</div></div><div class="panel"><h3>${en?'Memorization progress':'متابعة الحفظ'}</h3><label><input type="checkbox" id="fatihaDone" ${get('fatihaDone')==='yes'?'checked':''} onchange="set('fatihaDone',this.checked?'yes':'no');quranStatus()">${en?'I reviewed Al-Fatiha':'أتممت مراجعة سورة الفاتحة'}</label><div id="qStatus" class="status"></div></div><div class="panel"><h3>${en?'Listen to your own recording':'استمع إلى تسجيلك'}</h3><p>${en?'Choose an audio recording stored on your device.':'اختر تسجيلًا صوتيًا من جهازك للاستماع إليه ومراجعة حفظك.'}</p><input type="file" accept="audio/*" id="qAudio"><audio id="audioPlayer" controls class="hidden" style="width:100%"></audio><div class="note">${en?'This does not verify tajweed automatically.':'هذا المشغل لا يفحص التجويد تلقائيًا.'}</div></div>`}
-function quranStatus(){if($('qStatus'))$('qStatus').textContent=get('fatihaDone')==='yes'?(en?'Review saved ✓':'تم حفظ المراجعة ✓'):(en?'Not reviewed yet':'لم يتم تسجيل المراجعة بعد')}
+
+function quran(){
+ const names=window.OMNIX_SURAH_NAMES;
+ return `<div class="panel">
+ <h3>${en?'The Holy Quran':'القرآن الكريم'}</h3>
+ <p>${en?'114 Surahs · Works offline':'114 سورة · يعمل دون إنترنت'}</p>
+ <input id="surahSearch" placeholder="${en?'Search Surah':'ابحث عن سورة'}" oninput="filterSurahs()">
+ <div id="surahList" class="grid" style="grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px">
+ ${names.map((name,i)=>`<button class="secondary" onclick="openSurah(${i+1})">${i+1}. ${name}</button>`).join('')}
+ </div></div>
+ <div class="panel"><h3>${en?'Memorization':'متابعة الحفظ'}</h3>
+ <p>${en?'Your review marks are saved on this device.':'علامات المراجعة محفوظة على جهازك.'}</p>
+ <div class="status">${names.filter((_,i)=>get('quranDone_'+(i+1))==='yes').length} / 114 ${en?'Surahs reviewed':'سورة تمت مراجعتها'}</div>
+ </div>`;
+}
+
+function filterSurahs(){
+ const q=$('surahSearch').value.trim().toLowerCase();
+ const names=window.OMNIX_SURAH_NAMES;
+ $('surahList').innerHTML=names.map((name,i)=>({name,i}))
+ .filter(x=>(x.name+' '+(x.i+1)).toLowerCase().includes(q))
+ .map(x=>`<button class="secondary" onclick="openSurah(${x.i+1})">${x.i+1}. ${x.name}</button>`).join('');
+}
+
+function openSurah(n){
+ const names=window.OMNIX_SURAH_NAMES;
+ const surah=window.OMNIX_QURAN[n-1];
+ if(!surah)return showToast('تعذر فتح السورة');
+ const done=get('quranDone_'+n)==='yes';
+ $('content').innerHTML=`
+ <div class="panel">
+ <button class="secondary" onclick="$('content').innerHTML=quran()">← ${en?'Surah list':'قائمة السور'}</button>
+ <h2 style="text-align:center">${names[n-1]}</h2>
+ <p style="text-align:center">${en?'Surah number':'رقم السورة'} ${n} · ${surah.ayahs.length} ${en?'Ayahs':'آية'}</p>
+ <div class="ayahs" style="font-size:22px;line-height:2.2;text-align:center">
+ ${surah.ayahs.map(a=>`${escapeHtml(a.text)} <span style="color:var(--copper)">۞${a.number}</span>`).join(' ')}
+ </div></div>
+ <div class="panel">
+ <label><input type="checkbox" ${done?'checked':''}
+ onchange="set('quranDone_${n}',this.checked?'yes':'no');showToast(this.checked?'تم حفظ المراجعة':'تم إلغاء المراجعة')">
+ ${en?'I reviewed this Surah':'أتممت مراجعة هذه السورة'}</label>
+ </div>`;
+ window.scrollTo(0,0);
+}
+
 function productivity(){let tasks=JSON.parse(get('tasks','[]'));return `<div class="panel"><h3>${en?'Tasks':'قائمة المهام'}</h3><div class="row"><input id="taskInput" placeholder="${en?'Add a task':'اكتب مهمة جديدة'}"><button onclick="addTask()">${en?'Add':'إضافة'}</button></div><div id="taskList">${taskHtml(tasks)}</div></div><div class="panel"><h3>${en?'Notes':'ملاحظات'}</h3><textarea id="mainNote" placeholder="${en?'Your notes':'اكتب ملاحظاتك'}">${escapeHtml(get('mainNote'))}</textarea><button onclick="set('mainNote',$('mainNote').value);showToast(en?'Saved':'تم الحفظ')">${en?'Save':'حفظ'}</button></div>`}
 function taskHtml(a){return a.map((t,i)=>`<div class="itemline"><label><input type="checkbox" ${t.done?'checked':''} onchange="toggleTask(${i},this.checked)"> ${escapeHtml(t.text)}</label><button class="danger" onclick="deleteTask(${i})">×</button></div>`).join('')||'<small>لا توجد مهام بعد</small>'}
 function addTask(){let v=$('taskInput').value.trim();if(!v)return;let a=JSON.parse(get('tasks','[]'));a.push({text:v,done:false});set('tasks',JSON.stringify(a));$('taskList').innerHTML=taskHtml(a);$('taskInput').value=''}
 function toggleTask(i,v){let a=JSON.parse(get('tasks','[]'));a[i].done=v;set('tasks',JSON.stringify(a))}
 function deleteTask(i){let a=JSON.parse(get('tasks','[]'));a.splice(i,1);set('tasks',JSON.stringify(a));$('taskList').innerHTML=taskHtml(a)}
-const phrases=[['Hello','مرحباً'],['Thank you','شكراً لك'],['Good morning','صباح الخير'],['How are you?','كيف حالك؟'],['Where is the school?','أين المدرسة؟'],['I understand','أنا أفهم']];
-function languages(){return `<div class="panel"><h3>${en?'Mini dictionary':'قاموس مصغر'}</h3><input id="phraseSearch" oninput="filterPhrases()" placeholder="${en?'Search Arabic or English':'ابحث بالعربية أو الإنجليزية'}"><div id="phraseList">${phraseHtml(phrases)}</div></div>`}
-function phraseHtml(a){return a.map(p=>`<div class="itemline"><b>${en?p[0]:p[1]}</b><span>${en?p[1]:p[0]}</span></div>`).join('')}
-function filterPhrases(){let q=$('phraseSearch').value.toLowerCase();$('phraseList').innerHTML=phraseHtml(phrases.filter(p=>p.join(' ').toLowerCase().includes(q)))}
+
+const phrases = window.OMNIX_PHRASES || [];
+
+function languageOptions(selected){
+ return window.OMNIX_LANGUAGES.map(l =>
+  `<option value="${l.code}" ${l.code===selected?'selected':''}>${l.flag} ${escapeHtml(l.name)}</option>`
+ ).join('');
+}
+
+function languages(){
+ const from=get('langFrom','ar');
+ const to=get('langTo','en');
+ return `
+ <div class="panel">
+  <h3>${en?'Multilingual Translator':'المترجم متعدد اللغات'}</h3>
+  <div class="row">
+   <div style="flex:1;min-width:120px">
+    <label>${en?'Translate from':'الترجمة من'}</label>
+    <select id="langFrom" onchange="setLanguagePair()">${languageOptions(from)}</select>
+   </div>
+   <button class="secondary" onclick="swapLanguages()">⇄</button>
+   <div style="flex:1;min-width:120px">
+    <label>${en?'Translate to':'الترجمة إلى'}</label>
+    <select id="langTo" onchange="setLanguagePair()">${languageOptions(to)}</select>
+   </div>
+  </div>
+  <input id="phraseSearch" oninput="filterPhrases()"
+   placeholder="${en?'Search words and phrases':'ابحث عن كلمة أو عبارة'}">
+  <div id="phraseList">${phraseHtml(phrases)}</div>
+  <small>${en?'Offline starter dictionary':'قاموس أساسي يعمل دون إنترنت'}</small>
+ </div>`;
+}
+
+function setLanguagePair(){
+ set('langFrom',$('langFrom').value);
+ set('langTo',$('langTo').value);
+ filterPhrases();
+}
+
+function swapLanguages(){
+ const from=$('langFrom').value;
+ const to=$('langTo').value;
+ $('langFrom').value=to;
+ $('langTo').value=from;
+ setLanguagePair();
+}
+
+function phraseHtml(a){
+ const from=get('langFrom','ar');
+ const to=get('langTo','en');
+ const rows=a.filter(p=>p[from] && p[to]);
+ if(!rows.length)return `<div class="itemline">${en?'No matching translations yet':'لا توجد ترجمة لهذه العبارة حاليًا'}</div>`;
+ return rows.map(p=>`
+  <div class="itemline">
+   <b>${escapeHtml(p[from])}</b>
+   <span>${escapeHtml(p[to])}</span>
+  </div>`).join('');
+}
+
+function filterPhrases(){
+ const q=$('phraseSearch').value.trim().toLowerCase();
+ const from=get('langFrom','ar');
+ const to=get('langTo','en');
+ const filtered=phrases.filter(p=>
+  Object.values(p).some(v=>String(v).toLowerCase().includes(q))
+ );
+ $('phraseList').innerHTML=phraseHtml(filtered);
+}
 function files(){return `<div class="panel"><h3>${en?'Import a text file':'استيراد ملف نصي'}</h3><input type="file" id="textFile" accept=".txt,.md,.csv,text/plain,text/markdown,text/csv"><button onclick="readTextFile()">${en?'Open file':'فتح الملف'}</button><textarea id="fileText" placeholder="${en?'File content will appear here':'سيظهر محتوى الملف هنا'}"></textarea><button onclick="downloadText()">${en?'Export text':'تصدير النص'}</button></div><div class="note">${en?'The app only reads files you choose.':'التطبيق يقرأ الملفات التي تختارها بنفسك فقط.'}</div>`}
 function readTextFile(){let f=$('textFile').files[0];if(!f)return showToast(en?'Choose a file first':'اختر ملفًا أولاً');let r=new FileReader();r.onload=()=>{$('fileText').value=r.result};r.readAsText(f)}
 function downloadText(){let b=new Blob([$('fileText').value],{type:'text/plain;charset=utf-8'});let a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='omnix-notes.txt';a.click();URL.revokeObjectURL(a.href)}
