@@ -24,7 +24,14 @@ button.secondary{background:#111214;border-color:#34496d;color:var(--white)}butt
 input,textarea,select{width:100%;padding:12px;background:#0d0e10;border:1px solid #34496d;border-radius:10px;color:var(--white);margin:5px 0 10px;font:inherit}
 input[type=checkbox]{width:auto;vertical-align:middle;margin-inline-end:7px}textarea{min-height:90px;resize:vertical}label{font-size:13px;color:var(--muted)}.hidden{display:none!important}
 .back{margin:4px 0 15px}.itemline{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 0;border-bottom:1px solid #30271e}.itemline:last-child{border:0}
-.ayahs{font-family:serif;font-size:22px;line-height:2.2;text-align:center;color:var(--soft)}.status{color:var(--copper);font-size:13px;margin-top:10px}
+@font-face{
+ font-family:"Amiri Quran";
+ src:url("./fonts/amiri-quran.woff2") format("woff2");
+ font-weight:normal;
+ font-style:normal;
+ font-display:swap;
+}
+.ayahs{font-family:"Amiri Quran",serif;font-size:22px;line-height:2.2;text-align:center;color:var(--soft)}.status{color:var(--copper);font-size:13px;margin-top:10px}
 .big{font-size:25px;color:var(--copper);font-weight:bold}.answer{display:block;width:100%;text-align:right;margin:7px 0}
 footer{text-align:center;color:#75634e;padding:18px;font-size:11px}
 .tile{position:relative;overflow:hidden;transition:transform .22s,border-color .22s,box-shadow .22s}
@@ -494,6 +501,58 @@ footer{color:#777f8c!important}
  .tile{min-height:105px}
 }
 
+
+/* OMNIX FUTURE HUD */
+:root{--bg:#050811;--panel:#0b1422;--panel2:#101d30;--copper:#69eaff;--soft:#eaf7ff;--muted:#8da9c5;--line:#1c3d58;--white:#f2f9ff}
+body{background:radial-gradient(ellipse at 50% -18%,#123653,transparent 43%),radial-gradient(circle at 88% 35%,#24134a55,transparent 34%),#050811;color:#f2f9ff}
+.apple-header{background:#050b16e8;border-bottom:1px solid #48dfff38;box-shadow:0 8px 35px #00bfff12}
+.apple-header .mark{border:1px solid #55eaff99;background:linear-gradient(145deg,#103d55,#10152b);box-shadow:0 0 22px #00cfff38;color:#8cf3ff}
+.apple-header .logo{text-shadow:0 0 18px #35dfff66;letter-spacing:7px}
+.header-meta{color:#67dff4}
+#appleNav{background:#081321e8;border-color:#42dfff35;box-shadow:0 0 30px #00bfff12}
+.nav-caption{color:#5b9eb8}
+.nav-item{color:#a8c7dc!important}
+.nav-item span{color:#64e6ff}
+.nav-item:hover,.nav-item.active{background:linear-gradient(90deg,#12bfe51c,#9d65ff16)!important;box-shadow:inset 2px 0 #5beaff;color:#fff!important}
+#home>.panel:first-child,#commandCenter,#home .tile{background:linear-gradient(145deg,#0d1c2d,#09111e)!important;border:1px solid #39cce936!important;box-shadow:0 10px 35px #0008,inset 0 1px #b5f4ff12,0 0 22px #00bfff0b!important}
+#home>.panel:first-child{position:relative;overflow:hidden}
+#home>.panel:first-child:after{content:"";position:absolute;width:190px;height:190px;left:-70px;top:-100px;border:1px solid #50dfff22;border-radius:50%;box-shadow:0 0 0 18px #50dfff08,0 0 0 38px #50dfff06;pointer-events:none}
+#heroTitle,h2,h3{color:#e8f8ff!important}
+#heroText,.panel p{color:#9bb6cc}
+#commandCenter{position:relative;overflow:hidden;padding:22px}
+#commandCenter:before{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 20%,#2bdcff08 48%,transparent 75%);background-size:220% 100%;animation:hudSweep 9s linear infinite;pointer-events:none}
+.cc-heading,.cc-stats,.cc-quick,.cc-quiz{position:relative;z-index:1}
+.cc-label{color:#65e6f7!important;letter-spacing:2px}
+.cc-stat{background:#0b2031!important;border:1px solid #39cce92b!important}
+.cc-number{color:#76eaff!important;text-shadow:0 0 14px #30dfff44}
+#home .tile{position:relative;overflow:hidden;min-height:125px;transition:.28s}
+#home .tile:hover{transform:translateY(-5px);border-color:#58e9ff99!important;box-shadow:0 12px 30px #00bfff18!important}
+#home .tile .ico{color:#72eaff!important;text-shadow:0 0 16px #43dfff88!important}
+#home button:not(.tile){border-color:#42cfe83b!important;background:linear-gradient(135deg,#10283a,#11172a)!important}
+#home button:not(.tile):hover{border-color:#65eaff!important;box-shadow:0 0 18px #16c9ed20}
+.future-hud{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:clamp(18px,5vw,55px);padding:18px 8px 24px;min-height:205px;border-bottom:1px solid #4bdcf326;margin-bottom:18px}
+.hud-visual{position:relative;flex:0 0 172px;width:172px;height:172px;display:grid;place-items:center;filter:drop-shadow(0 0 18px #17cfee25)}
+.hud-ring{position:absolute;border-radius:50%;border:1px solid #4ce8ff75;inset:8px;box-shadow:0 0 18px #14dfff20,inset 0 0 18px #14dfff12}
+.ring-one{border-style:dashed;animation:hudSpin 24s linear infinite}
+.ring-two{inset:20px;border-color:#a77aff88;border-left-color:transparent;border-right-color:transparent;animation:hudSpin 12s linear infinite reverse}
+.ring-three{inset:34px;border-color:#5eeaff66;border-style:dotted;animation:hudSpin 18s linear infinite}
+.hud-core{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;font-size:48px;color:#b8f7ff;background:radial-gradient(circle,#1a5672,#10273c 55%,#08111e 76%);border:1px solid #75efff9c;box-shadow:0 0 25px #20dfff66,inset 0 0 20px #4ceaff38;text-shadow:0 0 15px #7bf4ff}
+.hud-node{position:absolute;width:7px;height:7px;border-radius:50%;background:#9af8ff;box-shadow:0 0 12px 3px #39dfff99}
+.node-one{top:18px;right:35px}.node-two{bottom:24px;left:27px;background:#c7a1ff;box-shadow:0 0 12px 3px #a16cff99}
+.hud-readout{min-width:0;display:flex;flex-direction:column;gap:8px;text-align:start}
+.hud-kicker{font-size:9px;letter-spacing:2.5px;color:#67dff4}
+.hud-readout strong{font-size:clamp(17px,3vw,24px);letter-spacing:2px;color:#e9fbff;text-shadow:0 0 18px #48dfff35}
+.hud-state{font-size:9px;letter-spacing:1.7px;color:#8df5c9}
+.hud-state i{display:inline-block;width:6px;height:6px;border-radius:50%;background:#65f5b5;box-shadow:0 0 10px #65f5b5;margin-inline-end:7px;animation:hudPulse 1.7s infinite}
+.hud-readout small{font-size:8px;letter-spacing:1px;color:#7398b3}
+.hud-wave{font-size:19px;letter-spacing:3px;color:#69eaff;text-shadow:0 0 12px #3bdcff;animation:waveGlow 1.2s ease-in-out infinite alternate}
+@keyframes hudSpin{to{transform:rotate(360deg)}}
+@keyframes hudPulse{50%{opacity:.35;transform:scale(.75)}}
+@keyframes waveGlow{to{opacity:.45;filter:brightness(1.8)}}
+@keyframes hudSweep{to{background-position:-220% 0}}
+@media(max-width:600px){.future-hud{gap:15px;min-height:165px;padding:14px 0 20px}.hud-visual{flex-basis:138px;width:138px;height:138px}.hud-core{width:62px;height:62px;font-size:39px}.hud-readout strong{font-size:16px;letter-spacing:1px}.hud-kicker{font-size:8px;letter-spacing:1.5px}.hud-readout small{font-size:7px}}
+@media(prefers-reduced-motion:reduce){.hud-ring,.hud-state i,.hud-wave,#commandCenter:before{animation:none!important}}
+
 </style>
 </head>
 <body>
@@ -567,6 +626,20 @@ function renderDashboard(){
  <div class="cc-heading">
   <h3>${en?'Command Center':'مركز التحكم'}</h3>
   <span class="cc-label">LIVE OVERVIEW</span>
+ </div>
+
+ <div class="future-hud">
+  <div class="hud-visual">
+   <div class="hud-ring ring-one"></div><div class="hud-ring ring-two"></div><div class="hud-ring ring-three"></div>
+   <div class="hud-core">∞</div><i class="hud-node node-one"></i><i class="hud-node node-two"></i>
+  </div>
+  <div class="hud-readout">
+   <span class="hud-kicker">OMNIX // SYSTEM CORE</span>
+   <strong>BEYOND LIMITS</strong>
+   <span class="hud-state"><i></i> SYSTEM ONLINE</span>
+   <div class="hud-wave">▂ ▅ ▃ ▇ ▄ ▆ ▂ ▇ ▄ ▅ ▃ ▆ ▂ ▇</div>
+   <small>LEARNING · CREATIVITY · INTELLIGENCE</small>
+  </div>
  </div>
  <div class="cc-stats">
   <div class="cc-stat">
