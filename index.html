@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#070912">
 <meta name="description" content="OMNIX — أدواتك وتعلمك ومساعدك الذكي في مكان واحد.">
 <link rel="manifest" href="manifest.webmanifest">
-<title>OMNIX 1.5</title>
+<title>OMNIX 1.8</title>
 <style>
 :root{--bg:#070912;--panel:#111626;--panel2:#17152b;--copper:#55c8ff;--soft:#d8eaff;--muted:#9aaac4;--line:#293b61;--white:#edf4ff}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#111a30 0,#070912 42%);color:var(--white);font-family:Arial,sans-serif;min-height:100vh}
@@ -151,7 +151,7 @@ footer{color:#7185a8}
 .status{color:#71d5ff}
 
 
-/* OMNIX 1.5 — NEXT GEN INTERFACE */
+/* OMNIX 1.8 — NEXT GEN INTERFACE */
 :root{
  --bg:#080b16;
  --panel:#111a2b;
@@ -282,7 +282,7 @@ footer{color:#8b9db9}
  *,*:before,*:after{scroll-behavior:auto!important;transition:none!important}
 }
 
-/* OMNIX 1.5 — COMMAND CENTER */
+/* OMNIX 1.8 — COMMAND CENTER */
 .command-center{padding:18px;margin:15px 0 20px}
 .cc-heading{display:flex;justify-content:space-between;margin-bottom:14px}
 .cc-heading h3{margin:0;color:#8ce4ff}
@@ -502,7 +502,7 @@ footer{color:#777f8c!important}
   <div class="mark" id="secretMark" title="OMNIX"><span>∞</span></div>
   <div class="logo">OMNIX</div>
  </div>
- <div class="header-meta">VERSION 1.5</div>
+ <div class="header-meta">VERSION 1.8</div>
 </header>
 <div class="top apple-top">
  <strong id="welcome">مرحباً بك في OMNIX</strong>
@@ -515,7 +515,7 @@ footer{color:#777f8c!important}
  <button onclick="openSection('3')" class="nav-item"><span>۞</span> القرآن الكريم</button>
  <button onclick="openSection('4')" class="nav-item"><span>▦</span> الإنتاجية</button>
  <button onclick="openSection('7')" class="nav-item"><span>✧</span> OMNIX AI</button>
- <div class="nav-caption nav-bottom-caption">OMNIX 1.5</div>
+ <div class="nav-caption nav-bottom-caption">OMNIX 1.8</div>
 </nav>
 <nav id="mobileNav" aria-label="التنقل السفلي">
  <button onclick="goHome()"><span>⌂</span>الرئيسية</button>
@@ -541,6 +541,8 @@ footer{color:#777f8c!important}
 <script src="./quran-names.js"></script>
 <script src="./dictionary-data.js"></script>
 <script src="./dictionary-extra.js"></script>
+<script src="./chess-engine.js"></script>
+<script src="./quiz-data.js"></script>
 <script>
 const $=id=>document.getElementById(id);
 let en=localStorage.getItem('omnixLang')==='en', current='';
@@ -622,9 +624,342 @@ let qIndex=0,qPoints=0;
 function startQuiz(){qIndex=0;qPoints=0;nextQuestion()}
 function nextQuestion(){if(qIndex>=quiz.length){$('quizArea').innerHTML='';$('quizScore').textContent=(en?'Your score: ':'نتيجتك: ')+qPoints+'/'+quiz.length;set('lastQuiz',qPoints+'/'+quiz.length);return}let q=quiz[qIndex];$('quizArea').innerHTML=`<b>${qIndex+1}. ${q.q}</b>`+q.a.map((a,i)=>`<button class="answer secondary" onclick="answerQuiz(${i})">${a}</button>`).join('')}
 function answerQuiz(i){if(i===quiz[qIndex].c)qPoints++;qIndex++;nextQuestion()}
-function games(){return `<div class="panel"><h3>${en?'Quick mental math':'تحدي الحساب الذهني'}</h3><p id="gameQuestion">اضغط ابدأ لعرض السؤال.</p><input id="gameAnswer" type="number" inputmode="numeric" placeholder="${en?'Your answer':'إجابتك'}"><div class="row"><button onclick="newGame()">${en?'New question':'سؤال جديد'}</button><button class="secondary" onclick="checkGame()">${en?'Check':'تحقق'}</button></div><div id="gameResult" class="status"></div></div>`}
+function games(){return `<div class="panel"><h3>${en?'OMNIX Games':'ألعاب OMNIX'}</h3><p>${en?'Choose your game':'اختر اللعبة التي تريد لعبها'}</p><div class="grid">
+<div class="tile" onclick="openMiniGame('xo')"><span class="ico">⭕ ❌</span>${en?'Tic Tac Toe':'إكس أو'}</div>
+<div class="tile" onclick="openMiniGame('chess')"><span class="ico">♟</span>${en?'Chess':'الشطرنج'}</div>
+<div class="tile" onclick="openMiniGame('adventure')"><span class="ico">🗺️</span>${en?'Adventure':'المغامرة'}</div>
+<div class="tile" onclick="openMiniGame('quiz')"><span class="ico">🎭</span>${en?'Anime & Series Quiz':'تحدي الأنمي والمسلسلات'}</div>
+<div class="tile" onclick="openMiniGame('math')"><span class="ico">🧠</span>${en?'Mental Math':'الحساب الذهني'}</div>
+</div></div><div id="miniGameArea"></div>`}
+function openMiniGame(name){
+ const area=$('miniGameArea');
+ if(!area)return;
+ if(name==='math'){area.innerHTML=`<div class="panel"><button class="secondary" onclick="closeMiniGame()">← ${en?'Games':'الألعاب'}</button><h3>${en?'Mental Math':'تحدي الحساب الذهني'}</h3><p id="gameQuestion">اضغط ابدأ لعرض السؤال.</p><input id="gameAnswer" type="number" inputmode="numeric" placeholder="${en?'Your answer':'إجابتك'}"><div class="row"><button onclick="newGame()">${en?'New question':'سؤال جديد'}</button><button class="secondary" onclick="checkGame()">${en?'Check':'تحقق'}</button></div><div id="gameResult" class="status"></div></div>`;return;}
+ if(name==='chess'){renderChessGame();return;}
+ if(name==='xo'){renderXOGame();return;}
+ if(name==='adventure'){renderAdventureGame();return;}
+ if(name==='quiz'){renderAnimeQuiz();return;}
+}
+function closeMiniGame(){const a=$('miniGameArea');if(a)a.innerHTML='';}
+
+let xoBoard=Array(9).fill(''),xoTurn='X',xoMode='cpu',xoDone=false;
+let xoScores={X:0,O:0,D:0};
+function renderXOGame(){
+ const a=$('miniGameArea');if(!a)return;
+ xoBoard=Array(9).fill('');xoTurn='X';xoDone=false;
+ a.innerHTML=`<div class="panel">
+ <button class="secondary" onclick="closeMiniGame()">← ${en?'Games':'الألعاب'}</button>
+ <h3>${en?'Tic Tac Toe':'لعبة إكس أو'}</h3>
+ <div class="row">
+ <button onclick="xoSetMode('cpu')" class="secondary">${en?'Vs Computer':'ضد الكمبيوتر'}</button>
+ <button onclick="xoSetMode('two')" class="secondary">${en?'Two Players':'لاعبان'}</button>
+ </div>
+ <div id="xoStatus" class="status"></div>
+ <div id="xoBoard" class="grid" style="grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;max-width:330px;margin:14px auto"></div>
+ <div id="xoScore" class="status"></div>
+ <button onclick="xoRestart()">${en?'New Round':'جولة جديدة'}</button>
+ </div>`;
+ xoDraw();
+}
+function xoSetMode(mode){xoMode=mode;xoRestart();}
+function xoWinner(b){
+ for(const [a,c,d] of [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]])
+  if(b[a]&&b[a]===b[c]&&b[a]===b[d])return b[a];
+ return b.every(Boolean)?'D':'';
+}
+function xoDraw(){
+ const board=$('xoBoard');if(!board)return;
+ board.innerHTML=xoBoard.map((v,i)=>`<button class="tile" style="min-height:88px;font-size:34px;color:${v==='X'?'#e5ad69':'#eee'}" onclick="xoPlay(${i})" ${v||xoDone?'disabled':''}>${v||'·'}</button>`).join('');
+ const w=xoWinner(xoBoard);
+ $('xoStatus').textContent=xoDone?(w==='D'?(en?'Draw!':'تعادل!'):(en?'Winner: ':'الفائز: ')+w):(en?'Turn: ':'الدور: ')+xoTurn;
+ $('xoScore').textContent=(en?'X: ':'إكس: ')+xoScores.X+'   '+(en?'O: ':'أو: ')+xoScores.O+'   '+(en?'Draws: ':'تعادلات: ')+xoScores.D;
+}
+function xoFinish(){
+ const w=xoWinner(xoBoard);if(!w)return false;
+ xoDone=true;xoScores[w]++;xoDraw();return true;
+}
+function xoPlay(i){
+ if(xoDone||xoBoard[i])return;
+ if(xoMode==='cpu'&&xoTurn==='O')return;
+ xoBoard[i]=xoTurn;
+ if(xoFinish())return;
+ xoTurn=xoTurn==='X'?'O':'X';
+ if(xoMode==='cpu'&&xoTurn==='O'){
+  const move=xoBestMove();if(move>=0)xoBoard[move]='O';
+  if(!xoFinish())xoTurn='X';
+ }
+ xoDraw();
+}
+function xoBestMove(){
+ let best=-Infinity,choice=-1;
+ for(let i=0;i<9;i++)if(!xoBoard[i]){
+  xoBoard[i]='O';const score=xoMinimax(false);xoBoard[i]='';
+  if(score>best){best=score;choice=i;}
+ }
+ return choice;
+}
+function xoMinimax(maximize){
+ const w=xoWinner(xoBoard);
+ if(w==='O')return 10;if(w==='X')return -10;if(w==='D')return 0;
+ let best=maximize?-Infinity:Infinity;
+ for(let i=0;i<9;i++)if(!xoBoard[i]){
+  xoBoard[i]=maximize?'O':'X';
+  const score=xoMinimax(!maximize);xoBoard[i]='';
+  best=maximize?Math.max(best,score):Math.min(best,score);
+ }
+ return best;
+}
+function xoRestart(){xoBoard=Array(9).fill('');xoTurn='X';xoDone=false;xoDraw();}
+
 let gameValue=0;function newGame(){let a=Math.floor(Math.random()*12)+1,b=Math.floor(Math.random()*12)+1;gameValue=a*b;$('gameQuestion').textContent=`${a} × ${b} = ؟`;$('gameAnswer').value='';$('gameResult').textContent=''}
 function checkGame(){if($('gameAnswer').value==='')return;$('gameResult').textContent=Number($('gameAnswer').value)===gameValue?(en?'Correct ✓':'إجابة صحيحة ✓'):(en?'Try again':'حاول مرة أخرى')}
+
+
+let chessGame=null,chessSelected=null,chessPromotion=null;
+const chessGlyph={wk:'♔',wq:'♕',wr:'♖',wb:'♗',wn:'♘',wp:'♙',bk:'♚',bq:'♛',br:'♜',bb:'♝',bn:'♞',bp:'♟'};
+function renderChessGame(){
+ const a=$('miniGameArea');if(!a)return;
+ if(!window.ChessEngine||!window.ChessEngine.Chess){a.innerHTML='<div class="panel">محرك الشطرنج غير محمّل. أعد تحميل التطبيق.</div>';return;}
+ chessGame=new window.ChessEngine.Chess();chessSelected=null;chessPromotion=null;
+ a.innerHTML=`<div class="panel">
+ <button class="secondary" onclick="closeMiniGame()">← ${en?'Games':'الألعاب'}</button>
+ <h3>${en?'OMNIX Chess':'شطرنج OMNIX'}</h3>
+ <p id="chessStatus" class="status"></p>
+ <div id="chessBoard" style="display:grid;grid-template-columns:repeat(8,minmax(0,1fr));max-width:440px;margin:12px auto;border:2px solid #b98249;border-radius:8px;overflow:hidden"></div>
+ <div id="chessPromotion" class="row"></div>
+ <div class="row">
+ <button onclick="chessUndo()" class="secondary">${en?'Undo':'تراجع'}</button>
+ <button onclick="chessRestart()">${en?'Restart':'إعادة اللعب'}</button>
+ </div>
+ <div id="chessMoves" class="status"></div>
+ </div>`;
+ chessDraw();
+}
+function chessDraw(){
+ if(!chessGame||!$('chessBoard'))return;
+ const board=chessGame.board(),files='abcdefgh';
+ let html='';
+ for(let r=0;r<8;r++)for(let c=0;c<8;c++){
+  const sq=files[c]+(8-r),piece=board[r][c],selected=chessSelected===sq;
+  const targets=chessSelected?chessGame.moves({square:chessSelected,verbose:true}).filter(m=>m.to===sq):[];
+  const light=(r+c)%2===1;
+  const bg=selected?'#c58b42':targets.length?'#829b62':light?'#e5d2b5':'#79583e';
+  const glyph=piece?chessGlyph[piece.color+piece.type]:'';
+  html+=`<button onclick="chessTap('${sq}')" aria-label="${sq}" style="aspect-ratio:1;border:0;border-radius:0;padding:0;background:${bg};color:${piece&&piece.color==='w'?'#fff':'#171717'};font-size:clamp(23px,7vw,43px);text-shadow:0 1px 2px #555;display:flex;align-items:center;justify-content:center;position:relative">${glyph}<span style="position:absolute;bottom:1px;left:3px;font-size:9px;color:${light?'#79583e':'#e5d2b5'}">${c===0?8-r:''}${r===7?files[c]:''}</span></button>`;
+ }
+ $('chessBoard').innerHTML=html;
+ const status=chessGame.isCheckmate()?(en?'Checkmate! ':'كش مات! ')+(chessGame.turn()==='w'?(en?'Black wins':'الأسود فاز'):(en?'White wins':'الأبيض فاز')):chessGame.isStalemate()?(en?'Draw by stalemate':'تعادل بالخنق'):chessGame.isDraw()?(en?'Draw':'تعادل'):((chessGame.turn()==='w'?(en?'White':'الأبيض'):(en?'Black':'الأسود'))+(en?' to move':' عليه اللعب')+(chessGame.isCheck()?' · '+(en?'Check':'كش'):''));
+ $('chessStatus').textContent=status;
+ $('chessMoves').textContent=(en?'Moves: ':'النقلات: ')+chessGame.history().join(' ');
+}
+function chessTap(sq){
+ if(!chessGame||chessGame.isGameOver()||chessPromotion)return;
+ const piece=chessGame.get(sq);
+ if(chessSelected){
+  const options=chessGame.moves({square:chessSelected,verbose:true}).filter(m=>m.to===sq);
+  if(options.length){
+   if(options.some(m=>m.promotion)){chessPromotion={from:chessSelected,to:sq};chessShowPromotion();return;}
+   chessGame.move({from:chessSelected,to:sq});chessSelected=null;chessDraw();return;
+  }
+ }
+ if(piece&&piece.color===chessGame.turn()){chessSelected=sq;chessDraw();}
+ else{chessSelected=null;chessDraw();}
+}
+function chessShowPromotion(){
+ const el=$('chessPromotion');if(!el)return;
+ const color=chessGame.turn(),pieces=['q','r','b','n'];
+ el.innerHTML=pieces.map(p=>`<button onclick="chessPromote('${p}')">${chessGlyph[color+p]} ${({q:'Queen',r:'Rook',b:'Bishop',n:'Knight'})[p]}</button>`).join('');
+}
+function chessPromote(piece){
+ if(!chessPromotion)return;
+ chessGame.move({...chessPromotion,promotion:piece});
+ chessPromotion=null;chessSelected=null;
+ $('chessPromotion').innerHTML='';chessDraw();
+}
+function chessUndo(){if(!chessGame)return;chessGame.undo();chessPromotion=null;chessSelected=null;if($('chessPromotion'))$('chessPromotion').innerHTML='';chessDraw();}
+function chessRestart(){chessGame=new window.ChessEngine.Chess();chessSelected=null;chessPromotion=null;if($('chessPromotion'))$('chessPromotion').innerHTML='';chessDraw();}
+
+
+const adventureLevels=[
+ {name:'الغابة الغامضة',q:'ما العدد التالي؟ 2، 4، 6، ؟',a:['7','8','10'],c:1},
+ {name:'كهف الأسرار',q:'ما ناتج 9 × 7؟',a:['63','56','72'],c:0},
+ {name:'جزيرة الكنز',q:'أي كلمة اسم حيوان؟',a:['كتاب','أسد','قلم'],c:1},
+ {name:'قصر النجوم',q:'كم ضلعًا للمربع؟',a:['3','4','5'],c:1},
+ {name:'بوابة الأبطال',q:'ما عاصمة السعودية؟',a:['جدة','الرياض','مكة'],c:1}
+];
+let adventureIndex=0,adventureStars=0,adventureAnswered=false;
+function renderAdventureGame(){
+ adventureIndex=Number(get('adventureLevel','0'));
+ adventureStars=Number(get('adventureStars','0'));
+ adventureAnswered=false;
+ const a=$('miniGameArea');if(!a)return;
+ a.innerHTML=`<div class="panel">
+ <button class="secondary" onclick="closeMiniGame()">← ${en?'Games':'الألعاب'}</button>
+ <h3>🗺️ OMNIX Adventure</h3>
+ <p class="status">${en?'Stars':'النجوم'}: ⭐ <span id="adventureStars">${adventureStars}</span></p>
+ <div id="adventureContent"></div>
+ </div>`;
+ adventureDraw();
+}
+function adventureDraw(){
+ const box=$('adventureContent');if(!box)return;
+ if(adventureIndex>=adventureLevels.length){
+  box.innerHTML=`<h3>${en?'Adventure completed!':'أكملت المغامرة!'}</h3><p>🏆 ⭐ ${adventureStars}</p><button onclick="adventureReset()">${en?'Play again':'العب من جديد'}</button>`;
+  return;
+ }
+ const level=adventureLevels[adventureIndex];
+ box.innerHTML=`<h3>🌍 ${en?'Stage':'المرحلة'} ${adventureIndex+1}: ${level.name}</h3><p>${level.q}</p><div class="col">${level.a.map((v,i)=>`<button class="secondary" onclick="adventureAnswer(${i})">${v}</button>`).join('')}</div><p class="muted">${en?'Complete the challenge to find the treasure.':'أجب إجابة صحيحة للعثور على الكنز.'}</p>`;
+}
+function adventureAnswer(i){
+ if(adventureAnswered)return;adventureAnswered=true;
+ const level=adventureLevels[adventureIndex],box=$('adventureContent');
+ if(i===level.c){
+  adventureStars++;set('adventureStars',adventureStars);
+  adventureIndex++;set('adventureLevel',adventureIndex);
+  if($('adventureStars'))$('adventureStars').textContent=adventureStars;
+  box.innerHTML=`<h3>🎁 ${en?'Treasure found!':'وجدت الكنز!'}</h3><p>⭐ +1</p><button onclick="adventureAnswered=false;adventureDraw()">${en?'Continue':'تابع'}</button>`;
+ }else{
+  box.innerHTML=`<p class="status">${en?'Not quite. Try the level again.':'ليست الإجابة الصحيحة، حاول مرة أخرى.'}</p><button onclick="adventureAnswered=false;adventureDraw()">${en?'Try again':'حاول مجددًا'}</button>`;
+ }
+}
+function adventureReset(){adventureIndex=0;adventureStars=0;set('adventureLevel',0);set('adventureStars',0);adventureAnswered=false;adventureDraw();}
+
+
+let quizState = {category:'', index:0, score:0, answered:false};
+
+function renderAnimeQuiz(){
+ const area=$('miniGameArea');
+ if(!area)return;
+ if(!window.OMNIX_QUIZ){
+  area.innerHTML='<div class="panel">تعذر تحميل بيانات المسابقة.</div>';
+  return;
+ }
+ quizState={category:'',index:0,score:0,answered:false};
+ quizCategoryScreen();
+}
+
+function quizCategoryScreen(){
+ const area=$('miniGameArea');
+ if(!area)return;
+ const cats=[
+  {id:'anime',icon:'🎌',color:'#8b5cf6'},
+  {id:'series',icon:'📺',color:'#0d9488'},
+  {id:'movies',icon:'🎬',color:'#c58b42'}
+ ];
+ area.innerHTML=`<div class="panel">
+ <button class="secondary" onclick="closeMiniGame()">← ${en?'Games':'الألعاب'}</button>
+ <h3 style="text-align:center">🏆 ${en?'OMNIX Quiz':'تحدي OMNIX'}</h3>
+ <p class="status" style="text-align:center">${en?'Choose your challenge':'اختر التحدي الذي تريده'}</p>
+ <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px">
+ ${cats.map(c=>{
+  const d=window.OMNIX_QUIZ[c.id];
+  const saved=quizLoad(c.id);
+  return `<button class="secondary" onclick="quizStart('${c.id}')" style="padding:20px 10px;border:1px solid ${c.color};border-radius:16px">
+   <span style="font-size:34px">${c.icon}</span>
+   <strong style="display:block;margin:8px 0">${escapeHtml(d.title)}</strong>
+   <small>${d.questions.length} ${en?'questions':'سؤال'}</small>
+   <small style="display:block;margin-top:7px">⭐ ${saved.score||0}</small>
+  </button>`;
+ }).join('')}
+ </div></div>`;
+}
+
+function quizLoad(cat){
+ try{
+  const v=JSON.parse(get('quiz_'+cat,'{}'));
+  return {index:Math.max(0,Math.min(Number(v.index)||0,window.OMNIX_QUIZ[cat].questions.length)),score:Math.max(0,Number(v.score)||0)};
+ }catch{return {index:0,score:0};}
+}
+
+function quizSave(){
+ set('quiz_'+quizState.category,JSON.stringify({
+  index:quizState.index,score:quizState.score
+ }));
+}
+
+function quizStart(cat){
+ if(!window.OMNIX_QUIZ[cat])return;
+ const saved=quizLoad(cat);
+ quizState={category:cat,index:saved.index,score:saved.score,answered:false};
+ quizDraw();
+}
+
+function quizDraw(){
+ const area=$('miniGameArea');
+ if(!area)return;
+ const cat=window.OMNIX_QUIZ[quizState.category];
+ if(!cat)return quizCategoryScreen();
+ const total=cat.questions.length;
+ if(quizState.index>=total){
+  area.innerHTML=`<div class="panel" style="text-align:center">
+   <h3>🏆 ${en?'Challenge completed!':'أكملت التحدي!'}</h3>
+   <div style="font-size:48px;margin:15px">⭐</div>
+   <h2>${quizState.score} / ${total}</h2>
+   <p>${en?'Your correct answers':'إجاباتك الصحيحة'}</p>
+   <button onclick="quizRestart()">${en?'Play again':'العب من جديد'}</button>
+   <button class="secondary" onclick="quizCategoryScreen()">${en?'Other challenges':'الأقسام الأخرى'}</button>
+  </div>`;
+  return;
+ }
+ const q=cat.questions[quizState.index];
+ const progress=Math.round(quizState.index/total*100);
+ area.innerHTML=`<div class="panel">
+  <div class="row" style="justify-content:space-between;align-items:center">
+   <button class="secondary" onclick="quizCategoryScreen()">← ${en?'Categories':'الأقسام'}</button>
+   <span>⭐ ${quizState.score*10} ${en?'points':'نقطة'}</span>
+  </div>
+  <h3 style="text-align:center">${escapeHtml(cat.title)}</h3>
+  <div style="height:8px;background:#333;border-radius:20px;overflow:hidden;margin:15px 0">
+   <div style="height:100%;width:${progress}%;background:linear-gradient(90deg,#a66a36,#e8bd78);transition:width .3s"></div>
+  </div>
+  <p class="status" style="text-align:center">${en?'Question':'السؤال'} ${quizState.index+1} / ${total}</p>
+  <div style="padding:22px 12px;text-align:center;border:1px solid #9b713f55;border-radius:15px;margin:12px 0;background:linear-gradient(135deg,#9b713f18,#222)">
+   <div style="font-size:30px;margin-bottom:12px">${quizState.category==='anime'?'🎌':quizState.category==='series'?'📺':'🎬'}</div>
+   <strong style="font-size:18px;line-height:1.8">${escapeHtml(q.q)}</strong>
+  </div>
+  <div class="col" style="gap:10px">
+   ${q.a.map((answer,i)=>`<button id="quizOption${i}" class="secondary" onclick="quizAnswer(${i})" style="text-align:${en?'left':'right'};white-space:normal;line-height:1.6">${i+1}. ${escapeHtml(answer)}</button>`).join('')}
+  </div>
+  <div id="quizFeedback" class="status" style="text-align:center;margin-top:14px"></div>
+  <button id="quizNext" style="display:none;width:100%;margin-top:10px" onclick="quizNext()">${en?'Next question':'السؤال التالي'} ←</button>
+ </div>`;
+}
+
+function quizAnswer(choice){
+ if(quizState.answered)return;
+ const cat=window.OMNIX_QUIZ[quizState.category];
+ const q=cat.questions[quizState.index];
+ if(!q||!Array.isArray(q.a)||q.a.length!==3||!Number.isInteger(q.c)||q.c<0||q.c>2)return;
+ quizState.answered=true;
+ const correct=choice===q.c;
+ if(correct)quizState.score++;
+ quizSave();
+ q.a.forEach((_,i)=>{
+  const b=$('quizOption'+i);
+  if(!b)return;
+  b.disabled=true;
+  if(i===q.c){b.style.border='2px solid #22a06b';b.style.background='#17613c55';}
+  else if(i===choice){b.style.border='2px solid #c45b5b';b.style.background='#8b303055';}
+ });
+ $('quizFeedback').textContent=correct
+  ?(en?'Correct! ⭐ +10 points':'إجابة صحيحة! ⭐ +10 نقاط')
+  :(en?'Not quite. The correct answer is: ':'إجابة غير صحيحة. الإجابة الصحيحة: ')+q.a[q.c];
+ $('quizNext').style.display='block';
+}
+
+function quizNext(){
+ if(!quizState.answered)return;
+ quizState.index++;
+ quizState.answered=false;
+ quizSave();
+ quizDraw();
+}
+
+function quizRestart(){
+ if(!quizState.category)return;
+ set('quiz_'+quizState.category,JSON.stringify({index:0,score:0}));
+ quizStart(quizState.category);
+}
 
 function quran(){
  const names=window.OMNIX_SURAH_NAMES;
@@ -855,7 +1190,7 @@ async function notifyCalendar(){
  showToast(en?'Notifications enabled':'تم تفعيل الإشعارات');
 }
 
-function admin(){return `<div class="panel"><h3>${en?'App settings':'إعدادات التطبيق'}</h3><p>${en?'Language and local data controls.':'اللغة والتحكم في البيانات المحلية.'}</p><button onclick="toggleLang()">${en?'Switch language':'تغيير اللغة'}</button><button class="secondary" onclick="backupData()">${en?'Export backup':'تصدير نسخة احتياطية'}</button><div style="margin-top:12px"><label>${en?'Restore backup file':'استعادة نسخة احتياطية'}</label><input type="file" id="backupFile" accept="application/json,.json"><button onclick="restoreData()">${en?'Restore':'استعادة'}</button></div></div><div class="panel"><h3>${en?'About OMNIX':'حول OMNIX'}</h3><p>OMNIX · منصة للتعلم والترفيه</p><small>${en?'Version 1.3 · Data stored locally on this device.':'الإصدار 1.3 · البيانات محفوظة محليًا على هذا الجهاز.'}</small></div><div class="note">${en?'Admin panel controls this app on this device; it is not a remote server dashboard.':'لوحة الإدارة تتحكم في التطبيق على هذا الجهاز، وليست لوحة تحكم بخادم خارجي.'}</div>`}
+function admin(){return `<div class="panel"><h3>${en?'App settings':'إعدادات التطبيق'}</h3><p>${en?'Language and local data controls.':'اللغة والتحكم في البيانات المحلية.'}</p><button onclick="toggleLang()">${en?'Switch language':'تغيير اللغة'}</button><button class="secondary" onclick="backupData()">${en?'Export backup':'تصدير نسخة احتياطية'}</button><div style="margin-top:12px"><label>${en?'Restore backup file':'استعادة نسخة احتياطية'}</label><input type="file" id="backupFile" accept="application/json,.json"><button onclick="restoreData()">${en?'Restore':'استعادة'}</button></div></div><div class="panel"><h3>${en?'About OMNIX':'حول OMNIX'}</h3><p>OMNIX · منصة للتعلم والترفيه</p><small>${en?'Version 1.8 · Data stored locally on this device.':'الإصدار 1.8 · البيانات محفوظة محليًا على هذا الجهاز.'}</small></div><div class="note">${en?'Admin panel controls this app on this device; it is not a remote server dashboard.':'لوحة الإدارة تتحكم في التطبيق على هذا الجهاز، وليست لوحة تحكم بخادم خارجي.'}</div>`}
 function backupData(){let data={};for(let i=0;i<localStorage.length;i++){let k=localStorage.key(i);if(k.startsWith('om_'))data[k]=localStorage.getItem(k)}let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download='omnix-backup.json';a.click();URL.revokeObjectURL(a.href)}
 function restoreData(){let f=$('backupFile').files[0];if(!f)return showToast(en?'Choose a backup':'اختر نسخة احتياطية');let r=new FileReader();r.onload=()=>{try{let d=JSON.parse(r.result);Object.keys(d).forEach(k=>{if(k.startsWith('om_'))localStorage.setItem(k,d[k])});showToast(en?'Backup restored':'تمت استعادة النسخة');setTimeout(()=>location.reload(),700)}catch{showToast(en?'Invalid backup file':'ملف النسخة غير صالح')}};r.readAsText(f)}
 function copyText(t){if(navigator.clipboard)navigator.clipboard.writeText(t).then(()=>showToast(en?'Copied':'تم النسخ')).catch(()=>showToast(en?'Copy unavailable':'تعذر النسخ'));else showToast(en?'Copy unavailable':'النسخ غير متاح')}
