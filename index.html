@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#070912">
-<meta name="description" content="OMNIX — أدواتك وتعلمك ومساعدك الذكي في مكان واحد.">
+<meta name="description" content="NEXORA — أدواتك وتعلمك ومساعدك الذكي في مكان واحد.">
 <link rel="manifest" href="manifest.webmanifest">
-<title>OMNIX 1.8</title>
+<title>NEXORA 1.8</title>
 <style>
 :root{--bg:#070912;--panel:#111626;--panel2:#17152b;--copper:#55c8ff;--soft:#d8eaff;--muted:#9aaac4;--line:#293b61;--white:#edf4ff}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#111a30 0,#070912 42%);color:var(--white);font-family:Arial,sans-serif;min-height:100vh}
@@ -158,7 +158,7 @@ footer{color:#7185a8}
 .status{color:#71d5ff}
 
 
-/* OMNIX 1.8 — NEXT GEN INTERFACE */
+/* NEXORA 1.8 — NEXT GEN INTERFACE */
 :root{
  --bg:#080b16;
  --panel:#111a2b;
@@ -289,7 +289,7 @@ footer{color:#8b9db9}
  *,*:before,*:after{scroll-behavior:auto!important;transition:none!important}
 }
 
-/* OMNIX 1.8 — COMMAND CENTER */
+/* NEXORA 1.8 — COMMAND CENTER */
 .command-center{padding:18px;margin:15px 0 20px}
 .cc-heading{display:flex;justify-content:space-between;margin-bottom:14px}
 .cc-heading h3{margin:0;color:#8ce4ff}
@@ -553,18 +553,158 @@ body{background:radial-gradient(ellipse at 50% -18%,#123653,transparent 43%),rad
 @media(max-width:600px){.future-hud{gap:15px;min-height:165px;padding:14px 0 20px}.hud-visual{flex-basis:138px;width:138px;height:138px}.hud-core{width:62px;height:62px;font-size:39px}.hud-readout strong{font-size:16px;letter-spacing:1px}.hud-kicker{font-size:8px;letter-spacing:1.5px}.hud-readout small{font-size:7px}}
 @media(prefers-reduced-motion:reduce){.hud-ring,.hud-state i,.hud-wave,#commandCenter:before{animation:none!important}}
 
+
+/* OMNIX MARBLE CHESS */
+.marble-frame{
+ max-width:470px;margin:18px auto;padding:9px;border-radius:20px;
+ background:linear-gradient(135deg,#f4dfb2,#8e693b 28%,#f7e7c4 52%,#73502c 78%,#e8c98d);
+ box-shadow:0 0 0 1px #f0d7a2,0 14px 38px #0009,0 0 28px #c99a5140;
+}
+.marble-board{
+ display:grid;grid-template-columns:repeat(8,minmax(0,1fr));
+ overflow:hidden;border:2px solid #392a1d;border-radius:12px;
+}
+.marble-square{
+ aspect-ratio:1;border:0;border-radius:0;padding:0;
+ display:flex;align-items:center;justify-content:center;position:relative;
+ font-family:"Segoe UI Symbol","Noto Sans Symbols 2",serif;
+ font-size:clamp(25px,7.5vw,46px);line-height:1;
+ cursor:pointer;transition:filter .15s,box-shadow .15s;
+ text-shadow:0 2px 2px #0005,0 0 8px #fff5;
+}
+.marble-light{
+ background-color:#e9ddc8;
+ background-image:linear-gradient(135deg,#fff9ebaa,#bba98b55),repeating-linear-gradient(115deg,transparent 0 17px,#fff7 18px 19px,transparent 20px 34px);
+}
+.marble-dark{
+ background-color:#51463e;
+ background-image:linear-gradient(135deg,#827365aa,#211d1a66),repeating-linear-gradient(35deg,transparent 0 21px,#ffffff12 22px 23px,transparent 24px 39px);
+}
+.marble-square.selected{
+ background-image:linear-gradient(135deg,#f7d58c,#b67b35)!important;
+ box-shadow:inset 0 0 0 3px #fff0bd,inset 0 0 20px #fff8;
+ z-index:1;
+}
+.marble-square.target{
+ background-image:linear-gradient(135deg,#9eb7a0,#526f5a)!important;
+ box-shadow:inset 0 0 0 2px #d7e9c8;
+}
+.marble-square.target:empty:after{
+ content:"";width:22%;height:22%;border-radius:50%;
+ background:#e4f4d5bb;box-shadow:0 0 12px #d9ffd4;
+}
+.marble-square:active{filter:brightness(1.18)}
+.marble-coordinate{
+ position:absolute;bottom:3px;left:4px;font:10px Arial,sans-serif;
+ color:#d8c7a8;text-shadow:0 1px 2px #000;
+}
+.marble-light .marble-coordinate{color:#79664c}
+#chessStatus{
+ text-align:center;padding:12px;margin:12px auto;
+ border:1px solid #b9976255;border-radius:12px;
+ background:linear-gradient(110deg,#ffffff08,#c79b4b18);
+}
+#chessMoves{
+ margin-top:14px;padding:12px;border-radius:12px;
+ background:#111923;border:1px solid #c49a5544;
+ color:#d9c7a7;line-height:1.9;overflow-wrap:anywhere;
+}
+#chessPromotion{justify-content:center;flex-wrap:wrap;margin:12px 0}
+#chessPromotion button{border:1px solid #c49a55;background:linear-gradient(135deg,#342a20,#171a20);color:#f5dfb5}
+@media(max-width:480px){
+ .marble-frame{padding:6px;border-radius:15px}
+ .marble-board{border-radius:9px}
+ .marble-coordinate{font-size:8px;bottom:2px;left:2px}
+}
+
+
+
+/* NEXORA HUD + LED ENHANCEMENT */
+.command-center{
+ position:relative;overflow:hidden;
+ border:1px solid #5c67ff55!important;
+ box-shadow:0 0 24px #536dff18,inset 0 0 28px #7c4dff0c;
+}
+.command-center:before{
+ content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+ background:linear-gradient(115deg,transparent 20%,#6b5cff12 48%,transparent 72%);
+ background-size:220% 100%;animation:hudSweep 7s linear infinite;
+}
+.command-center:after{
+ content:"";position:absolute;top:0;left:8%;right:8%;height:1px;
+ background:linear-gradient(90deg,transparent,#56eaff,#a16bff,transparent);
+ box-shadow:0 0 12px #6c8dff;pointer-events:none;
+}
+.future-hud{isolation:isolate}
+.hud-visual{
+ filter:drop-shadow(0 0 14px #536dff66) drop-shadow(0 0 30px #9b5cff33);
+}
+.hud-ring{
+ border-color:#64dfffaa;
+ box-shadow:0 0 15px #36cfff35,inset 0 0 18px #36cfff18;
+}
+.ring-one{border-width:1px;box-shadow:0 0 22px #38d9ff55}
+.ring-two{
+ border-color:#ad75ffdd;
+ box-shadow:0 0 18px #9c58ff55,inset 0 0 15px #9c58ff22;
+}
+.ring-three{border-color:#68f3ff99}
+.hud-core{
+ color:#fff;background:radial-gradient(circle at 35% 30%,#765cff,#252d70 48%,#090e25 78%);
+ border:1px solid #a99aff;
+ box-shadow:0 0 15px #6d70ff,0 0 34px #8755ff88,inset 0 0 22px #56dfff55;
+ animation:coreBreath 3s ease-in-out infinite;
+}
+.hud-node{
+ width:8px;height:8px;background:#70f6ff;
+ box-shadow:0 0 8px 3px #35dfff,0 0 20px #35dfff99;
+ animation:ledBlink 1.5s ease-in-out infinite alternate;
+}
+.node-two{background:#bd8aff;box-shadow:0 0 8px 3px #a16cff,0 0 20px #a16cff99;animation-delay:.6s}
+.hud-readout strong{
+ color:#f2f0ff;
+ text-shadow:0 0 10px #6b83ff,0 0 24px #a45cff77;
+}
+.hud-kicker{color:#78eaff;text-shadow:0 0 10px #38cfff77}
+.hud-state{color:#8dffd1}
+.hud-state i{
+ box-shadow:0 0 8px #65f5b5,0 0 18px #65f5b599;
+}
+.hud-wave{
+ color:#9c8bff;text-shadow:0 0 10px #806bff,0 0 22px #5bdfff99;
+}
+.cc-stat{
+ position:relative;overflow:hidden;
+ border:1px solid #7184ff35;
+ box-shadow:inset 0 0 18px #637aff0b,0 0 13px #637aff12;
+}
+.cc-stat:before{
+ content:"";position:absolute;top:0;left:12%;right:12%;height:1px;
+ background:linear-gradient(90deg,transparent,#69eaff,#a778ff,transparent);
+ box-shadow:0 0 9px #6c8dff;
+}
+.cc-number{text-shadow:0 0 12px #7c78ff88}
+@keyframes coreBreath{
+ 0%,100%{transform:scale(1);filter:brightness(1)}
+ 50%{transform:scale(1.06);filter:brightness(1.3)}
+}
+@keyframes ledBlink{from{opacity:.55}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){
+ .hud-core,.hud-node,.command-center:before{animation:none!important}
+}
+
 </style>
 </head>
 <body>
 <header class="apple-header">
  <div class="brand">
-  <div class="mark" id="secretMark" title="OMNIX"><span>∞</span></div>
-  <div class="logo">OMNIX</div>
+  <div class="mark" id="secretMark" title="NEXORA"><span>∞</span></div>
+  <div class="logo">NEXORA</div>
  </div>
  <div class="header-meta">VERSION 1.8</div>
 </header>
 <div class="top apple-top">
- <strong id="welcome">مرحباً بك في OMNIX</strong>
+ <strong id="welcome">مرحباً بك في NEXORA</strong>
  <button id="langBtn" class="apple-lang" onclick="toggleLang()">English</button>
 </div>
 <nav id="appleNav" aria-label="التنقل الرئيسي">
@@ -573,8 +713,8 @@ body{background:radial-gradient(ellipse at 50% -18%,#123653,transparent 43%),rad
  <button onclick="openSection('1')" class="nav-item"><span>▤</span> التعليم</button>
  <button onclick="openSection('3')" class="nav-item"><span>۞</span> القرآن الكريم</button>
  <button onclick="openSection('4')" class="nav-item"><span>▦</span> الإنتاجية</button>
- <button onclick="openSection('7')" class="nav-item"><span>✧</span> OMNIX AI</button>
- <div class="nav-caption nav-bottom-caption">OMNIX 1.8</div>
+ <button onclick="openSection('7')" class="nav-item"><span>✧</span> NEXORA AI</button>
+ <div class="nav-caption nav-bottom-caption">NEXORA 1.8</div>
 </nav>
 <nav id="mobileNav" aria-label="التنقل السفلي">
  <button onclick="goHome()"><span>⌂</span>الرئيسية</button>
@@ -595,7 +735,7 @@ body{background:radial-gradient(ellipse at 50% -18%,#123653,transparent 43%),rad
  <h2 id="sectionTitle"></h2><div id="content"></div>
 </section>
 </main>
-<footer>OMNIX © 2026 · منصة للتعلم والترفيه</footer>
+<footer>NEXORA © 2026 · منصة للتعلم والترفيه</footer>
 <script src="./quran-data.js"></script>
 <script src="./quran-names.js"></script>
 <script src="./dictionary-data.js"></script>
@@ -605,7 +745,7 @@ body{background:radial-gradient(ellipse at 50% -18%,#123653,transparent 43%),rad
 <script>
 const $=id=>document.getElementById(id);
 let en=localStorage.getItem('omnixLang')==='en', current='';
-const names=[['الحساب والأدوات','Accounts & Tools','⌗'],['التعليم','Education','▤'],['الألعاب','Games','◇'],['القرآن الكريم','Holy Quran','۞'],['الإنتاجية','Productivity','▦'],['اللغات والترجمة','Languages','文'],['إدارة الملفات','File Manager','▣'],['OMNIX AI','OMNIX AI','✧'],['التقويم والمناسبات','Calendar & Events','▦']];
+const names=[['الحساب والأدوات','Accounts & Tools','⌗'],['التعليم','Education','▤'],['الألعاب','Games','◇'],['القرآن الكريم','Holy Quran','۞'],['الإنتاجية','Productivity','▦'],['اللغات والترجمة','Languages','文'],['إدارة الملفات','File Manager','▣'],['NEXORA AI','NEXORA AI','✧'],['التقويم والمناسبات','Calendar & Events','▦']];
 const get=(k,d='')=>localStorage.getItem('om_'+k)??d;
 const set=(k,v)=>localStorage.setItem('om_'+k,v);
 
@@ -634,7 +774,7 @@ function renderDashboard(){
    <div class="hud-core">∞</div><i class="hud-node node-one"></i><i class="hud-node node-two"></i>
   </div>
   <div class="hud-readout">
-   <span class="hud-kicker">OMNIX // SYSTEM CORE</span>
+   <span class="hud-kicker">NEXORA // SYSTEM CORE</span>
    <strong>BEYOND LIMITS</strong>
    <span class="hud-state"><i></i> SYSTEM ONLINE</span>
    <div class="hud-wave">▂ ▅ ▃ ▇ ▄ ▆ ▂ ▇ ▄ ▅ ▃ ▆ ▂ ▇</div>
@@ -668,7 +808,7 @@ function renderDashboard(){
 function toggleLang(){en=!en;localStorage.setItem('omnixLang',en?'en':'ar');renderHome();if(current)openSection(current)}
 function renderHome(){
  document.documentElement.lang=en?'en':'ar';document.documentElement.dir=en?'ltr':'rtl';
- $('welcome').textContent=en?'Welcome to OMNIX':'مرحباً بك في OMNIX';
+ $('welcome').textContent=en?'Welcome to NEXORA':'مرحباً بك في NEXORA';
  $('langBtn').textContent=en?'العربية':'English';
  $('heroTitle').textContent=en?'Everything in one place':'كل ما تحتاجه في مكان واحد';
  $('heroText').textContent=en?'Learning, entertainment and daily tools.':'التعليم والترفيه والأدوات اليومية.';
@@ -680,16 +820,16 @@ function renderHome(){
 }
 function goHome(){current='';$('section').classList.add('hidden');$('home').classList.remove('hidden');renderHome()}
 function openSection(i){current=String(i);$('home').classList.add('hidden');$('section').classList.remove('hidden');$('sectionTitle').textContent=names[+i][en?1:0];const f=[tools,education,games,quran,productivity,languages,files,omnixAI,calendar];$('content').innerHTML=f[+i]()}
-function omnixAI(){return `<div class="panel" style="text-align:center"><div class="ai-orb">✦</div><h3>OMNIX AI</h3><p>${en?'Your smart assistant for learning, coding, translation and ideas.':'مساعدك الذكي للتعلم والبرمجة والترجمة والأفكار.'}</p></div>
-<div class="panel"><div class="chat-log" id="aiChat"><div class="chat-msg bot">${en?'Hello! I am OMNIX AI. The chat interface is ready. Connect a secure AI server to enable real answers.':'أهلًا! أنا OMNIX AI. واجهة المحادثة جاهزة. لبدء الردود الذكية الحقيقية نحتاج ربط خادم AI آمن.'}</div></div>
-<div class="chat-compose"><input id="aiInput" placeholder="${en?'Ask OMNIX AI...':'اسأل OMNIX AI...'}" onkeydown="if(event.key==='Enter')sendAI()"><button onclick="sendAI()">${en?'Send':'إرسال'}</button></div>
+function omnixAI(){return `<div class="panel" style="text-align:center"><div class="ai-orb">✦</div><h3>NEXORA AI</h3><p>${en?'Your smart assistant for learning, coding, translation and ideas.':'مساعدك الذكي للتعلم والبرمجة والترجمة والأفكار.'}</p></div>
+<div class="panel"><div class="chat-log" id="aiChat"><div class="chat-msg bot">${en?'Hello! I am NEXORA AI. The chat interface is ready. Connect a secure AI server to enable real answers.':'أهلًا! أنا NEXORA AI. واجهة المحادثة جاهزة. لبدء الردود الذكية الحقيقية نحتاج ربط خادم AI آمن.'}</div></div>
+<div class="chat-compose"><input id="aiInput" placeholder="${en?'Ask NEXORA AI...':'اسأل NEXORA AI...'}" onkeydown="if(event.key==='Enter')sendAI()"><button onclick="sendAI()">${en?'Send':'إرسال'}</button></div>
 <p class="note">${en?'Connection status: UI ready · AI server not connected yet.':'حالة الاتصال: الواجهة جاهزة · خادم الذكاء الاصطناعي لم يتم ربطه بعد.'}</p></div>
 <div class="panel"><h3>${en?'Quick prompts':'اقتراحات سريعة'}</h3><div class="row"><button class="secondary" onclick="aiPrompt('${en?'Explain a school lesson simply':'اشرح لي درسًا دراسيًا ببساطة'}')">${en?'Study':'الدراسة'}</button><button class="secondary" onclick="aiPrompt('${en?'Help me write code':'ساعدني في كتابة كود'}')">${en?'Coding':'البرمجة'}</button><button class="secondary" onclick="aiPrompt('${en?'Translate a sentence':'ترجم لي جملة'}')">${en?'Translate':'الترجمة'}</button></div></div>`}
 function aiPrompt(t){$('aiInput').value=t;sendAI()}
 async function sendAI(){let input=$('aiInput'),chat=$('aiChat');if(!input||!input.value.trim())return;let msg=input.value.trim();chat.innerHTML+=`<div class="chat-msg user">${escapeHtml(msg)}</div>`;input.value='';chat.scrollTop=chat.scrollHeight;
 try{let r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg})});if(!r.ok)throw new Error('not-connected');let d=await r.json();chat.innerHTML+=`<div class="chat-msg bot">${escapeHtml(d.reply||'')}</div>`}
 catch{chat.innerHTML+=`<div class="chat-msg bot">${en?'AI server is not connected yet. The interface is working; the next step is to connect a secure backend.':'خادم الذكاء الاصطناعي غير متصل حاليًا. الواجهة تعمل، والخطوة التالية ربطها بخادم آمن.'}</div>`}chat.scrollTop=chat.scrollHeight}
-function tools(){return `<div class="panel"><h3>${en?'Calculator':'آلة حاسبة'}</h3><input id="calcInput" placeholder="مثال: (12+8)*3" inputmode="decimal"><button onclick="calculate()">${en?'Calculate':'احسب'}</button><div class="status" id="calcResult"></div><p class="note">${en?'Allowed: numbers and + − × ÷ parentheses.':'استخدم الأرقام والعمليات الحسابية والأقواس فقط.'}</p></div><div class="panel"><h3>${en?'Quick tools':'أدوات سريعة'}</h3><div class="row"><button onclick="copyText(location.href)">${en?'Copy app address':'نسخ عنوان الصفحة'}</button><button class="secondary" onclick="showToast('${en?'OMNIX is ready':'تطبيق OMNIX جاهز'}')">${en?'Test button':'تجربة الزر'}</button></div></div>`}
+function tools(){return `<div class="panel"><h3>${en?'Calculator':'آلة حاسبة'}</h3><input id="calcInput" placeholder="مثال: (12+8)*3" inputmode="decimal"><button onclick="calculate()">${en?'Calculate':'احسب'}</button><div class="status" id="calcResult"></div><p class="note">${en?'Allowed: numbers and + − × ÷ parentheses.':'استخدم الأرقام والعمليات الحسابية والأقواس فقط.'}</p></div><div class="panel"><h3>${en?'Quick tools':'أدوات سريعة'}</h3><div class="row"><button onclick="copyText(location.href)">${en?'Copy app address':'نسخ عنوان الصفحة'}</button><button class="secondary" onclick="showToast('${en?'NEXORA is ready':'تطبيق NEXORA جاهز'}')">${en?'Test button':'تجربة الزر'}</button></div></div>`}
 function calculate(){let s=$('calcInput').value;if(!/^[0-9+\-*/().\s]+$/.test(s)){ $('calcResult').textContent=en?'Invalid expression':'عملية غير صالحة';return}try{let v=Function('"use strict";return ('+s+')')();$('calcResult').textContent=Number.isFinite(v)?String(v):(en?'Invalid result':'نتيجة غير صالحة')}catch{$('calcResult').textContent=en?'Check the expression':'راجع العملية الحسابية'}}
 const quiz=[{q:'ما ناتج 7 × 8؟',a:['54','56','64'],c:1},{q:'ما عاصمة مصر؟',a:['القاهرة','الإسكندرية','أسوان'],c:0},{q:'أي كلمة فعل؟',a:['مدرسة','يكتب','قلم'],c:1}];
 function education(){return `<div class="panel"><h3>${en?'Mini quiz':'اختبار قصير'}</h3><p>${en?'Choose the correct answer:':'اختر الإجابة الصحيحة:'}</p><div id="quizArea"></div><div class="status" id="quizScore"></div><button onclick="startQuiz()">${en?'Start quiz':'ابدأ الاختبار'}</button></div><div class="panel"><h3>${en?'Learning note':'ملاحظة تعليمية'}</h3><textarea id="studyNote" placeholder="${en?'Write a lesson note':'اكتب ملحوظة للدرس'}">${escapeHtml(get('studyNote'))}</textarea><button onclick="set('studyNote',$('studyNote').value);showToast(en?'Saved':'تم الحفظ')">${en?'Save note':'حفظ الملحوظة'}</button></div>`}
@@ -697,7 +837,7 @@ let qIndex=0,qPoints=0;
 function startQuiz(){qIndex=0;qPoints=0;nextQuestion()}
 function nextQuestion(){if(qIndex>=quiz.length){$('quizArea').innerHTML='';$('quizScore').textContent=(en?'Your score: ':'نتيجتك: ')+qPoints+'/'+quiz.length;set('lastQuiz',qPoints+'/'+quiz.length);return}let q=quiz[qIndex];$('quizArea').innerHTML=`<b>${qIndex+1}. ${q.q}</b>`+q.a.map((a,i)=>`<button class="answer secondary" onclick="answerQuiz(${i})">${a}</button>`).join('')}
 function answerQuiz(i){if(i===quiz[qIndex].c)qPoints++;qIndex++;nextQuestion()}
-function games(){return `<div class="panel"><h3>${en?'OMNIX Games':'ألعاب OMNIX'}</h3><p>${en?'Choose your game':'اختر اللعبة التي تريد لعبها'}</p><div class="grid">
+function games(){return `<div class="panel"><h3>${en?'NEXORA Games':'ألعاب NEXORA'}</h3><p>${en?'Choose your game':'اختر اللعبة التي تريد لعبها'}</p><div class="grid">
 <div class="tile" onclick="openMiniGame('xo')"><span class="ico">⭕ ❌</span>${en?'Tic Tac Toe':'إكس أو'}</div>
 <div class="tile" onclick="openMiniGame('chess')"><span class="ico">♟</span>${en?'Chess':'الشطرنج'}</div>
 <div class="tile" onclick="openMiniGame('adventure')"><span class="ico">🗺️</span>${en?'Adventure':'المغامرة'}</div>
@@ -796,9 +936,9 @@ function renderChessGame(){
  chessGame=new window.ChessEngine.Chess();chessSelected=null;chessPromotion=null;
  a.innerHTML=`<div class="panel">
  <button class="secondary" onclick="closeMiniGame()">← ${en?'Games':'الألعاب'}</button>
- <h3>${en?'OMNIX Chess':'شطرنج OMNIX'}</h3>
+ <h3>${en?'NEXORA Chess':'شطرنج NEXORA'}</h3>
  <p id="chessStatus" class="status"></p>
- <div id="chessBoard" style="display:grid;grid-template-columns:repeat(8,minmax(0,1fr));max-width:440px;margin:12px auto;border:2px solid #b98249;border-radius:8px;overflow:hidden"></div>
+ <div class="marble-frame"><div id="chessBoard" class="marble-board"></div></div>
  <div id="chessPromotion" class="row"></div>
  <div class="row">
  <button onclick="chessUndo()" class="secondary">${en?'Undo':'تراجع'}</button>
@@ -816,9 +956,9 @@ function chessDraw(){
   const sq=files[c]+(8-r),piece=board[r][c],selected=chessSelected===sq;
   const targets=chessSelected?chessGame.moves({square:chessSelected,verbose:true}).filter(m=>m.to===sq):[];
   const light=(r+c)%2===1;
-  const bg=selected?'#c58b42':targets.length?'#829b62':light?'#e5d2b5':'#79583e';
+  const squareClass=selected?'selected':targets.length?'target':light?'marble-light':'marble-dark';
   const glyph=piece?chessGlyph[piece.color+piece.type]:'';
-  html+=`<button onclick="chessTap('${sq}')" aria-label="${sq}" style="aspect-ratio:1;border:0;border-radius:0;padding:0;background:${bg};color:${piece&&piece.color==='w'?'#fff':'#171717'};font-size:clamp(23px,7vw,43px);text-shadow:0 1px 2px #555;display:flex;align-items:center;justify-content:center;position:relative">${glyph}<span style="position:absolute;bottom:1px;left:3px;font-size:9px;color:${light?'#79583e':'#e5d2b5'}">${c===0?8-r:''}${r===7?files[c]:''}</span></button>`;
+  html+=`<button class="marble-square ${squareClass}" onclick="chessTap('${sq}')" aria-label="${sq}" style="color:${piece&&piece.color==='w'?'#fffaf0':'#17130f'}">${glyph}<span class="marble-coordinate">${c===0?8-r:''}${r===7?files[c]:''}</span></button>`;
  }
  $('chessBoard').innerHTML=html;
  const status=chessGame.isCheckmate()?(en?'Checkmate! ':'كش مات! ')+(chessGame.turn()==='w'?(en?'Black wins':'الأسود فاز'):(en?'White wins':'الأبيض فاز')):chessGame.isStalemate()?(en?'Draw by stalemate':'تعادل بالخنق'):chessGame.isDraw()?(en?'Draw':'تعادل'):((chessGame.turn()==='w'?(en?'White':'الأبيض'):(en?'Black':'الأسود'))+(en?' to move':' عليه اللعب')+(chessGame.isCheck()?' · '+(en?'Check':'كش'):''));
@@ -868,7 +1008,7 @@ function renderAdventureGame(){
  const a=$('miniGameArea');if(!a)return;
  a.innerHTML=`<div class="panel">
  <button class="secondary" onclick="closeMiniGame()">← ${en?'Games':'الألعاب'}</button>
- <h3>🗺️ OMNIX Adventure</h3>
+ <h3>🗺️ NEXORA Adventure</h3>
  <p class="status">${en?'Stars':'النجوم'}: ⭐ <span id="adventureStars">${adventureStars}</span></p>
  <div id="adventureContent"></div>
  </div>`;
@@ -921,7 +1061,7 @@ function quizCategoryScreen(){
  ];
  area.innerHTML=`<div class="panel">
  <button class="secondary" onclick="closeMiniGame()">← ${en?'Games':'الألعاب'}</button>
- <h3 style="text-align:center">🏆 ${en?'OMNIX Quiz':'تحدي OMNIX'}</h3>
+ <h3 style="text-align:center">🏆 ${en?'NEXORA Quiz':'تحدي NEXORA'}</h3>
  <p class="status" style="text-align:center">${en?'Choose your challenge':'اختر التحدي الذي تريده'}</p>
  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px">
  ${cats.map(c=>{
@@ -1153,7 +1293,7 @@ function filterPhrases(){
 }
 function files(){return `<div class="panel"><h3>${en?'Import a text file':'استيراد ملف نصي'}</h3><input type="file" id="textFile" accept=".txt,.md,.csv,text/plain,text/markdown,text/csv"><button onclick="readTextFile()">${en?'Open file':'فتح الملف'}</button><textarea id="fileText" placeholder="${en?'File content will appear here':'سيظهر محتوى الملف هنا'}"></textarea><button onclick="downloadText()">${en?'Export text':'تصدير النص'}</button></div><div class="note">${en?'The app only reads files you choose.':'التطبيق يقرأ الملفات التي تختارها بنفسك فقط.'}</div>`}
 function readTextFile(){let f=$('textFile').files[0];if(!f)return showToast(en?'Choose a file first':'اختر ملفًا أولاً');let r=new FileReader();r.onload=()=>{$('fileText').value=r.result};r.readAsText(f)}
-function downloadText(){let b=new Blob([$('fileText').value],{type:'text/plain;charset=utf-8'});let a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='omnix-notes.txt';a.click();URL.revokeObjectURL(a.href)}
+function downloadText(){let b=new Blob([$('fileText').value],{type:'text/plain;charset=utf-8'});let a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='nexora-notes.txt';a.click();URL.revokeObjectURL(a.href)}
 
 function calendar(){
  const today=new Date();
@@ -1259,11 +1399,11 @@ async function notifyCalendar(){
   return days>=0&&days<=1;
  });
  if(!soon.length)return showToast(en?'Notifications enabled':'تم تفعيل الإشعارات');
- soon.forEach(e=>new Notification('OMNIX · '+e.name,{body:en?'An occasion is coming up':'اقترب موعد مناسبتك'}));
+ soon.forEach(e=>new Notification('NEXORA · '+e.name,{body:en?'An occasion is coming up':'اقترب موعد مناسبتك'}));
  showToast(en?'Notifications enabled':'تم تفعيل الإشعارات');
 }
 
-function admin(){return `<div class="panel"><h3>${en?'App settings':'إعدادات التطبيق'}</h3><p>${en?'Language and local data controls.':'اللغة والتحكم في البيانات المحلية.'}</p><button onclick="toggleLang()">${en?'Switch language':'تغيير اللغة'}</button><button class="secondary" onclick="backupData()">${en?'Export backup':'تصدير نسخة احتياطية'}</button><div style="margin-top:12px"><label>${en?'Restore backup file':'استعادة نسخة احتياطية'}</label><input type="file" id="backupFile" accept="application/json,.json"><button onclick="restoreData()">${en?'Restore':'استعادة'}</button></div></div><div class="panel"><h3>${en?'About OMNIX':'حول OMNIX'}</h3><p>OMNIX · منصة للتعلم والترفيه</p><small>${en?'Version 1.8 · Data stored locally on this device.':'الإصدار 1.8 · البيانات محفوظة محليًا على هذا الجهاز.'}</small></div><div class="note">${en?'Admin panel controls this app on this device; it is not a remote server dashboard.':'لوحة الإدارة تتحكم في التطبيق على هذا الجهاز، وليست لوحة تحكم بخادم خارجي.'}</div>`}
+function admin(){return `<div class="panel"><h3>${en?'App settings':'إعدادات التطبيق'}</h3><p>${en?'Language and local data controls.':'اللغة والتحكم في البيانات المحلية.'}</p><button onclick="toggleLang()">${en?'Switch language':'تغيير اللغة'}</button><button class="secondary" onclick="backupData()">${en?'Export backup':'تصدير نسخة احتياطية'}</button><div style="margin-top:12px"><label>${en?'Restore backup file':'استعادة نسخة احتياطية'}</label><input type="file" id="backupFile" accept="application/json,.json"><button onclick="restoreData()">${en?'Restore':'استعادة'}</button></div></div><div class="panel"><h3>${en?'About NEXORA':'حول NEXORA'}</h3><p>NEXORA · منصة للتعلم والترفيه</p><small>${en?'Version 1.8 · Data stored locally on this device.':'الإصدار 1.8 · البيانات محفوظة محليًا على هذا الجهاز.'}</small></div><div class="note">${en?'Admin panel controls this app on this device; it is not a remote server dashboard.':'لوحة الإدارة تتحكم في التطبيق على هذا الجهاز، وليست لوحة تحكم بخادم خارجي.'}</div>`}
 function backupData(){let data={};for(let i=0;i<localStorage.length;i++){let k=localStorage.key(i);if(k.startsWith('om_'))data[k]=localStorage.getItem(k)}let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download='omnix-backup.json';a.click();URL.revokeObjectURL(a.href)}
 function restoreData(){let f=$('backupFile').files[0];if(!f)return showToast(en?'Choose a backup':'اختر نسخة احتياطية');let r=new FileReader();r.onload=()=>{try{let d=JSON.parse(r.result);Object.keys(d).forEach(k=>{if(k.startsWith('om_'))localStorage.setItem(k,d[k])});showToast(en?'Backup restored':'تمت استعادة النسخة');setTimeout(()=>location.reload(),700)}catch{showToast(en?'Invalid backup file':'ملف النسخة غير صالح')}};r.readAsText(f)}
 function copyText(t){if(navigator.clipboard)navigator.clipboard.writeText(t).then(()=>showToast(en?'Copied':'تم النسخ')).catch(()=>showToast(en?'Copy unavailable':'تعذر النسخ'));else showToast(en?'Copy unavailable':'النسخ غير متاح')}

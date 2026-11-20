@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#070912">
+<meta name="description" content="OMNIX — أدواتك وتعلمك ومساعدك الذكي في مكان واحد.">
+<link rel="manifest" href="manifest.webmanifest">
+<title>OMNIX 1.8</title>
+<style>
+:root{--bg:#070912;--panel:#111626;--panel2:#17152b;--copper:#55c8ff;--soft:#d8eaff;--muted:#9aaac4;--line:#293b61;--white:#edf4ff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#111a30 0,#070912 42%);color:var(--white);font-family:Arial,sans-serif;min-height:100vh}
+header{padding:22px 16px 14px;text-align:center;border-bottom:1px solid #263b60}
+.mark{width:54px;height:54px;margin:0 auto 9px;border:2px solid var(--copper);border-radius:16px;display:grid;place-items:center;color:var(--soft);font-size:25px;font-weight:900;transform:rotate(45deg)}
+.mark span{transform:rotate(-45deg)}.logo{font-size:30px;font-weight:900;letter-spacing:6px;color:var(--copper)}.sub{font-size:10px;letter-spacing:4px;color:var(--muted);margin-top:5px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px}.top strong{font-size:14px}
+main{padding:0 14px 28px;max-width:850px;margin:auto}h2{font-size:19px;color:var(--copper);margin:10px 0 14px}h3{font-size:16px;color:var(--soft);margin:4px 0 10px}
+.panel,.tile{background:linear-gradient(145deg,#111a30,#121315);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:13px}
+.panel p,.muted{color:var(--muted);font-size:13px;line-height:1.8}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.tile{min-height:105px;text-align:center;cursor:pointer;color:var(--white);font-size:14px;font-weight:bold}.tile:active,button:active{transform:scale(.98)}.tile .ico{display:block;color:var(--copper);font-size:25px;margin-bottom:10px}
+button,.btn{background:#151d35;border:1px solid #426b9c;color:var(--soft);border-radius:11px;padding:11px 14px;font-weight:bold;cursor:pointer;font-size:13px}
+button.secondary{background:#111214;border-color:#34496d;color:var(--white)}button.danger{border-color:#8c4545;color:#ffb5a9}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.row>*{flex:1}
+input,textarea,select{width:100%;padding:12px;background:#0d0e10;border:1px solid #34496d;border-radius:10px;color:var(--white);margin:5px 0 10px;font:inherit}
+input[type=checkbox]{width:auto;vertical-align:middle;margin-inline-end:7px}textarea{min-height:90px;resize:vertical}label{font-size:13px;color:var(--muted)}.hidden{display:none!important}
+.back{margin:4px 0 15px}.itemline{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 0;border-bottom:1px solid #30271e}.itemline:last-child{border:0}
+.ayahs{font-family:serif;font-size:22px;line-height:2.2;text-align:center;color:var(--soft)}.status{color:var(--copper);font-size:13px;margin-top:10px}
+.big{font-size:25px;color:var(--copper);font-weight:bold}.answer{display:block;width:100%;text-align:right;margin:7px 0}
+footer{text-align:center;color:#75634e;padding:18px;font-size:11px}
+.tile{position:relative;overflow:hidden;transition:transform .22s,border-color .22s,box-shadow .22s}
+.tile:hover{transform:translateY(-3px);border-color:#e2a65a;box-shadow:0 8px 28px #d8792822}
+.tile:before{content:"";position:absolute;inset:-60% auto auto -30%;width:70%;height:180%;transform:rotate(28deg);background:linear-gradient(90deg,transparent,#ffb45b12,transparent);pointer-events:none}
+.mark{box-shadow:0 0 18px #e39a4430, inset 0 0 14px #e39a4420;cursor:pointer;user-select:none}
+.logo{text-shadow:0 0 20px #df8d3b55}
+.ai-orb{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;margin:4px auto 14px;color:#fff1d8;font-size:26px;background:radial-gradient(circle at 35% 30%,#ffdc9b,#bd6928 45%,#28160d 75%);box-shadow:0 0 18px #ed8a3e77,0 0 42px #ed8a3e33;animation:orbPulse 2.8s ease-in-out infinite}
+@keyframes orbPulse{0%,100%{box-shadow:0 0 18px #ed8a3e77,0 0 42px #ed8a3e33}50%{box-shadow:0 0 25px #ffc078aa,0 0 58px #ed8a3e55}}
+.chat-log{height: min(48vh,420px);overflow:auto;background:#0b0c0e;border:1px solid #263b60;border-radius:13px;padding:12px;margin:12px 0}
+.chat-msg{max-width:90%;padding:10px 12px;border-radius:13px;margin:8px 0;line-height:1.7;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}
+.chat-msg.user{background:#172b4b;border:1px solid #3979b9;margin-right:auto}
+.chat-msg.bot{background:#171719;border:1px solid #34496d;margin-left:auto}
+.chat-compose{display:flex;gap:8px;align-items:stretch}.chat-compose input{margin:0;min-width:0}.chat-compose button{flex:0 0 auto}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+small{color:var(--muted)}.note{background:#101113;padding:12px;border-radius:10px;color:var(--muted);font-size:12px;line-height:1.7}
+
+/* OMNIX 1.3 — CYBER TECH THEME */
+:root{
+ --bg:#070912;--panel:#101729;--panel2:#17152b;
+ --copper:#55c8ff;--soft:#d8eaff;--muted:#9aaac4;
+ --line:#293b61;--white:#edf4ff;
+ --violet:#9b72ff;--blue:#35aaff;
+}
+body{
+ background:
+ radial-gradient(ellipse at 12% 0%,#172d58 0,transparent 38%),
+ radial-gradient(ellipse at 90% 15%,#29194e 0,transparent 34%),
+ #070912;
+}
+header{
+ border-bottom:1px solid #263b60;
+ background:linear-gradient(180deg,#101a30dd,transparent);
+}
+.mark{
+ border-color:#55c8ff;
+ color:#d8eaff;
+ box-shadow:0 0 22px #299fff55,inset 0 0 16px #6c65ff33;
+ background:linear-gradient(145deg,#152b49,#17152b);
+}
+.logo{
+ color:#8bdcff;
+ text-shadow:0 0 12px #35aaff88,0 0 28px #7655ff55;
+}
+.sub{color:#9aaac4;letter-spacing:2px}
+.panel,.tile{
+ background:linear-gradient(145deg,#131e35eF,#111323f2);
+ border:1px solid #2c426b;
+ border-radius:17px;
+ box-shadow:0 8px 28px #0005,inset 0 1px #ffffff09;
+ backdrop-filter:blur(12px);
+}
+h2{color:#78d5ff}
+h3{color:#c4b2ff}
+.tile{
+ min-height:125px;
+ text-align:right;
+ padding:17px;
+ isolation:isolate;
+ border-color:#30466e;
+}
+.tile:before{
+ z-index:2;
+ background:linear-gradient(90deg,transparent,#ffffff12,transparent);
+}
+.tile:after{
+ content:"";
+ position:absolute;
+ inset:0;
+ z-index:-1;
+ opacity:.24;
+ background-size:cover;
+ background-position:center;
+ transition:opacity .25s,transform .35s;
+}
+.tile:nth-child(1):after{background-image:url('https://images.unsplash.com/photo-1518770660439-4636190af475?w=700')}
+.tile:nth-child(2):after{background-image:url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=700')}
+.tile:nth-child(3):after{background-image:url('https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=700')}
+.tile:nth-child(4):after{background-image:url('https://images.unsplash.com/photo-1564769625905-50e93615e769?w=700')}
+.tile:nth-child(5):after{background-image:url('https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=700')}
+.tile:nth-child(6):after{background-image:url('https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?w=700')}
+.tile:nth-child(7):after{background-image:url('https://images.unsplash.com/photo-1518770660439-4636190af475?w=700')}
+.tile:nth-child(8):after{background-image:url('https://images.unsplash.com/photo-1677442136019-21780ecad995?w=700')}
+.tile:hover{
+ transform:translateY(-3px);
+ border-color:#65cfff;
+ box-shadow:0 10px 30px #268fff25;
+}
+.tile:hover:after{opacity:.38;transform:scale(1.04)}
+.tile .ico{
+ color:#72d7ff;
+ text-shadow:0 0 15px #38aaff99;
+ position:relative;
+ z-index:3;
+}
+.tile{ text-shadow:0 2px 8px #000; }
+button,.btn{
+ background:linear-gradient(120deg,#172b4b,#211b43);
+ border:1px solid #4778aa;
+ color:#d8eaff;
+}
+button.secondary{
+ background:#11182a;
+ border-color:#34496d;
+ color:#e2eaff;
+}
+input,textarea,select{
+ background:#0b1020;
+ border-color:#30466b;
+}
+.ai-orb{
+ background:radial-gradient(circle at 35% 30%,#d9f4ff,#39aaff 42%,#6550c9 72%,#17152b);
+ box-shadow:0 0 22px #35aaff88,0 0 48px #7655ff44;
+}
+@keyframes orbPulse{
+ 0%,100%{box-shadow:0 0 18px #35aaff77,0 0 42px #7655ff33}
+ 50%{box-shadow:0 0 28px #35aaffaa,0 0 58px #7655ff66}
+}
+.chat-log{background:#090e1c;border-color:#30466b}
+.chat-msg.user{background:#172b4b;border-color:#3979b9}
+.chat-msg.bot{background:#17172b;border-color:#454078}
+.note{background:#10182a}
+footer{color:#7185a8}
+.status{color:#71d5ff}
+
+
+/* OMNIX 1.8 — NEXT GEN INTERFACE */
+:root{
+ --bg:#080b16;
+ --panel:#111a2b;
+ --panel2:#19243a;
+ --copper:#64d8ff;
+ --soft:#e5f3ff;
+ --muted:#9aabc4;
+ --line:#293b59;
+ --white:#f1f6ff;
+ --violet:#a78bfa;
+ --blue:#38bdf8;
+}
+html{scroll-behavior:smooth}
+body{
+ background:
+ radial-gradient(ellipse at 10% 0%,#17345a 0,transparent 38%),
+ radial-gradient(ellipse at 95% 18%,#30204f 0,transparent 34%),
+ linear-gradient(145deg,#080b16,#0b1020 65%,#111027);
+ background-attachment:fixed;
+ color:var(--white);
+}
+header{
+ padding:26px 16px 19px;
+ border-bottom:1px solid #30476a;
+ background:linear-gradient(180deg,#111d33ee,#0b1020bb);
+}
+.mark{
+ border-color:var(--copper);
+ background:linear-gradient(145deg,#183b5c,#29204c);
+ box-shadow:0 0 25px #38bdf855,inset 0 0 15px #a78bfa33;
+}
+.logo{
+ color:#8ce4ff;
+ text-shadow:0 0 14px #38bdf888,0 0 32px #8b5cf655;
+}
+.sub{color:#a9bad3}
+.top{
+ max-width:850px;
+ margin:auto;
+ padding:16px 18px;
+}
+main{max-width:900px;padding:0 16px 35px}
+h2{color:#8cddff}
+h3{color:#c9baff}
+.panel{
+ background:linear-gradient(145deg,#15223aee,#101629f5);
+ border:1px solid #304767;
+ border-radius:19px;
+ box-shadow:0 10px 30px #0004,inset 0 1px #ffffff0c;
+ backdrop-filter:blur(14px);
+}
+#home>.panel:first-child{
+ padding:23px 19px;
+ border-color:#42618a;
+ background:
+ radial-gradient(ellipse at 95% 0%,#3b4d8b55,transparent 55%),
+ linear-gradient(135deg,#172d4a,#17172f);
+}
+#heroTitle{font-size:23px;line-height:1.6}
+#heroText{font-size:14px}
+.grid{gap:13px}
+.tile{
+ min-height:125px;
+ padding:19px 14px;
+ border-radius:18px;
+ border-color:#344c70;
+ background:linear-gradient(145deg,#192944ee,#15172cf5);
+ box-shadow:0 8px 25px #0004,inset 0 1px #ffffff0c;
+ transition:transform .2s,border-color .2s,box-shadow .2s;
+}
+.tile .ico{
+ color:#8de3ff;
+ text-shadow:0 0 17px #38bdf899;
+}
+.tile:hover{
+ transform:translateY(-4px);
+ border-color:#78dfff;
+ box-shadow:0 12px 30px #249bdf25;
+}
+button,.btn{
+ border:1px solid #4b79a7;
+ border-radius:12px;
+ background:linear-gradient(120deg,#1a3655,#29234b);
+ color:#e6f5ff;
+ transition:transform .15s,filter .15s;
+}
+button:hover,.btn:hover{filter:brightness(1.2)}
+button.secondary{
+ background:#151d30;
+ border-color:#3c506f;
+ color:#e5efff;
+}
+button.danger{
+ background:#351d2a;
+ border-color:#94516a;
+ color:#ffc0c8;
+}
+input,textarea,select{
+ background:#0b1324;
+ border-color:#354c70;
+ color:#f1f6ff;
+ border-radius:12px;
+}
+input:focus,textarea:focus,select:focus{
+ outline:2px solid #38bdf877;
+ border-color:#64d8ff;
+}
+.itemline{border-color:#293b59}
+.chat-log{background:#090f1d;border-color:#344a6d}
+.chat-msg.user{background:#183454;border-color:#3979b9}
+.chat-msg.bot{background:#211c3a;border-color:#51447e}
+.ai-orb{
+ background:radial-gradient(circle at 35% 30%,#e0f7ff,#38bdf8 42%,#7155ce 75%,#17152b);
+ box-shadow:0 0 25px #38bdf888,0 0 50px #8b5cf644;
+}
+.note{background:#152139;color:#b5c5dc}
+.status{color:#78ddff}
+footer{color:#8b9db9}
+@media(min-width:650px){
+ .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:380px){
+ .logo{font-size:26px}
+ .tile{min-height:112px;padding:14px 9px}
+ #heroTitle{font-size:20px}
+}
+@media(prefers-reduced-motion:reduce){
+ *,*:before,*:after{scroll-behavior:auto!important;transition:none!important}
+}
+
+/* OMNIX 1.8 — COMMAND CENTER */
+.command-center{padding:18px;margin:15px 0 20px}
+.cc-heading{display:flex;justify-content:space-between;margin-bottom:14px}
+.cc-heading h3{margin:0;color:#8ce4ff}
+.cc-label,.cc-quiz{font-size:11px;color:#9aabc4}
+.cc-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.cc-stat{padding:13px 5px;text-align:center;border:1px solid #344c70;border-radius:13px;background:#192944}
+.cc-number{font-size:22px;font-weight:bold;color:#8ce4ff;margin-bottom:5px}
+.cc-stat small{font-size:11px}
+.cc-quick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:15px}
+.cc-action{padding:12px 5px;font-size:12px}
+.cc-quiz{margin-top:12px}
+@media(max-width:380px){.cc-number{font-size:19px}}
+
+/* OMNIX APPLE DESIGN */
+:root{
+ --bg:#0b0c0f;
+ --panel:#17191e;
+ --panel2:#20232a;
+ --copper:#9bcaff;
+ --soft:#f3f5f9;
+ --muted:#9a9da7;
+ --line:#30343c;
+ --white:#f5f6fa;
+}
+body{
+ background:
+ radial-gradient(ellipse at 50% -15%,#28354b 0,transparent 48%),
+ #0b0c0f;
+ color:#f5f6fa;
+ font-family:Arial,sans-serif;
+}
+.apple-header{
+ height:82px;
+ padding:0 30px;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ background:#111318dd;
+ border-bottom:1px solid #ffffff12;
+ backdrop-filter:blur(24px);
+}
+.brand{display:flex;align-items:center;gap:13px}
+.apple-header .mark{
+ width:43px;height:43px;margin:0;
+ border:1px solid #91bfff88;
+ border-radius:14px;
+ transform:none;
+ display:grid;place-items:center;
+ background:linear-gradient(145deg,#26364c,#171d29);
+ box-shadow:0 4px 18px #4b8bda22;
+ color:#d8eaff;
+}
+.apple-header .mark span{transform:none;font-size:29px}
+.apple-header .logo{
+ font-size:26px;letter-spacing:5px;
+ color:#f4f6fa;text-shadow:none;
+}
+.header-meta{font-size:10px;letter-spacing:2px;color:#858b98}
+.apple-top{
+ max-width:1100px;
+ padding:20px 25px;
+ margin:0 auto;
+}
+.apple-top strong{font-size:15px;font-weight:600}
+.apple-lang{
+ background:#252932!important;
+ border:1px solid #ffffff18!important;
+ border-radius:20px!important;
+ padding:9px 17px!important;
+}
+#appleNav{
+ position:fixed;
+ z-index:20;
+ top:110px;right:20px;
+ width:185px;
+ padding:15px 10px;
+ border:1px solid #ffffff12;
+ border-radius:20px;
+ background:#17191edb;
+ backdrop-filter:blur(24px);
+ box-shadow:0 12px 35px #0005;
+}
+.nav-caption{
+ padding:8px 12px;
+ color:#777f8c;
+ font-size:10px;
+ letter-spacing:1.5px;
+}
+.nav-item{
+ display:flex;
+ align-items:center;
+ gap:12px;
+ width:100%;
+ padding:12px;
+ margin:3px 0;
+ text-align:right;
+ border:0!important;
+ border-radius:12px!important;
+ background:transparent!important;
+ color:#b9bec9!important;
+ font-weight:500;
+}
+.nav-item span{font-size:19px;color:#9ebde8;width:23px}
+.nav-item:hover,.nav-item.active{
+ background:#ffffff0d!important;
+ color:#fff!important;
+}
+.nav-bottom-caption{margin-top:20px}
+#mobileNav{display:none}
+main{
+ max-width:1050px;
+ margin:0 auto 0 0;
+ padding:0 25px 45px;
+}
+.panel,.tile{
+ background:linear-gradient(145deg,#1b1e25,#15171c)!important;
+ border:1px solid #ffffff12!important;
+ border-radius:20px!important;
+ box-shadow:0 8px 30px #0003,inset 0 1px #ffffff08!important;
+ backdrop-filter:blur(20px);
+}
+#home>.panel:first-child{
+ padding:25px;
+ background:linear-gradient(120deg,#202a39,#171a21)!important;
+}
+h2{color:#e8edf5!important;font-size:20px}
+h3{color:#e0e7f2!important}
+#heroTitle{font-size:25px}
+#heroText,.panel p{color:#aeb5c2}
+.grid{gap:14px}
+.tile{
+ min-height:118px;
+ color:#eef2f8!important;
+ text-align:center!important;
+ background:#1a1d23!important;
+}
+.tile:before,.tile:after{display:none!important}
+.tile .ico{
+ color:#a8c9f4!important;
+ text-shadow:none!important;
+}
+.tile:hover{
+ transform:translateY(-2px);
+ border-color:#7296c5!important;
+}
+button,.btn{
+ background:#29313e!important;
+ border:1px solid #ffffff16!important;
+ color:#f0f3f9!important;
+ border-radius:13px!important;
+}
+button.secondary{background:#20232a!important}
+input,textarea,select{
+ background:#11141a!important;
+ border:1px solid #ffffff1c!important;
+ color:#f4f6fa!important;
+ border-radius:13px!important;
+}
+.command-center{padding:21px}
+.cc-stat{
+ background:#20252e!important;
+ border-color:#ffffff12!important;
+ border-radius:15px!important;
+}
+.cc-number{color:#b7d5ff!important}
+.cc-heading h3{color:#eef3fb!important}
+.cc-label,.cc-quiz{color:#9da8b8}
+footer{color:#777f8c!important}
+@media(min-width:900px){
+ main{margin-right:215px;margin-left:auto}
+ .apple-top{margin-right:215px;margin-left:auto}
+}
+@media(max-width:899px){
+ #appleNav{display:none}
+ #mobileNav{
+  display:flex;
+  position:fixed;
+  z-index:50;
+  bottom:0;left:10px;right:10px;
+  justify-content:space-around;
+  padding:9px 4px calc(9px + env(safe-area-inset-bottom));
+  background:#1b1e24ed;
+  border:1px solid #ffffff18;
+  border-radius:20px 20px 12px 12px;
+  backdrop-filter:blur(25px);
+  box-shadow:0 -5px 30px #0005;
+ }
+ #mobileNav button{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+  padding:6px 2px!important;
+  background:transparent!important;
+  border:0!important;
+  color:#b9c2d0!important;
+  font-size:10px;
+ }
+ #mobileNav button span{font-size:20px;color:#b5d2fa}
+ main{padding-bottom:110px}
+ footer{padding-bottom:100px}
+ .apple-header{height:72px;padding:0 17px}
+ .apple-header .logo{font-size:23px}
+ .apple-top{padding:15px 17px}
+}
+@media(max-width:380px){
+ .cc-number{font-size:18px}
+ .tile{min-height:105px}
+}
+
+</style>
+</head>
+<body>
+<header class="apple-header">
+ <div class="brand">
+  <div class="mark" id="secretMark" title="OMNIX"><span>∞</span></div>
+  <div class="logo">OMNIX</div>
+ </div>
+ <div class="header-meta">VERSION 1.8</div>
+</header>
+<div class="top apple-top">
+ <strong id="welcome">مرحباً بك في OMNIX</strong>
+ <button id="langBtn" class="apple-lang" onclick="toggleLang()">English</button>
+</div>
+<nav id="appleNav" aria-label="التنقل الرئيسي">
+ <div class="nav-caption">WORKSPACE</div>
+ <button onclick="goHome()" class="nav-item active"><span>⌂</span> الرئيسية</button>
+ <button onclick="openSection('1')" class="nav-item"><span>▤</span> التعليم</button>
+ <button onclick="openSection('3')" class="nav-item"><span>۞</span> القرآن الكريم</button>
+ <button onclick="openSection('4')" class="nav-item"><span>▦</span> الإنتاجية</button>
+ <button onclick="openSection('7')" class="nav-item"><span>✧</span> OMNIX AI</button>
+ <div class="nav-caption nav-bottom-caption">OMNIX 1.8</div>
+</nav>
+<nav id="mobileNav" aria-label="التنقل السفلي">
+ <button onclick="goHome()"><span>⌂</span>الرئيسية</button>
+ <button onclick="openSection('1')"><span>▤</span>التعليم</button>
+ <button onclick="openSection('3')"><span>۞</span>القرآن</button>
+ <button onclick="openSection('4')"><span>▦</span>المهام</button>
+ <button onclick="openSection('7')"><span>✧</span>AI</button>
+</nav>
+<main>
+<section id="home">
+ <div class="panel"><h2 id="heroTitle">كل ما تحتاجه في مكان واحد</h2><p id="heroText">التعليم والترفيه والأدوات اليومية.</p><div class="status" id="progressSummary"></div></div>
+ <div id="commandCenter" class="panel command-center"></div>
+ <h2 id="sectionsTitle">الأقسام الرئيسية</h2><div class="grid" id="grid"></div>
+</section>
+
+<section id="section" class="hidden">
+ <button class="back secondary" onclick="goHome()" id="backBtn">← الرئيسية</button>
+ <h2 id="sectionTitle"></h2><div id="content"></div>
+</section>
+</main>
+<footer>OMNIX © 2026 · منصة للتعلم والترفيه</footer>
+<script src="./quran-data.js"></script>
+<script src="./quran-names.js"></script>
+<script src="./dictionary-data.js"></script>
+<script src="./dictionary-extra.js"></script>
+<script src="./chess-engine.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+let en=localStorage.getItem('omnixLang')==='en', current='';
+const names=[['الحساب والأدوات','Accounts & Tools','⌗'],['التعليم','Education','▤'],['الألعاب','Games','◇'],['القرآن الكريم','Holy Quran','۞'],['الإنتاجية','Productivity','▦'],['اللغات والترجمة','Languages','文'],['إدارة الملفات','File Manager','▣'],['OMNIX AI','OMNIX AI','✧'],['التقويم والمناسبات','Calendar & Events','▦']];
+const get=(k,d='')=>localStorage.getItem('om_'+k)??d;
+const set=(k,v)=>localStorage.setItem('om_'+k,v);
+
+function renderDashboard(){
+ let tasks=[];
+ try{
+  const data=JSON.parse(get('tasks','[]'));
+  if(Array.isArray(data))tasks=data;
+ }catch(e){}
+
+ const completed=tasks.filter(t=>t&&t.done).length;
+ const notes=['mainNote','studyNote']
+  .filter(k=>String(get(k,'')).trim()).length;
+ const reviewed=get('fatihaDone')==='yes';
+ const quizResult=get('lastQuiz','—');
+
+ $('commandCenter').innerHTML=`
+ <div class="cc-heading">
+  <h3>${en?'Command Center':'مركز التحكم'}</h3>
+  <span class="cc-label">LIVE OVERVIEW</span>
+ </div>
+ <div class="cc-stats">
+  <div class="cc-stat">
+   <div class="cc-number">${completed}/${tasks.length}</div>
+   <small>${en?'Completed tasks':'المهام المكتملة'}</small>
+  </div>
+  <div class="cc-stat">
+   <div class="cc-number">${notes}</div>
+   <small>${en?'Saved notes':'الملاحظات المحفوظة'}</small>
+  </div>
+  <div class="cc-stat">
+   <div class="cc-number">${reviewed?'✓':'—'}</div>
+   <small>${en?'Al-Fatiha review':'مراجعة الفاتحة'}</small>
+  </div>
+ </div>
+ <div class="cc-quick">
+  <button class="cc-action" onclick="openSection('4')">${en?'Tasks':'المهام'}</button>
+  <button class="cc-action" onclick="openSection('1')">${en?'Education':'التعليم'}</button>
+  <button class="cc-action" onclick="openSection('3')">${en?'Quran':'القرآن'}</button>
+  <button class="cc-action" onclick="openSection('8')">${en?'Calendar':'التقويم'}</button>
+ </div>
+ <div class="cc-quiz">${en?'Last quiz result: ':'آخر نتيجة اختبار: '}${escapeHtml(quizResult)}</div>
+ `;
+}
+
+function toggleLang(){en=!en;localStorage.setItem('omnixLang',en?'en':'ar');renderHome();if(current)openSection(current)}
+function renderHome(){
+ document.documentElement.lang=en?'en':'ar';document.documentElement.dir=en?'ltr':'rtl';
+ $('welcome').textContent=en?'Welcome to OMNIX':'مرحباً بك في OMNIX';
+ $('langBtn').textContent=en?'العربية':'English';
+ $('heroTitle').textContent=en?'Everything in one place':'كل ما تحتاجه في مكان واحد';
+ $('heroText').textContent=en?'Learning, entertainment and daily tools.':'التعليم والترفيه والأدوات اليومية.';
+ $('sectionsTitle').textContent=en?'Main sections':'الأقسام الرئيسية';
+ $('backBtn').textContent=en?'← Home':'← الرئيسية';
+ $('progressSummary').textContent=en?'Your data is saved on this device.':'بياناتك تُحفظ على هذا الجهاز.';
+ renderDashboard();
+ $('grid').innerHTML=names.map((n,i)=>`<button class="tile" onclick="openSection('${i}')"><span class="ico">${n[2]}</span>${n[en?1:0]}</button>`).join('');
+}
+function goHome(){current='';$('section').classList.add('hidden');$('home').classList.remove('hidden');renderHome()}
+function openSection(i){current=String(i);$('home').classList.add('hidden');$('section').classList.remove('hidden');$('sectionTitle').textContent=names[+i][en?1:0];const f=[tools,education,games,quran,productivity,languages,files,omnixAI,calendar];$('content').innerHTML=f[+i]()}
+function omnixAI(){return `<div class="panel" style="text-align:center"><div class="ai-orb">✦</div><h3>OMNIX AI</h3><p>${en?'Your smart assistant for learning, coding, translation and ideas.':'مساعدك الذكي للتعلم والبرمجة والترجمة والأفكار.'}</p></div>
+<div class="panel"><div class="chat-log" id="aiChat"><div class="chat-msg bot">${en?'Hello! I am OMNIX AI. The chat interface is ready. Connect a secure AI server to enable real answers.':'أهلًا! أنا OMNIX AI. واجهة المحادثة جاهزة. لبدء الردود الذكية الحقيقية نحتاج ربط خادم AI آمن.'}</div></div>
+<div class="chat-compose"><input id="aiInput" placeholder="${en?'Ask OMNIX AI...':'اسأل OMNIX AI...'}" onkeydown="if(event.key==='Enter')sendAI()"><button onclick="sendAI()">${en?'Send':'إرسال'}</button></div>
+<p class="note">${en?'Connection status: UI ready · AI server not connected yet.':'حالة الاتصال: الواجهة جاهزة · خادم الذكاء الاصطناعي لم يتم ربطه بعد.'}</p></div>
+<div class="panel"><h3>${en?'Quick prompts':'اقتراحات سريعة'}</h3><div class="row"><button class="secondary" onclick="aiPrompt('${en?'Explain a school lesson simply':'اشرح لي درسًا دراسيًا ببساطة'}')">${en?'Study':'الدراسة'}</button><button class="secondary" onclick="aiPrompt('${en?'Help me write code':'ساعدني في كتابة كود'}')">${en?'Coding':'البرمجة'}</button><button class="secondary" onclick="aiPrompt('${en?'Translate a sentence':'ترجم لي جملة'}')">${en?'Translate':'الترجمة'}</button></div></div>`}
+function aiPrompt(t){$('aiInput').value=t;sendAI()}
+async function sendAI(){let input=$('aiInput'),chat=$('aiChat');if(!input||!input.value.trim())return;let msg=input.value.trim();chat.innerHTML+=`<div class="chat-msg user">${escapeHtml(msg)}</div>`;input.value='';chat.scrollTop=chat.scrollHeight;
+try{let r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg})});if(!r.ok)throw new Error('not-connected');let d=await r.json();chat.innerHTML+=`<div class="chat-msg bot">${escapeHtml(d.reply||'')}</div>`}
+catch{chat.innerHTML+=`<div class="chat-msg bot">${en?'AI server is not connected yet. The interface is working; the next step is to connect a secure backend.':'خادم الذكاء الاصطناعي غير متصل حاليًا. الواجهة تعمل، والخطوة التالية ربطها بخادم آمن.'}</div>`}chat.scrollTop=chat.scrollHeight}
+function tools(){return `<div class="panel"><h3>${en?'Calculator':'آلة حاسبة'}</h3><input id="calcInput" placeholder="مثال: (12+8)*3" inputmode="decimal"><button onclick="calculate()">${en?'Calculate':'احسب'}</button><div class="status" id="calcResult"></div><p class="note">${en?'Allowed: numbers and + − × ÷ parentheses.':'استخدم الأرقام والعمليات الحسابية والأقواس فقط.'}</p></div><div class="panel"><h3>${en?'Quick tools':'أدوات سريعة'}</h3><div class="row"><button onclick="copyText(location.href)">${en?'Copy app address':'نسخ عنوان الصفحة'}</button><button class="secondary" onclick="showToast('${en?'OMNIX is ready':'تطبيق OMNIX جاهز'}')">${en?'Test button':'تجربة الزر'}</button></div></div>`}
+function calculate(){let s=$('calcInput').value;if(!/^[0-9+\-*/().\s]+$/.test(s)){ $('calcResult').textContent=en?'Invalid expression':'عملية غير صالحة';return}try{let v=Function('"use strict";return ('+s+')')();$('calcResult').textContent=Number.isFinite(v)?String(v):(en?'Invalid result':'نتيجة غير صالحة')}catch{$('calcResult').textContent=en?'Check the expression':'راجع العملية الحسابية'}}
+const quiz=[{q:'ما ناتج 7 × 8؟',a:['54','56','64'],c:1},{q:'ما عاصمة مصر؟',a:['القاهرة','الإسكندرية','أسوان'],c:0},{q:'أي كلمة فعل؟',a:['مدرسة','يكتب','قلم'],c:1}];
+function education(){return `<div class="panel"><h3>${en?'Mini quiz':'اختبار قصير'}</h3><p>${en?'Choose the correct answer:':'اختر الإجابة الصحيحة:'}</p><div id="quizArea"></div><div class="status" id="quizScore"></div><button onclick="startQuiz()">${en?'Start quiz':'ابدأ الاختبار'}</button></div><div class="panel"><h3>${en?'Learning note':'ملاحظة تعليمية'}</h3><textarea id="studyNote" placeholder="${en?'Write a lesson note':'اكتب ملحوظة للدرس'}">${escapeHtml(get('studyNote'))}</textarea><button onclick="set('studyNote',$('studyNote').value);showToast(en?'Saved':'تم الحفظ')">${en?'Save note':'حفظ الملحوظة'}</button></div>`}
+let qIndex=0,qPoints=0;
+function startQuiz(){qIndex=0;qPoints=0;nextQuestion()}
+function nextQuestion(){if(qIndex>=quiz.length){$('quizArea').innerHTML='';$('quizScore').textContent=(en?'Your score: ':'نتيجتك: ')+qPoints+'/'+quiz.length;set('lastQuiz',qPoints+'/'+quiz.length);return}let q=quiz[qIndex];$('quizArea').innerHTML=`<b>${qIndex+1}. ${q.q}</b>`+q.a.map((a,i)=>`<button class="answer secondary" onclick="answerQuiz(${i})">${a}</button>`).join('')}
+function answerQuiz(i){if(i===quiz[qIndex].c)qPoints++;qIndex++;nextQuestion()}
+function games(){return `<div class="panel"><h3>${en?'Quick mental math':'تحدي الحساب الذهني'}</h3><p id="gameQuestion">اضغط ابدأ لعرض السؤال.</p><input id="gameAnswer" type="number" inputmode="numeric" placeholder="${en?'Your answer':'إجابتك'}"><div class="row"><button onclick="newGame()">${en?'New question':'سؤال جديد'}</button><button class="secondary" onclick="checkGame()">${en?'Check':'تحقق'}</button></div><div id="gameResult" class="status"></div></div>`}
+let gameValue=0;function newGame(){let a=Math.floor(Math.random()*12)+1,b=Math.floor(Math.random()*12)+1;gameValue=a*b;$('gameQuestion').textContent=`${a} × ${b} = ؟`;$('gameAnswer').value='';$('gameResult').textContent=''}
+function checkGame(){if($('gameAnswer').value==='')return;$('gameResult').textContent=Number($('gameAnswer').value)===gameValue?(en?'Correct ✓':'إجابة صحيحة ✓'):(en?'Try again':'حاول مرة أخرى')}
+
+function quran(){
+ const names=window.OMNIX_SURAH_NAMES;
+ return `<div class="panel">
+ <h3>${en?'The Holy Quran':'القرآن الكريم'}</h3>
+ <p>${en?'114 Surahs · Works offline':'114 سورة · يعمل دون إنترنت'}</p>
+ <input id="surahSearch" placeholder="${en?'Search Surah':'ابحث عن سورة'}" oninput="filterSurahs()">
+ <div id="surahList" class="grid" style="grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px">
+ ${names.map((name,i)=>`<button class="secondary" onclick="openSurah(${i+1})">${i+1}. ${name}</button>`).join('')}
+ </div></div>
+ <div class="panel"><h3>${en?'Memorization':'متابعة الحفظ'}</h3>
+ <p>${en?'Your review marks are saved on this device.':'علامات المراجعة محفوظة على جهازك.'}</p>
+ <div class="status">${names.filter((_,i)=>get('quranDone_'+(i+1))==='yes').length} / 114 ${en?'Surahs reviewed':'سورة تمت مراجعتها'}</div>
+ </div>`;
+}
+
+function filterSurahs(){
+ const q=$('surahSearch').value.trim().toLowerCase();
+ const names=window.OMNIX_SURAH_NAMES;
+ $('surahList').innerHTML=names.map((name,i)=>({name,i}))
+ .filter(x=>(x.name+' '+(x.i+1)).toLowerCase().includes(q))
+ .map(x=>`<button class="secondary" onclick="openSurah(${x.i+1})">${x.i+1}. ${x.name}</button>`).join('');
+}
+
+function openSurah(n){
+ const names=window.OMNIX_SURAH_NAMES;
+ const surah=window.OMNIX_QURAN[n-1];
+ if(!surah)return showToast('تعذر فتح السورة');
+ const done=get('quranDone_'+n)==='yes';
+ $('content').innerHTML=`
+ <div class="panel">
+ <button class="secondary" onclick="$('content').innerHTML=quran()">← ${en?'Surah list':'قائمة السور'}</button>
+ <h2 style="text-align:center">${names[n-1]}</h2>
+ <p style="text-align:center">${en?'Surah number':'رقم السورة'} ${n} · ${surah.ayahs.length} ${en?'Ayahs':'آية'}</p>
+ <div class="ayahs" style="font-size:22px;line-height:2.2;text-align:center">
+ ${surah.ayahs.map(a=>`${escapeHtml(a.text)} <span style="color:var(--copper)">۞${a.number}</span>`).join(' ')}
+ </div></div>
+ <div class="panel">
+ <label><input type="checkbox" ${done?'checked':''}
+ onchange="set('quranDone_${n}',this.checked?'yes':'no');showToast(this.checked?'تم حفظ المراجعة':'تم إلغاء المراجعة')">
+ ${en?'I reviewed this Surah':'أتممت مراجعة هذه السورة'}</label>
+ </div>`;
+ window.scrollTo(0,0);
+}
+
+function productivity(){let tasks=JSON.parse(get('tasks','[]'));return `<div class="panel"><h3>${en?'Tasks':'قائمة المهام'}</h3><div class="row"><input id="taskInput" placeholder="${en?'Add a task':'اكتب مهمة جديدة'}"><button onclick="addTask()">${en?'Add':'إضافة'}</button></div><div id="taskList">${taskHtml(tasks)}</div></div><div class="panel"><h3>${en?'Notes':'ملاحظات'}</h3><textarea id="mainNote" placeholder="${en?'Your notes':'اكتب ملاحظاتك'}">${escapeHtml(get('mainNote'))}</textarea><button onclick="set('mainNote',$('mainNote').value);showToast(en?'Saved':'تم الحفظ')">${en?'Save':'حفظ'}</button></div>`}
+function taskHtml(a){return a.map((t,i)=>`<div class="itemline"><label><input type="checkbox" ${t.done?'checked':''} onchange="toggleTask(${i},this.checked)"> ${escapeHtml(t.text)}</label><button class="danger" onclick="deleteTask(${i})">×</button></div>`).join('')||'<small>لا توجد مهام بعد</small>'}
+function addTask(){let v=$('taskInput').value.trim();if(!v)return;let a=JSON.parse(get('tasks','[]'));a.push({text:v,done:false});set('tasks',JSON.stringify(a));$('taskList').innerHTML=taskHtml(a);$('taskInput').value=''}
+function toggleTask(i,v){let a=JSON.parse(get('tasks','[]'));a[i].done=v;set('tasks',JSON.stringify(a))}
+function deleteTask(i){let a=JSON.parse(get('tasks','[]'));a.splice(i,1);set('tasks',JSON.stringify(a));$('taskList').innerHTML=taskHtml(a)}
+
+const phrases = window.OMNIX_PHRASES || [];
+
+function languageOptions(selected){
+ return window.OMNIX_LANGUAGES.map(l =>
+  `<option value="${l.code}" ${l.code===selected?'selected':''}>${l.flag} ${escapeHtml(l.name)}</option>`
+ ).join('');
+}
+
+function languages(){
+ const from=get('langFrom','ar');
+ const to=get('langTo','en');
+ return `
+ <div class="panel">
+  <h3>${en?'Multilingual Translator':'المترجم متعدد اللغات'}</h3>
+  <div class="row">
+   <div style="flex:1;min-width:120px">
+    <label>${en?'Translate from':'الترجمة من'}</label>
+    <select id="langFrom" onchange="setLanguagePair()">${languageOptions(from)}</select>
+   </div>
+   <button class="secondary" onclick="swapLanguages()">⇄</button>
+   <div style="flex:1;min-width:120px">
+    <label>${en?'Translate to':'الترجمة إلى'}</label>
+    <select id="langTo" onchange="setLanguagePair()">${languageOptions(to)}</select>
+   </div>
+  </div>
+  <input id="phraseSearch" oninput="filterPhrases()"
+   placeholder="${en?'Search words and phrases':'ابحث عن كلمة أو عبارة'}">
+  <div id="phraseList">${phraseHtml(phrases)}</div>
+  <small>${en?'Offline starter dictionary':'قاموس أساسي يعمل دون إنترنت'}</small>
+ </div>`;
+}
+
+function setLanguagePair(){
+ set('langFrom',$('langFrom').value);
+ set('langTo',$('langTo').value);
+ filterPhrases();
+}
+
+function swapLanguages(){
+ const from=$('langFrom').value;
+ const to=$('langTo').value;
+ $('langFrom').value=to;
+ $('langTo').value=from;
+ setLanguagePair();
+}
+
+function phraseHtml(a){
+ const from=get('langFrom','ar');
+ const to=get('langTo','en');
+ const rows=a.filter(p=>p[from] && p[to]);
+ if(!rows.length)return `<div class="itemline">${en?'No matching translations yet':'لا توجد ترجمة لهذه العبارة حاليًا'}</div>`;
+ return rows.map(p=>`
+  <div class="itemline">
+   <b>${escapeHtml(p[from])}</b>
+   <span>${escapeHtml(p[to])}</span>
+  </div>`).join('');
+}
+
+function filterPhrases(){
+ const q=$('phraseSearch').value.trim().toLowerCase();
+ const from=get('langFrom','ar');
+ const to=get('langTo','en');
+ const filtered=phrases.filter(p=>
+  Object.values(p).some(v=>String(v).toLowerCase().includes(q))
+ );
+ $('phraseList').innerHTML=phraseHtml(filtered);
+}
+function files(){return `<div class="panel"><h3>${en?'Import a text file':'استيراد ملف نصي'}</h3><input type="file" id="textFile" accept=".txt,.md,.csv,text/plain,text/markdown,text/csv"><button onclick="readTextFile()">${en?'Open file':'فتح الملف'}</button><textarea id="fileText" placeholder="${en?'File content will appear here':'سيظهر محتوى الملف هنا'}"></textarea><button onclick="downloadText()">${en?'Export text':'تصدير النص'}</button></div><div class="note">${en?'The app only reads files you choose.':'التطبيق يقرأ الملفات التي تختارها بنفسك فقط.'}</div>`}
+function readTextFile(){let f=$('textFile').files[0];if(!f)return showToast(en?'Choose a file first':'اختر ملفًا أولاً');let r=new FileReader();r.onload=()=>{$('fileText').value=r.result};r.readAsText(f)}
+function downloadText(){let b=new Blob([$('fileText').value],{type:'text/plain;charset=utf-8'});let a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='omnix-notes.txt';a.click();URL.revokeObjectURL(a.href)}
+
+function calendar(){
+ const today=new Date();
+ const fmt=new Intl.DateTimeFormat(en?'en-US':'ar-SA',{dateStyle:'full'});
+ let hijri='';
+ try{
+  hijri=new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura',{dateStyle:'full'}).format(today);
+ }catch(e){
+  hijri=en?'Hijri calendar unavailable':'التاريخ الهجري غير متاح على هذا الجهاز';
+ }
+ const personal=JSON.parse(get('personalEvents','[]'));
+ const fixed=[
+  {name:'يوم التأسيس السعودي',month:2,day:22,type:'national'},
+  {name:'اليوم الوطني السعودي',month:9,day:23,type:'national'}
+ ];
+ function nextGregorian(m,d){
+  let x=new Date(today.getFullYear(),m-1,d);
+  x.setHours(0,0,0,0);
+  if(x<new Date(today.getFullYear(),today.getMonth(),today.getDate()))x.setFullYear(x.getFullYear()+1);
+  return x;
+ }
+ function nextHijri(m,d,label){
+  try{
+   for(let i=0;i<=370;i++){
+    let x=new Date(today.getFullYear(),today.getMonth(),today.getDate()+i);
+    let parts=new Intl.DateTimeFormat('en-u-ca-islamic-umalqura',{month:'numeric',day:'numeric'}).formatToParts(x);
+    let month=Number(parts.find(p=>p.type==='month').value);
+    let day=Number(parts.find(p=>p.type==='day').value);
+    if(month===m&&day===d)return {name:label,date:x,type:'islamic'};
+   }
+  }catch(e){}
+  return null;
+ }
+ let events=[
+  ...fixed.map(e=>({...e,date:nextGregorian(e.month,e.day)})),
+  nextHijri(9,1,'بداية شهر رمضان'),
+  nextHijri(10,1,'عيد الفطر'),
+  nextHijri(12,9,'يوم عرفة'),
+  nextHijri(12,10,'عيد الأضحى'),
+  nextHijri(1,1,'رأس السنة الهجرية'),
+  nextHijri(3,12,'المولد النبوي')
+ ].filter(Boolean);
+ personal.forEach((e,i)=>{
+  let d=new Date(e.date+'T00:00:00');
+  if(!isNaN(d)&&d>=new Date(today.getFullYear(),today.getMonth(),today.getDate()))
+   events.push({name:e.name,date:d,type:'personal',index:i});
+ });
+ events.sort((a,b)=>a.date-b.date);
+ const cards=events.map(e=>{
+  let days=Math.ceil((new Date(e.date.getFullYear(),e.date.getMonth(),e.date.getDate())-new Date(today.getFullYear(),today.getMonth(),today.getDate()))/86400000);
+  let dateText=new Intl.DateTimeFormat(en?'en-US':'ar-SA',{dateStyle:'medium'}).format(e.date);
+  return `<div class="itemline"><div><b>${escapeHtml(e.name)}</b><br><small>${dateText}</small><br><span class="status">${days===0?(en?'Today':'اليوم'):(en?'In ':'بعد ')+days+(en?' days':' يوم')}</span></div>${e.type==='personal'?`<button class="danger" onclick="deleteCalendarEvent(${e.index})">×</button>`:''}</div>`;
+ }).join('');
+ return `<div class="panel">
+ <h3>${en?'Today':'تاريخ اليوم'}</h3>
+ <p>${fmt.format(today)}</p><p class="status">${hijri}</p>
+ </div>
+ <div class="panel">
+ <h3>${en?'Upcoming occasions':'المناسبات القادمة'}</h3>
+ ${cards||`<p>${en?'No upcoming occasions':'لا توجد مناسبات قادمة'}</p>`}
+ </div>
+ <div class="panel">
+ <h3>${en?'Add a personal occasion':'إضافة مناسبة شخصية'}</h3>
+ <input id="eventName" placeholder="${en?'Occasion name':'اسم المناسبة'}" maxlength="60">
+ <input id="eventDate" type="date">
+ <button onclick="addCalendarEvent()">${en?'Add occasion':'إضافة المناسبة'}</button>
+ <p class="note">${en?'Your personal occasions are saved on this device.':'مناسباتك الشخصية تُحفظ على هذا الجهاز.'}</p>
+ </div>
+ <div class="panel">
+ <h3>${en?'Notifications':'التنبيهات'}</h3>
+ <p>${en?'Allow notifications to receive a reminder when you open the calendar.':'اسمح بالإشعارات لتلقي تذكير عند فتح التقويم.'}</p>
+ <button onclick="notifyCalendar()">${en?'Enable notifications':'تفعيل الإشعارات'}</button>
+ <p class="note">${en?'Notifications are not scheduled while the app is closed yet.':'لا يتم جدولة الإشعارات حتى الآن عندما يكون التطبيق مغلقًا.'}</p>
+ </div>`;
+}
+function addCalendarEvent(){
+ let name=$('eventName').value.trim(),date=$('eventDate').value;
+ if(!name||!date)return showToast(en?'Enter a name and date':'اكتب اسم المناسبة وتاريخها');
+ let d=new Date(date+'T00:00:00');
+ if(isNaN(d)||d<new Date(new Date().getFullYear(),new Date().getMonth(),new Date().getDate()))return showToast(en?'Choose a future date':'اختر تاريخًا اليوم أو بعده');
+ let a=JSON.parse(get('personalEvents','[]'));
+ a.push({name,date});
+ set('personalEvents',JSON.stringify(a));
+ $('content').innerHTML=calendar();
+ showToast(en?'Occasion saved':'تم حفظ المناسبة');
+}
+function deleteCalendarEvent(i){
+ let a=JSON.parse(get('personalEvents','[]'));
+ a.splice(i,1);
+ set('personalEvents',JSON.stringify(a));
+ $('content').innerHTML=calendar();
+}
+async function notifyCalendar(){
+ if(!('Notification' in window))return showToast(en?'Notifications are not supported':'الإشعارات غير مدعومة على هذا الجهاز');
+ let permission=Notification.permission;
+ if(permission==='default')permission=await Notification.requestPermission();
+ if(permission!=='granted')return showToast(en?'Notification permission not granted':'لم يتم السماح بالإشعارات');
+ let a=JSON.parse(get('personalEvents','[]'));
+ let today=new Date();today.setHours(0,0,0,0);
+ let soon=a.filter(e=>{
+  let d=new Date(e.date+'T00:00:00');
+  let days=Math.ceil((d-today)/86400000);
+  return days>=0&&days<=1;
+ });
+ if(!soon.length)return showToast(en?'Notifications enabled':'تم تفعيل الإشعارات');
+ soon.forEach(e=>new Notification('OMNIX · '+e.name,{body:en?'An occasion is coming up':'اقترب موعد مناسبتك'}));
+ showToast(en?'Notifications enabled':'تم تفعيل الإشعارات');
+}
+
+function admin(){return `<div class="panel"><h3>${en?'App settings':'إعدادات التطبيق'}</h3><p>${en?'Language and local data controls.':'اللغة والتحكم في البيانات المحلية.'}</p><button onclick="toggleLang()">${en?'Switch language':'تغيير اللغة'}</button><button class="secondary" onclick="backupData()">${en?'Export backup':'تصدير نسخة احتياطية'}</button><div style="margin-top:12px"><label>${en?'Restore backup file':'استعادة نسخة احتياطية'}</label><input type="file" id="backupFile" accept="application/json,.json"><button onclick="restoreData()">${en?'Restore':'استعادة'}</button></div></div><div class="panel"><h3>${en?'About OMNIX':'حول OMNIX'}</h3><p>OMNIX · منصة للتعلم والترفيه</p><small>${en?'Version 1.8 · Data stored locally on this device.':'الإصدار 1.8 · البيانات محفوظة محليًا على هذا الجهاز.'}</small></div><div class="note">${en?'Admin panel controls this app on this device; it is not a remote server dashboard.':'لوحة الإدارة تتحكم في التطبيق على هذا الجهاز، وليست لوحة تحكم بخادم خارجي.'}</div>`}
+function backupData(){let data={};for(let i=0;i<localStorage.length;i++){let k=localStorage.key(i);if(k.startsWith('om_'))data[k]=localStorage.getItem(k)}let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download='omnix-backup.json';a.click();URL.revokeObjectURL(a.href)}
+function restoreData(){let f=$('backupFile').files[0];if(!f)return showToast(en?'Choose a backup':'اختر نسخة احتياطية');let r=new FileReader();r.onload=()=>{try{let d=JSON.parse(r.result);Object.keys(d).forEach(k=>{if(k.startsWith('om_'))localStorage.setItem(k,d[k])});showToast(en?'Backup restored':'تمت استعادة النسخة');setTimeout(()=>location.reload(),700)}catch{showToast(en?'Invalid backup file':'ملف النسخة غير صالح')}};r.readAsText(f)}
+function copyText(t){if(navigator.clipboard)navigator.clipboard.writeText(t).then(()=>showToast(en?'Copied':'تم النسخ')).catch(()=>showToast(en?'Copy unavailable':'تعذر النسخ'));else showToast(en?'Copy unavailable':'النسخ غير متاح')}
+function showToast(t){alert(t)}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+$('content').addEventListener('change',e=>{if(e.target.id==='qAudio'&&e.target.files[0]){$('audioPlayer').src=URL.createObjectURL(e.target.files[0]);$('audioPlayer').classList.remove('hidden')}});
+let secretTapCount=0,secretTapTimer=null;
+$('secretMark').addEventListener('click',()=>{secretTapCount++;clearTimeout(secretTapTimer);secretTapTimer=setTimeout(()=>secretTapCount=0,1800);if(secretTapCount>=5){secretTapCount=0;openAdminSecret()}});
+function openAdminSecret(){let pin=prompt(en?'Set or enter your local admin PIN:':'أنشئ أو أدخل رمز لوحة الإدارة المحلية:');if(pin===null||!pin.trim())return;let saved=get('adminPin');if(!saved){if(pin.trim().length<4)return alert(en?'PIN must be at least 4 characters':'يجب أن يكون الرمز 4 خانات على الأقل');set('adminPin',pin.trim());alert(en?'Local admin PIN saved':'تم حفظ رمز الإدارة على هذا الجهاز');}else if(pin.trim()!==saved){alert(en?'Incorrect PIN':'الرمز غير صحيح');return;}current='admin';$('home').classList.add('hidden');$('section').classList.remove('hidden');$('sectionTitle').textContent=en?'Hidden Admin':'لوحة الإدارة المخفية';$('content').innerHTML=admin();}
+if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}
+renderHome();
+</script>
+</body></html>
