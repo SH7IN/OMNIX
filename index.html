@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#070912">
 <meta name="description" content="NEXORA — أدواتك وتعلمك ومساعدك الذكي في مكان واحد.">
 <link rel="manifest" href="manifest.webmanifest">
-<title>NEXORA 1.8</title>
+<title>NEXORA 1.9</title>
 <style>
 :root{--bg:#070912;--panel:#111626;--panel2:#17152b;--copper:#55c8ff;--soft:#d8eaff;--muted:#9aaac4;--line:#293b61;--white:#edf4ff}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#111a30 0,#070912 42%);color:var(--white);font-family:Arial,sans-serif;min-height:100vh}
@@ -936,7 +936,7 @@ button.marble-square.marble-dark{
   <div class="mark" id="secretMark" title="NEXORA"><span>∞</span></div>
   <div class="logo">NEXORA</div>
  </div>
- <div class="header-meta">VERSION 1.8</div>
+ <div class="header-meta">VERSION 1.9</div>
 </header>
 <div class="top apple-top">
  <strong id="welcome">مرحباً بك في NEXORA</strong>
@@ -949,7 +949,7 @@ button.marble-square.marble-dark{
  <button onclick="openSection('3')" class="nav-item"><span>۞</span> القرآن الكريم</button>
  <button onclick="openSection('4')" class="nav-item"><span>▦</span> الإنتاجية</button>
  <button onclick="openSection('7')" class="nav-item"><span>✧</span> NEXORA AI</button>
- <div class="nav-caption nav-bottom-caption">NEXORA 1.8</div>
+ <div class="nav-caption nav-bottom-caption">NEXORA 1.9</div>
 </nav>
 <nav id="mobileNav" aria-label="التنقل السفلي">
  <button onclick="goHome()"><span>⌂</span>الرئيسية</button>
@@ -1638,7 +1638,7 @@ async function notifyCalendar(){
  showToast(en?'Notifications enabled':'تم تفعيل الإشعارات');
 }
 
-function admin(){return `<div class="panel"><h3>${en?'App settings':'إعدادات التطبيق'}</h3><p>${en?'Language and local data controls.':'اللغة والتحكم في البيانات المحلية.'}</p><button onclick="toggleLang()">${en?'Switch language':'تغيير اللغة'}</button><button class="secondary" onclick="backupData()">${en?'Export backup':'تصدير نسخة احتياطية'}</button><div style="margin-top:12px"><label>${en?'Restore backup file':'استعادة نسخة احتياطية'}</label><input type="file" id="backupFile" accept="application/json,.json"><button onclick="restoreData()">${en?'Restore':'استعادة'}</button></div></div><div class="panel"><h3>${en?'About NEXORA':'حول NEXORA'}</h3><p>NEXORA · منصة للتعلم والترفيه</p><small>${en?'Version 1.8 · Data stored locally on this device.':'الإصدار 1.8 · البيانات محفوظة محليًا على هذا الجهاز.'}</small></div><div class="note">${en?'Admin panel controls this app on this device; it is not a remote server dashboard.':'لوحة الإدارة تتحكم في التطبيق على هذا الجهاز، وليست لوحة تحكم بخادم خارجي.'}</div>`}
+function admin(){return `<div class="panel"><h3>${en?'App settings':'إعدادات التطبيق'}</h3><p>${en?'Language and local data controls.':'اللغة والتحكم في البيانات المحلية.'}</p><button onclick="toggleLang()">${en?'Switch language':'تغيير اللغة'}</button><button class="secondary" onclick="backupData()">${en?'Export backup':'تصدير نسخة احتياطية'}</button><div style="margin-top:12px"><label>${en?'Restore backup file':'استعادة نسخة احتياطية'}</label><input type="file" id="backupFile" accept="application/json,.json"><button onclick="restoreData()">${en?'Restore':'استعادة'}</button></div></div><div class="panel"><h3>${en?'About NEXORA':'حول NEXORA'}</h3><p>NEXORA · منصة للتعلم والترفيه</p><small>${en?'Version 1.9 · Data stored locally on this device.':'الإصدار 1.9 · البيانات محفوظة محليًا على هذا الجهاز.'}</small></div><div class="note">${en?'Admin panel controls this app on this device; it is not a remote server dashboard.':'لوحة الإدارة تتحكم في التطبيق على هذا الجهاز، وليست لوحة تحكم بخادم خارجي.'}</div>`}
 function backupData(){let data={};for(let i=0;i<localStorage.length;i++){let k=localStorage.key(i);if(k.startsWith('om_'))data[k]=localStorage.getItem(k)}let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download='omnix-backup.json';a.click();URL.revokeObjectURL(a.href)}
 function restoreData(){let f=$('backupFile').files[0];if(!f)return showToast(en?'Choose a backup':'اختر نسخة احتياطية');let r=new FileReader();r.onload=()=>{try{let d=JSON.parse(r.result);Object.keys(d).forEach(k=>{if(k.startsWith('om_'))localStorage.setItem(k,d[k])});showToast(en?'Backup restored':'تمت استعادة النسخة');setTimeout(()=>location.reload(),700)}catch{showToast(en?'Invalid backup file':'ملف النسخة غير صالح')}};r.readAsText(f)}
 function copyText(t){if(navigator.clipboard)navigator.clipboard.writeText(t).then(()=>showToast(en?'Copied':'تم النسخ')).catch(()=>showToast(en?'Copy unavailable':'تعذر النسخ'));else showToast(en?'Copy unavailable':'النسخ غير متاح')}
