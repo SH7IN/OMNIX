@@ -693,6 +693,241 @@ body{background:radial-gradient(ellipse at 50% -18%,#123653,transparent 43%),rad
  .hud-core,.hud-node,.command-center:before{animation:none!important}
 }
 
+
+/* CHESS SQUARE COLORS — OVERRIDE GLOBAL BUTTON STYLE */
+button.marble-square.marble-light {
+  background-color: #c49a60 !important;
+  background-image: linear-gradient(135deg,#e3bd83,#936b3e) !important;
+}
+button.marble-square.marble-dark {
+  background-color: #171717 !important;
+  background-image: linear-gradient(135deg,#303030,#090909) !important;
+}
+
+
+/* OMNIX COPPER GLASS — FINAL UI */
+:root{
+ --bg:#08090b;
+ --panel:#151311;
+ --panel2:#201a14;
+ --copper:#c49a60;
+ --soft:#f5eee5;
+ --muted:#b9aa98;
+ --line:#765a39;
+ --white:#faf6ef;
+ --violet:#b58a62;
+ --blue:#c49a60;
+}
+html{scroll-behavior:smooth}
+body{
+ background:
+ radial-gradient(ellipse at 50% -15%,#50351f55,transparent 48%),
+ radial-gradient(circle at 90% 35%,#9b6b3212,transparent 35%),
+ linear-gradient(145deg,#08090b,#100e0b 65%,#08090b)!important;
+ color:var(--white)!important;
+}
+.apple-header{
+ background:#0b0a09eF!important;
+ border-bottom:1px solid #c49a6038!important;
+ box-shadow:0 8px 35px #0009!important;
+ backdrop-filter:blur(24px);
+}
+.apple-header .mark{
+ border:1px solid #c49a60!important;
+ background:linear-gradient(145deg,#382719,#17120e)!important;
+ color:#f4d7a8!important;
+ box-shadow:0 0 22px #c49a6030,inset 0 0 15px #c49a6018!important;
+}
+.apple-header .logo{
+ color:#f5e6d0!important;
+ text-shadow:0 0 18px #c49a6033!important;
+}
+.header-meta,.sub{color:#b49a79!important}
+#appleNav{
+ background:#100e0ceF!important;
+ border:1px solid #c49a6033!important;
+ box-shadow:0 12px 35px #0009,0 0 25px #c49a600b!important;
+ backdrop-filter:blur(24px);
+}
+.nav-caption{color:#a68b68!important}
+.nav-item{color:#c9bba9!important}
+.nav-item span{color:#c49a60!important}
+.nav-item:hover,.nav-item.active{
+ background:linear-gradient(100deg,#c49a6022,#c49a6008)!important;
+ box-shadow:inset -2px 0 #c49a60!important;
+ color:#fff5e8!important;
+}
+#mobileNav{
+ background:#100e0cf2!important;
+ border:1px solid #c49a6040!important;
+ box-shadow:0 -8px 30px #0009!important;
+ backdrop-filter:blur(25px);
+}
+#mobileNav button{
+ background:transparent!important;
+ border:0!important;
+ color:#c9bba9!important;
+}
+#mobileNav button span{color:#c49a60!important}
+.panel,.tile{
+ background:linear-gradient(145deg,#211b15ed,#12110ff5)!important;
+ border:1px solid #c49a6030!important;
+ border-radius:20px!important;
+ box-shadow:0 10px 30px #0007,inset 0 1px #ffffff0b!important;
+ backdrop-filter:blur(20px);
+}
+#home>.panel:first-child,#commandCenter,#home .tile{
+ background:linear-gradient(145deg,#251c13,#11100e)!important;
+ border:1px solid #c49a6045!important;
+ box-shadow:0 10px 35px #0009,inset 0 1px #f5dfbd12,0 0 22px #c49a6009!important;
+}
+#home>.panel:first-child:after{
+ border-color:#c49a6030!important;
+ box-shadow:0 0 0 18px #c49a6008,0 0 0 38px #c49a6005!important;
+}
+h2,h3,#heroTitle{color:#f1dfc5!important}
+#heroText,.panel p{color:#b9aa98!important}
+.tile{
+ color:#f5eee5!important;
+ border-color:#765a394d!important;
+}
+.tile .ico{
+ color:#d6ad75!important;
+ text-shadow:0 0 15px #c49a6040!important;
+}
+.tile:hover{
+ transform:translateY(-3px);
+ border-color:#c49a60!important;
+ box-shadow:0 12px 30px #c49a6018!important;
+}
+button,.btn{
+ background:linear-gradient(135deg,#3a2b1cdd,#19140fee)!important;
+ border:1px solid #c49a6066!important;
+ color:#f5e8d5!important;
+ border-radius:13px!important;
+ box-shadow:inset 0 1px #ffffff12,0 4px 14px #0004;
+ backdrop-filter:blur(12px);
+ transition:transform .18s,filter .18s,border-color .18s,box-shadow .18s;
+}
+button:hover,.btn:hover{
+ filter:brightness(1.15);
+ border-color:#e2bd83!important;
+ box-shadow:0 0 18px #c49a6022,inset 0 1px #ffffff20;
+}
+button:active,.btn:active{transform:scale(.98)}
+button.secondary{
+ background:linear-gradient(135deg,#24201b,#12110f)!important;
+ border-color:#806849!important;
+ color:#eadbc7!important;
+}
+button.danger{
+ background:linear-gradient(135deg,#3b1e1c,#1b1110)!important;
+ border-color:#a65c4e!important;
+ color:#ffd0c4!important;
+}
+input,textarea,select{
+ background:#100e0cf2!important;
+ border:1px solid #765a3966!important;
+ color:#f5eee5!important;
+ border-radius:12px!important;
+}
+input:focus,textarea:focus,select:focus{
+ outline:2px solid #c49a6044!important;
+ border-color:#c49a60!important;
+}
+::placeholder{color:#887967!important}
+.status,.big,.cc-number{color:#d7ad73!important}
+.cc-stat{
+ background:linear-gradient(145deg,#2a2118,#15120f)!important;
+ border:1px solid #c49a6038!important;
+ box-shadow:inset 0 1px #ffffff0b,0 5px 15px #0005!important;
+}
+.cc-stat:before{
+ background:linear-gradient(90deg,transparent,#c49a60,transparent)!important;
+ box-shadow:0 0 9px #c49a6055!important;
+}
+.cc-heading h3{color:#f1dfc5!important}
+.cc-label,.cc-quiz{color:#bba17e!important}
+.command-center{
+ border-color:#c49a6045!important;
+ box-shadow:0 0 24px #c49a6010,inset 0 0 28px #c49a6008!important;
+}
+.command-center:after{
+ background:linear-gradient(90deg,transparent,#c49a60,#f1d4a3,transparent)!important;
+ box-shadow:0 0 12px #c49a60!important;
+}
+#commandCenter:before,.command-center:before{
+ background:linear-gradient(115deg,transparent 20%,#c49a600d 48%,transparent 75%)!important;
+}
+.future-hud{border-bottom-color:#c49a6033!important}
+.hud-visual{filter:drop-shadow(0 0 18px #c49a6025)!important}
+.hud-ring{
+ border-color:#c49a6080!important;
+ box-shadow:0 0 18px #c49a6020,inset 0 0 18px #c49a6012!important;
+}
+.ring-two{border-color:#e0bd8b99!important}
+.ring-three{border-color:#c49a6066!important}
+.hud-core{
+ color:#f8e4c5!important;
+ background:radial-gradient(circle at 35% 30%,#c49a60,#54391f 55%,#100d09 78%)!important;
+ border-color:#e1bd8b!important;
+ box-shadow:0 0 25px #c49a6055,inset 0 0 20px #f1d4a322!important;
+ text-shadow:0 0 15px #f1d4a3!important;
+}
+.hud-node{background:#f0cf9a!important;box-shadow:0 0 12px 3px #c49a6099!important}
+.node-two{background:#b58a62!important;box-shadow:0 0 12px 3px #b58a6299!important}
+.hud-kicker,.hud-wave{color:#d6ad75!important;text-shadow:0 0 12px #c49a6044!important}
+.hud-readout strong{color:#f5e8d5!important;text-shadow:0 0 18px #c49a6033!important}
+.hud-state{color:#a8c99b!important}
+.hud-state i{background:#a8c99b!important}
+.chat-log{
+ background:#100e0c!important;
+ border-color:#765a3966!important;
+}
+.chat-msg.user{
+ background:#38291b!important;
+ border-color:#a47b4b!important;
+}
+.chat-msg.bot{
+ background:#1d1914!important;
+ border-color:#765a39!important;
+}
+.note{
+ background:#211a13!important;
+ border:1px solid #765a3933;
+ color:#c8b69e!important;
+}
+.itemline{border-color:#765a3933!important}
+footer{color:#9b8467!important}
+#chessStatus{
+ border-color:#c49a6066!important;
+ background:linear-gradient(110deg,#ffffff08,#c49a6018)!important;
+}
+#chessMoves{
+ background:#15120f!important;
+ border-color:#c49a6055!important;
+ color:#e2cba9!important;
+}
+#chessPromotion button{
+ border-color:#c49a60!important;
+ background:linear-gradient(135deg,#342719,#17130f)!important;
+ color:#f5dfb5!important;
+}
+button.marble-square.marble-light{
+ background-color:#c49a60!important;
+ background-image:linear-gradient(135deg,#e3bd83,#936b3e)!important;
+}
+button.marble-square.marble-dark{
+ background-color:#171717!important;
+ background-image:linear-gradient(135deg,#303030,#090909)!important;
+}
+@media(max-width:899px){
+ #mobileNav{border-radius:20px 20px 12px 12px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ *,*:before,*:after{animation:none!important;transition:none!important}
+}
+
 </style>
 </head>
 <body>
