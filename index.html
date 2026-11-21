@@ -928,7 +928,36 @@ button.marble-square.marble-dark{
  *,*:before,*:after{animation:none!important;transition:none!important}
 }
 
+
+/* NEXORA LOCAL ACCOUNTS */
+.account-card{background:linear-gradient(145deg,#251c13ed,#12110ff5);border:1px solid #c49a6040;border-radius:20px;padding:20px;margin-bottom:14px;box-shadow:0 10px 30px #0007}
+.account-avatar{width:76px;height:76px;border-radius:24px;border:1px solid #c49a6070;background:#21180f;display:grid;place-items:center;font-size:38px;margin:0 auto 12px}
+.account-title{text-align:center;color:#f2d7ad;font-size:19px;margin:8px 0}
+.account-muted{text-align:center;color:#b49a79;font-size:12px;line-height:1.8}
+.account-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:15px 0}
+.account-stat{background:#ffffff08;border:1px solid #c49a6025;border-radius:14px;padding:13px;text-align:center}
+.account-stat strong{display:block;color:#e3b77d;font-size:23px;margin-bottom:5px}
+.account-stat span{font-size:11px;color:#b49a79}
+.account-form{margin-top:14px}
+.account-form button{width:100%;margin-top:5px}
+.account-note{font-size:11px;line-height:1.8;color:#b49a79;background:#ffffff08;border-radius:12px;padding:12px;margin-top:12px}
+.account-achievement{padding:9px;border-bottom:1px solid #c49a6022;color:#e5d2b8;font-size:13px}
+
+
+/* Account navigation label alignment */
+#accountNavLabel{
+ width:auto!important;
+ font-size:13px!important;
+ color:inherit!important;
+}
+#mobileAccountNavLabel{
+ width:auto!important;
+ font-size:10px!important;
+ color:inherit!important;
+}
+
 </style>
+<link rel="stylesheet" href="./nexora-hidden-room.css">
 </head>
 <body>
 <header class="apple-header">
@@ -949,6 +978,7 @@ button.marble-square.marble-dark{
  <button onclick="openSection('3')" class="nav-item"><span>۞</span> القرآن الكريم</button>
  <button onclick="openSection('4')" class="nav-item"><span>▦</span> الإنتاجية</button>
  <button onclick="openSection('7')" class="nav-item"><span>✧</span> NEXORA AI</button>
+ <button class="nav-item" onclick="openAccount()"><span>♙</span> <span id="accountNavLabel">حسابي</span></button>
  <div class="nav-caption nav-bottom-caption">NEXORA 1.9</div>
 </nav>
 <nav id="mobileNav" aria-label="التنقل السفلي">
@@ -957,6 +987,7 @@ button.marble-square.marble-dark{
  <button onclick="openSection('3')"><span>۞</span>القرآن</button>
  <button onclick="openSection('4')"><span>▦</span>المهام</button>
  <button onclick="openSection('7')"><span>✧</span>AI</button>
+ <button onclick="openAccount()"><span>♙</span><span id="mobileAccountNavLabel">حسابي</span></button>
 </nav>
 <main>
 <section id="home">
@@ -1041,10 +1072,12 @@ function renderDashboard(){
  `;
 }
 
-function toggleLang(){en=!en;localStorage.setItem('omnixLang',en?'en':'ar');renderHome();if(current)openSection(current)}
+function toggleLang(){en=!en;localStorage.setItem('omnixLang',en?'en':'ar');renderHome();if(current && current!=='hiddenRoom')openSection(current)}
 function renderHome(){
  document.documentElement.lang=en?'en':'ar';document.documentElement.dir=en?'ltr':'rtl';
  $('welcome').textContent=en?'Welcome to NEXORA':'مرحباً بك في NEXORA';
+ $('accountNavLabel').textContent=en?'My Account':'حسابي';
+ $('mobileAccountNavLabel').textContent=en?'Account':'حسابي';
  $('langBtn').textContent=en?'العربية':'English';
  $('heroTitle').textContent=en?'Everything in one place':'كل ما تحتاجه في مكان واحد';
  $('heroText').textContent=en?'Learning, entertainment and daily tools.':'التعليم والترفيه والأدوات اليومية.';
@@ -1340,6 +1373,7 @@ function quizDraw(){
  if(!cat)return quizCategoryScreen();
  const total=cat.questions.length;
  if(quizState.index>=total){
+  rewardQuizCompletion(quizState.category);
   area.innerHTML=`<div class="panel" style="text-align:center">
    <h3>🏆 ${en?'Challenge completed!':'أكملت التحدي!'}</h3>
    <div style="font-size:48px;margin:15px">⭐</div>
@@ -1374,6 +1408,22 @@ function quizDraw(){
  </div>`;
 }
 
+function rewardQuizAccountPoints(category,questionIndex){
+ const account=activeLocalAccount();
+ if(!account)return;
+ const storageKey='quizRewards_'+account.id;
+ let rewarded=[];
+ try{
+  const saved=JSON.parse(get(storageKey,'[]'));
+  if(Array.isArray(saved))rewarded=saved;
+ }catch{}
+ const token=category+':'+questionIndex;
+ if(rewarded.includes(token))return;
+ rewarded.push(token);
+ set(storageKey,JSON.stringify(rewarded));
+ addAccountPoints(10);
+}
+
 function quizAnswer(choice){
  if(quizState.answered)return;
  const cat=window.OMNIX_QUIZ[quizState.category];
@@ -1381,7 +1431,10 @@ function quizAnswer(choice){
  if(!q||!Array.isArray(q.a)||q.a.length!==3||!Number.isInteger(q.c)||q.c<0||q.c>2)return;
  quizState.answered=true;
  const correct=choice===q.c;
- if(correct)quizState.score++;
+ if(correct){
+  quizState.score++;
+  rewardQuizAccountPoints(quizState.category,quizState.index);
+ }
  quizSave();
  q.a.forEach((_,i)=>{
   const b=$('quizOption'+i);
@@ -1668,6 +1721,162 @@ async function notifyCalendar(){
  }
 }
 
+
+/* NEXORA LOCAL ACCOUNT SYSTEM */
+function readLocalAccounts(){
+ try{
+  const a=JSON.parse(get('accounts','[]'));
+  return Array.isArray(a)?a:[];
+ }catch{return []}
+}
+function saveLocalAccounts(a){set('accounts',JSON.stringify(a))}
+function activeLocalAccount(){
+ const id=get('activeAccount','');
+ if(!id||id==='guest')return null;
+ return readLocalAccounts().find(a=>a.id===id)||null;
+}
+function openAccount(){
+ current='account';
+ $('home').classList.add('hidden');
+ $('section').classList.remove('hidden');
+ $('sectionTitle').textContent=en?'My Account':'حسابي';
+ $('content').innerHTML=accountPage();
+}
+function accountPage(){
+ const a=activeLocalAccount();
+ if(a){
+  const achievements=Array.isArray(a.achievements)?a.achievements:[];
+  return `<div class="account-card">
+   <div class="account-avatar">${escapeHtml(a.avatar||'👤')}</div>
+   <h3 class="account-title">${escapeHtml(a.name)}</h3>
+   <p class="account-muted">${en?'Your local NEXORA profile':'ملفك الشخصي المحلي في NEXORA'}</p>
+   <div class="account-stats">
+    <div class="account-stat"><strong>${Number(a.points)||0}</strong><span>${en?'Points':'النقاط'}</span></div>
+    <div class="account-stat"><strong>${achievements.length}</strong><span>${en?'Achievements':'الإنجازات'}</span></div>
+   </div>
+   <h3>${en?'Achievements':'الإنجازات'}</h3>
+   ${achievements.length?achievements.map(x=>`<div class="account-achievement">✦ ${escapeHtml(x)}</div>`).join(''):`<p class="account-muted">${en?'Your achievements will appear here.':'ستظهر إنجازاتك هنا عند إضافتها.'}</p>`}
+   <button class="secondary" style="width:100%;margin-top:16px" onclick="logoutLocalAccount()">${en?'Log out':'تسجيل الخروج'}</button>
+  </div>
+  <div class="account-note">${en?'This profile and its points are stored on this device only.':'هذا الملف ونقاطه محفوظة على هذا الجهاز فقط.'}</div>`;
+ }
+ if(get('activeAccount','')==='guest'){
+  return `<div class="account-card">
+   <div class="account-avatar">👤</div>
+   <h3 class="account-title">${en?'Guest mode':'وضع الزائر'}</h3>
+   <p class="account-muted">${en?'You are using NEXORA as a guest.':'أنت تستخدم NEXORA كزائر.'}</p>
+   <button onclick="logoutLocalAccount()">${en?'Switch profile':'تغيير الحساب'}</button>
+  </div>`;
+ }
+ const accounts=readLocalAccounts();
+ return `<div class="account-card">
+  <div class="account-avatar">✦</div>
+  <h3 class="account-title">${en?'Welcome to NEXORA':'مرحبًا بك في NEXORA'}</h3>
+  <p class="account-muted">${en?'Create a local profile or log in.':'أنشئ ملفًا شخصيًا محليًا أو سجّل الدخول.'}</p>
+  <div class="account-form">
+   <h3>${en?'Create profile':'إنشاء حساب محلي'}</h3>
+   <form onsubmit="createLocalAccount(event)">
+    <label>${en?'Display name':'الاسم الظاهر'}</label>
+    <input id="newAccountName" maxlength="20" required placeholder="${en?'Your name':'اكتب اسمك'}">
+    <label>${en?'Choose avatar':'اختر الصورة الرمزية'}</label>
+    <select id="newAccountAvatar">
+     <option>👤</option><option>⭐</option><option>🚀</option><option>🦊</option><option>🐼</option><option>🎮</option><option>🌙</option>
+    </select>
+    <label>${en?'Password (6 characters minimum)':'كلمة المرور (6 أحرف على الأقل)'}</label>
+    <input id="newAccountPassword" type="password" minlength="6" required autocomplete="new-password">
+    <button type="submit">${en?'Create profile':'إنشاء الحساب'}</button>
+   </form>
+  </div>
+  <div class="account-form">
+   <h3>${en?'Log in':'تسجيل الدخول'}</h3>
+   ${accounts.length?`<form onsubmit="loginLocalAccount(event)">
+    <label>${en?'Choose profile':'اختر الحساب'}</label>
+    <select id="loginAccount">${accounts.map(x=>`<option value="${escapeHtml(x.id)}">${escapeHtml(x.name)}</option>`).join('')}</select>
+    <label>${en?'Password':'كلمة المرور'}</label>
+    <input id="loginAccountPassword" type="password" required autocomplete="current-password">
+    <button type="submit" class="secondary">${en?'Log in':'دخول'}</button>
+   </form>`:`<p class="account-muted">${en?'No profiles created yet.':'لا توجد حسابات حتى الآن.'}</p>`}
+  </div>
+  <button class="secondary" style="width:100%;margin-top:14px" onclick="continueAsGuest()">${en?'Continue as guest':'الدخول كزائر'}</button>
+  <div class="account-note">${en?'Local profiles work only in this app on this device. They are not online accounts and do not sync to other devices.':'الحسابات محلية وتعمل داخل التطبيق على هذا الجهاز فقط، وليست حسابات إنترنت ولا تتزامن مع أجهزة أخرى.'}</div>
+ </div>`;
+}
+async function deriveLocalPassword(password,salt){
+ const key=await crypto.subtle.importKey('raw',new TextEncoder().encode(password),'PBKDF2',false,['deriveBits']);
+ const bits=await crypto.subtle.deriveBits({name:'PBKDF2',salt,iterations:120000,hash:'SHA-256'},key,256);
+ return Array.from(new Uint8Array(bits),b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function createLocalAccount(event){
+ event.preventDefault();
+ const name=$('newAccountName').value.trim();
+ const password=$('newAccountPassword').value;
+ const avatar=$('newAccountAvatar').value;
+ if(name.length<2)return showToast(en?'Name is too short':'الاسم قصير جدًا');
+ if(password.length<6)return showToast(en?'Password must be at least 6 characters':'كلمة المرور يجب ألا تقل عن 6 أحرف');
+ if(!crypto.subtle)return showToast(en?'Secure password storage is unavailable in this app context.':'تخزين كلمة المرور بطريقة مشتقة آمنة غير متاح في بيئة التطبيق الحالية.');
+ const accounts=readLocalAccounts();
+ if(accounts.some(a=>a.name.toLowerCase()===name.toLowerCase()))return showToast(en?'This name is already used':'هذا الاسم مستخدم بالفعل');
+ try{
+  const salt=crypto.getRandomValues(new Uint8Array(16));
+  const hash=await deriveLocalPassword(password,salt);
+  const id='local-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8);
+  const saltText=btoa(String.fromCharCode(...salt));
+  accounts.push({id,name,avatar,salt:saltText,hash,points:0,achievements:[],createdAt:new Date().toISOString()});
+  saveLocalAccounts(accounts);
+  set('activeAccount',id);
+  openAccount();
+  showToast(en?'Profile created':'تم إنشاء الحساب');
+ }catch(error){console.error(error);showToast(en?'Could not create profile':'تعذر إنشاء الحساب');}
+}
+async function loginLocalAccount(event){
+ event.preventDefault();
+ const id=$('loginAccount').value;
+ const password=$('loginAccountPassword').value;
+ const account=readLocalAccounts().find(a=>a.id===id);
+ if(!account)return showToast(en?'Profile not found':'الحساب غير موجود');
+ try{
+  const salt=Uint8Array.from(atob(account.salt),c=>c.charCodeAt(0));
+  const hash=await deriveLocalPassword(password,salt);
+  if(hash!==account.hash)return showToast(en?'Incorrect password':'كلمة المرور غير صحيحة');
+  set('activeAccount',account.id);
+  openAccount();
+  showToast(en?'Welcome back':'مرحبًا بعودتك');
+ }catch(error){console.error(error);showToast(en?'Could not log in':'تعذر تسجيل الدخول');}
+}
+function continueAsGuest(){set('activeAccount','guest');openAccount()}
+function logoutLocalAccount(){set('activeAccount','');openAccount()}
+function achievementLabel(id){
+ const labels={
+  quiz_complete_anime:en?'Anime challenge completed':'إكمال تحدي الأنمي',
+  quiz_complete_series:en?'Series challenge completed':'إكمال تحدي المسلسلات',
+  quiz_complete_movies:en?'Movies challenge completed':'إكمال تحدي الأفلام'
+ };
+ return labels[id]||id;
+}
+
+function rewardQuizCompletion(category){
+ const account=activeLocalAccount();
+ if(!account)return;
+ const allowed=['anime','series','movies'];
+ if(!allowed.includes(category))return;
+ addAccountPoints(0,'quiz_complete_'+category);
+}
+
+function addAccountPoints(amount,achievement){
+ const a=activeLocalAccount();
+ if(!a||!Number.isFinite(Number(amount)))return;
+ const accounts=readLocalAccounts();
+ const item=accounts.find(x=>x.id===a.id);
+ if(!item)return;
+ item.points=Math.max(0,(Number(item.points)||0)+Number(amount));
+ if(achievement){
+  if(!Array.isArray(item.achievements))item.achievements=[];
+  if(!item.achievements.includes(achievement))item.achievements.push(achievement);
+ }
+ saveLocalAccounts(accounts);
+ if(current==='account')openAccount();
+}
+
 function admin(){return `<div class="panel"><h3>${en?'App settings':'إعدادات التطبيق'}</h3><p>${en?'Language and local data controls.':'اللغة والتحكم في البيانات المحلية.'}</p><button onclick="toggleLang()">${en?'Switch language':'تغيير اللغة'}</button><button class="secondary" onclick="backupData()">${en?'Export backup':'تصدير نسخة احتياطية'}</button><div style="margin-top:12px"><label>${en?'Restore backup file':'استعادة نسخة احتياطية'}</label><input type="file" id="backupFile" accept="application/json,.json"><button onclick="restoreData()">${en?'Restore':'استعادة'}</button></div></div><div class="panel"><h3>${en?'About NEXORA':'حول NEXORA'}</h3><p>NEXORA · منصة للتعلم والترفيه</p><small>${en?'Version 1.9 · Data stored locally on this device.':'الإصدار 1.9 · البيانات محفوظة محليًا على هذا الجهاز.'}</small></div><div class="note">${en?'Admin panel controls this app on this device; it is not a remote server dashboard.':'لوحة الإدارة تتحكم في التطبيق على هذا الجهاز، وليست لوحة تحكم بخادم خارجي.'}</div>`}
 function backupData(){let data={};for(let i=0;i<localStorage.length;i++){let k=localStorage.key(i);if(k.startsWith('om_'))data[k]=localStorage.getItem(k)}let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download='omnix-backup.json';a.click();URL.revokeObjectURL(a.href)}
 function restoreData(){let f=$('backupFile').files[0];if(!f)return showToast(en?'Choose a backup':'اختر نسخة احتياطية');let r=new FileReader();r.onload=()=>{try{let d=JSON.parse(r.result);Object.keys(d).forEach(k=>{if(k.startsWith('om_'))localStorage.setItem(k,d[k])});showToast(en?'Backup restored':'تمت استعادة النسخة');setTimeout(()=>location.reload(),700)}catch{showToast(en?'Invalid backup file':'ملف النسخة غير صالح')}};r.readAsText(f)}
@@ -1681,4 +1890,5 @@ function openAdminSecret(){let pin=prompt(en?'Set or enter your local admin PIN:
 if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}
 renderHome();
 </script>
+<script src="./nexora-hidden-room.js"></script>
 </body></html>

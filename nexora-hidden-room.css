@@ -1,0 +1,64 @@
+#nexoraHiddenOverlay{
+ position:fixed;inset:0;z-index:99999;
+ display:grid;place-items:center;padding:20px;
+ background:rgba(3,4,6,.94);backdrop-filter:blur(18px);
+}
+.nh-modal{
+ width:min(100%,390px);padding:26px;
+ border:1px solid #bd8b553d;border-radius:24px;
+ background:linear-gradient(145deg,#171513,#08090b);
+ box-shadow:0 25px 90px #000b;color:#f5eee5;
+ text-align:center;
+}
+.nh-symbol{font-size:43px;color:#c99a65;margin-bottom:8px}
+.nh-modal h2,.nh-title{color:#d5a16c;letter-spacing:2px}
+.nh-modal p,.nh-muted{color:#a99b8b;font-size:12px;line-height:1.8}
+.nh-modal input{
+ width:100%;padding:14px;margin:8px 0;
+ color:#fff;background:#ffffff0a;border:1px solid #bd8b5545;
+ border-radius:12px;outline:none;
+}
+.nh-btn{
+ padding:12px 16px;border:1px solid #bd8b5560;
+ border-radius:12px;background:#b7834b;color:#100d09;
+ font-weight:bold;cursor:pointer;
+}
+.nh-btn.secondary{background:#ffffff09;color:#e7d3b8}
+.nh-actions{display:flex;gap:9px;flex-wrap:wrap;margin:14px 0}
+.nh-actions button{flex:1;min-width:90px}
+.nh-player{
+ padding:20px;border:1px solid #bd8b5540;
+ border-radius:20px;background:linear-gradient(145deg,#211b15,#0c0d0f);
+ text-align:center;margin:15px 0;
+}
+.nh-disc{
+ width:110px;height:110px;border-radius:50%;
+ margin:10px auto 18px;display:grid;place-items:center;
+ border:5px solid #a978453d;
+ background:radial-gradient(circle,#d1a06a 0 9%,#171310 11% 35%,#9b693c 37%,#171310 40%);
+ box-shadow:0 0 35px #bd8b5520;
+ animation:nhSpin 9s linear infinite;
+}
+.nh-disc.paused{animation-play-state:paused}
+@keyframes nhSpin{to{transform:rotate(360deg)}}
+.nh-player audio{width:100%;margin-top:12px}
+.nh-track{
+ display:flex;align-items:center;gap:9px;padding:12px;
+ border-bottom:1px solid #bd8b5520;
+}
+.nh-track-name{flex:1;min-width:0;overflow-wrap:anywhere;font-size:13px}
+.nh-track button{
+ background:#ffffff0a;color:#e5c59e;
+ border:1px solid #bd8b5535;border-radius:9px;padding:8px;
+}
+.nh-track button:active,.nh-btn:active{transform:scale(.97)}
+.nh-section{
+ border:1px solid #bd8b552b;border-radius:17px;
+ padding:15px;margin:13px 0;background:#ffffff05;
+}
+.nh-file{display:block;text-align:center;padding:15px;border:1px dashed #bd8b5570;border-radius:14px;color:#d5a16c;cursor:pointer}
+.nh-file input{display:none}
+.nh-error{color:#ff9b88;font-size:12px;min-height:20px}
+.nh-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.nh-empty{text-align:center;padding:25px;color:#a99b8b;font-size:13px}
+@media(prefers-reduced-motion:reduce){.nh-disc{animation:none}}

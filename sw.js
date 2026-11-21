@@ -1,4 +1,4 @@
-const CACHE = 'omnix-v1-10';
+const CACHE = 'omnix-v1-11';
 const FILES = [
   './',
   './index.html',
@@ -9,7 +9,9 @@ const FILES = [
   './dictionary-data.js',
   './dictionary-extra.js',
   './chess-engine.js',
-  './quiz-data.js'
+  './quiz-data.js',
+  './nexora-hidden-room.css',
+  './nexora-hidden-room.js'
 ];
 
 self.addEventListener('install', event => {
