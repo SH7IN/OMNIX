@@ -50,17 +50,17 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: NEXORA-1.8-APK
+          name: NEXORA-1.9-APK
           path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
 
       - name: Prepare release APK
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk NEXORA-1.8.apk
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk NEXORA-1.9.apk
 
       - name: Publish APK release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: nexora-1.8-${{ github.run_number }}
-          name: NEXORA 1.8 Build ${{ github.run_number }}
-          files: NEXORA-1.8.apk
+          tag_name: nexora-1.9-${{ github.run_number }}
+          name: NEXORA 1.9 Build ${{ github.run_number }}
+          files: NEXORA-1.9.apk
           make_latest: true

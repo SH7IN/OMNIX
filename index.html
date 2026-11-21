@@ -977,6 +977,7 @@ button.marble-square.marble-dark{
 <script src="./dictionary-extra.js"></script>
 <script src="./chess-engine.js"></script>
 <script src="./quiz-data.js"></script>
+<script src="./nexora-notifications.js"></script>
 <script>
 const $=id=>document.getElementById(id);
 let en=localStorage.getItem('omnixLang')==='en', current='';
@@ -1599,9 +1600,9 @@ function calendar(){
  </div>
  <div class="panel">
  <h3>${en?'Notifications':'التنبيهات'}</h3>
- <p>${en?'Allow notifications to receive a reminder when you open the calendar.':'اسمح بالإشعارات لتلقي تذكير عند فتح التقويم.'}</p>
+ <p>${en?'Receive a local reminder at 9 AM on the day before each occasion.':'استقبل تذكيرًا الساعة 9 صباحًا في اليوم السابق لكل مناسبة.'}</p>
  <button onclick="notifyCalendar()">${en?'Enable notifications':'تفعيل الإشعارات'}</button>
- <p class="note">${en?'Notifications are not scheduled while the app is closed yet.':'لا يتم جدولة الإشعارات حتى الآن عندما يكون التطبيق مغلقًا.'}</p>
+ <p class="note">${en?'Reminders are scheduled on this device.':'تُجدول التذكيرات على هذا الجهاز وتعمل عند إغلاق التطبيق.'}</p>
  </div>`;
 }
 function addCalendarEvent(){
@@ -1612,6 +1613,7 @@ function addCalendarEvent(){
  let a=JSON.parse(get('personalEvents','[]'));
  a.push({name,date});
  set('personalEvents',JSON.stringify(a));
+ if(get('notificationsEnabled')==='true')syncCalendarNotifications();
  $('content').innerHTML=calendar();
  showToast(en?'Occasion saved':'تم حفظ المناسبة');
 }
@@ -1619,23 +1621,51 @@ function deleteCalendarEvent(i){
  let a=JSON.parse(get('personalEvents','[]'));
  a.splice(i,1);
  set('personalEvents',JSON.stringify(a));
+ if(get('notificationsEnabled')==='true')syncCalendarNotifications();
  $('content').innerHTML=calendar();
 }
+async function syncCalendarNotifications(){
+ if(get('notificationsEnabled')!=='true')return;
+ try{
+  const events=JSON.parse(get('personalEvents','[]'));
+  return await window.NexoraNotifications.sync(events,en);
+ }catch(error){
+  console.error('NEXORA notification sync failed:',error);
+ }
+}
+
 async function notifyCalendar(){
- if(!('Notification' in window))return showToast(en?'Notifications are not supported':'الإشعارات غير مدعومة على هذا الجهاز');
- let permission=Notification.permission;
- if(permission==='default')permission=await Notification.requestPermission();
- if(permission!=='granted')return showToast(en?'Notification permission not granted':'لم يتم السماح بالإشعارات');
- let a=JSON.parse(get('personalEvents','[]'));
- let today=new Date();today.setHours(0,0,0,0);
- let soon=a.filter(e=>{
-  let d=new Date(e.date+'T00:00:00');
-  let days=Math.ceil((d-today)/86400000);
-  return days>=0&&days<=1;
- });
- if(!soon.length)return showToast(en?'Notifications enabled':'تم تفعيل الإشعارات');
- soon.forEach(e=>new Notification('NEXORA · '+e.name,{body:en?'An occasion is coming up':'اقترب موعد مناسبتك'}));
- showToast(en?'Notifications enabled':'تم تفعيل الإشعارات');
+ try{
+  const api=window.NexoraNotifications;
+
+  if(!api||!api.isNative()){
+   return showToast(en
+    ?'Native notifications are available in the Android app'
+    :'الإشعارات المجدولة متاحة داخل تطبيق Android');
+  }
+
+  const permission=await api.requestPermission();
+
+  if(permission!=='granted'){
+   return showToast(en
+    ?'Notification permission was not granted'
+    :'لم يتم السماح بالإشعارات');
+  }
+
+  set('notificationsEnabled','true');
+
+  const count=await syncCalendarNotifications();
+
+  showToast(en
+   ?`Reminders enabled · ${count||0} scheduled`
+   :`تم تفعيل التذكيرات · ${count||0} تذكير مجدول`);
+
+ }catch(error){
+  console.error('NEXORA notification error:',error);
+  showToast(en
+   ?'Could not schedule notifications. Check app permissions.'
+   :'تعذرت جدولة الإشعارات. تحقق من أذونات التطبيق.');
+ }
 }
 
 function admin(){return `<div class="panel"><h3>${en?'App settings':'إعدادات التطبيق'}</h3><p>${en?'Language and local data controls.':'اللغة والتحكم في البيانات المحلية.'}</p><button onclick="toggleLang()">${en?'Switch language':'تغيير اللغة'}</button><button class="secondary" onclick="backupData()">${en?'Export backup':'تصدير نسخة احتياطية'}</button><div style="margin-top:12px"><label>${en?'Restore backup file':'استعادة نسخة احتياطية'}</label><input type="file" id="backupFile" accept="application/json,.json"><button onclick="restoreData()">${en?'Restore':'استعادة'}</button></div></div><div class="panel"><h3>${en?'About NEXORA':'حول NEXORA'}</h3><p>NEXORA · منصة للتعلم والترفيه</p><small>${en?'Version 1.9 · Data stored locally on this device.':'الإصدار 1.9 · البيانات محفوظة محليًا على هذا الجهاز.'}</small></div><div class="note">${en?'Admin panel controls this app on this device; it is not a remote server dashboard.':'لوحة الإدارة تتحكم في التطبيق على هذا الجهاز، وليست لوحة تحكم بخادم خارجي.'}</div>`}
