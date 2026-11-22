@@ -1062,6 +1062,21 @@ function renderDashboard(){
    <small>${en?'Al-Fatiha review':'مراجعة الفاتحة'}</small>
   </div>
  </div>
+
+ <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-top:15px">
+  <div class="cc-stat" style="text-align:right;padding:14px;border:1px solid var(--line);border-radius:16px">
+   <b>🌤️ ${en?'Weather & location':'الطقس والموقع'}</b>
+   <div id="nexoraWeatherTemp" style="font-size:25px;font-weight:800;margin:10px 0">—°</div>
+   <div id="nexoraWeatherPlace">${en?'Location not selected':'لم يتم تحديد الموقع'}</div>
+   <div id="nexoraWeatherStatus" style="font-size:12px;color:var(--muted);margin-top:7px">${en?'Allow location to get weather':'اسمح بالموقع لعرض الطقس'}</div>
+   <button class="cc-action" style="width:100%;margin-top:10px" onclick="requestNexoraWeather()">${en?'Use my location':'تحديد موقعي والطقس'}</button>
+  </div>
+  <div class="cc-stat" style="text-align:right;padding:14px;border:1px solid var(--line);border-radius:16px">
+   <b>⏱️ ${en?'NEXORA screen time':'مدة استخدام NEXORA'}</b>
+   <div id="nexoraScreenTimeValue" style="font-size:25px;font-weight:800;margin:10px 0">00:00:00</div>
+   <div style="font-size:12px;color:var(--muted)">${en?'Time spent today':'وقت استخدامك اليوم'}</div>
+  </div>
+ </div>
  <div class="cc-quick">
   <button class="cc-action" onclick="openSection('4')">${en?'Tasks':'المهام'}</button>
   <button class="cc-action" onclick="openSection('1')">${en?'Education':'التعليم'}</button>
@@ -1070,6 +1085,84 @@ function renderDashboard(){
  </div>
  <div class="cc-quiz">${en?'Last quiz result: ':'آخر نتيجة اختبار: '}${escapeHtml(quizResult)}</div>
  `;
+}
+
+
+let nexoraWeatherState=null;
+let nexoraScreenStartedAt=document.visibilityState==='visible'?Date.now():0;
+
+function nexoraTodayKey(){
+ const d=new Date();
+ return 'om_screen_daily_ms_'+d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function nexoraScreenElapsed(){
+ return (Number(localStorage.getItem(nexoraTodayKey()))||0)+
+ (nexoraScreenStartedAt&&document.visibilityState==='visible'?Date.now()-nexoraScreenStartedAt:0);
+}
+function renderNexoraScreenTime(){
+ const el=$('nexoraScreenTimeValue');
+ if(!el)return;
+ let sec=Math.floor(nexoraScreenElapsed()/1000);
+ let h=Math.floor(sec/3600),m=Math.floor(sec%3600/60),s=sec%60;
+ el.textContent=[h,m,s].map(x=>String(x).padStart(2,'0')).join(':');
+}
+function saveNexoraScreenTime(){
+ if(!nexoraScreenStartedAt)return;
+ localStorage.setItem(nexoraTodayKey(),String(nexoraScreenElapsed()));
+ nexoraScreenStartedAt=0;
+ renderNexoraScreenTime();
+}
+function initNexoraScreenTime(){
+ if(window.nexoraScreenTimerReady)return;
+ window.nexoraScreenTimerReady=true;
+ document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='hidden')saveNexoraScreenTime();
+  else if(!nexoraScreenStartedAt)nexoraScreenStartedAt=Date.now();
+  renderNexoraScreenTime();
+ });
+ window.addEventListener('pagehide',saveNexoraScreenTime);
+ setInterval(renderNexoraScreenTime,1000);
+ renderNexoraScreenTime();
+}
+function renderNexoraWeatherCard(){
+ const t=$('nexoraWeatherTemp'),p=$('nexoraWeatherPlace'),s=$('nexoraWeatherStatus');
+ if(!t||!p||!s)return;
+ if(nexoraWeatherState){
+  t.textContent=Math.round(nexoraWeatherState.temp)+'°C';
+  p.textContent=nexoraWeatherState.place;
+  s.textContent=nexoraWeatherState.desc;
+ }
+}
+function requestNexoraWeather(){
+ const status=$('nexoraWeatherStatus');
+ if(!navigator.geolocation){
+  status.textContent=en?'Location unavailable':'الموقع غير مدعوم';return;
+ }
+ status.textContent=en?'Requesting permission…':'جارٍ طلب إذن الموقع…';
+ navigator.geolocation.getCurrentPosition(async pos=>{
+  try{
+   const lat=pos.coords.latitude,lon=pos.coords.longitude;
+   const [wr,pr]=await Promise.all([
+    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&timezone=auto`),
+    fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=${en?'en':'ar'}`)
+   ]);
+   if(!wr.ok)throw Error('weather');
+   const w=await wr.json();
+   let place=en?'Your location':'موقعك الحالي';
+   if(pr.ok){
+    const d=await pr.json();
+    place=d.city||d.locality||d.principalSubdivision||place;
+   }
+   const codes={0:['سماء صافية','Clear sky'],1:['غائم جزئيًا','Mainly clear'],2:['غائم جزئيًا','Partly cloudy'],3:['غائم','Overcast'],45:['ضباب','Fog'],51:['رذاذ خفيف','Light drizzle'],61:['مطر خفيف','Light rain'],63:['مطر متوسط','Moderate rain'],65:['مطر غزير','Heavy rain'],80:['زخات مطر','Rain showers'],95:['عواصف رعدية','Thunderstorm']};
+   const c=codes[w.current.weather_code]||['حالة الطقس الحالية','Current conditions'];
+   nexoraWeatherState={temp:w.current.temperature_2m,place,desc:c[en?1:0]};
+   renderNexoraWeatherCard();
+  }catch(e){
+   status.textContent=en?'Weather service unavailable':'تعذر تحميل الطقس، تحقق من الإنترنت';
+  }
+ },e=>{
+  status.textContent=e.code===1?(en?'Location permission denied':'تم رفض إذن الموقع'):(en?'Could not get location':'تعذر تحديد الموقع');
+ },{enableHighAccuracy:false,timeout:15000,maximumAge:300000});
 }
 
 function toggleLang(){en=!en;localStorage.setItem('omnixLang',en?'en':'ar');renderHome();if(current && current!=='hiddenRoom')openSection(current)}
@@ -1085,6 +1178,8 @@ function renderHome(){
  $('backBtn').textContent=en?'← Home':'← الرئيسية';
  $('progressSummary').textContent=en?'Your data is saved on this device.':'بياناتك تُحفظ على هذا الجهاز.';
  renderDashboard();
+ renderNexoraScreenTime();
+ renderNexoraWeatherCard();
  $('grid').innerHTML=names.map((n,i)=>`<button class="tile" onclick="openSection('${i}')"><span class="ico">${n[2]}</span>${n[en?1:0]}</button>`).join('');
 }
 function goHome(){current='';$('section').classList.add('hidden');$('home').classList.remove('hidden');renderHome()}
@@ -1111,12 +1206,10 @@ function games(){return `<div class="panel"><h3>${en?'NEXORA Games':'ألعاب 
 <div class="tile" onclick="openMiniGame('chess')"><span class="ico">♟</span>${en?'Chess':'الشطرنج'}</div>
 <div class="tile" onclick="openMiniGame('adventure')"><span class="ico">🗺️</span>${en?'Adventure':'المغامرة'}</div>
 <div class="tile" onclick="openMiniGame('quiz')"><span class="ico">🎭</span>${en?'Anime & Series Quiz':'تحدي الأنمي والمسلسلات'}</div>
-<div class="tile" onclick="openMiniGame('math')"><span class="ico">🧠</span>${en?'Mental Math':'الحساب الذهني'}</div>
 </div></div><div id="miniGameArea"></div>`}
 function openMiniGame(name){
  const area=$('miniGameArea');
  if(!area)return;
- if(name==='math'){area.innerHTML=`<div class="panel"><button class="secondary" onclick="closeMiniGame()">← ${en?'Games':'الألعاب'}</button><h3>${en?'Mental Math':'تحدي الحساب الذهني'}</h3><p id="gameQuestion">اضغط ابدأ لعرض السؤال.</p><input id="gameAnswer" type="number" inputmode="numeric" placeholder="${en?'Your answer':'إجابتك'}"><div class="row"><button onclick="newGame()">${en?'New question':'سؤال جديد'}</button><button class="secondary" onclick="checkGame()">${en?'Check':'تحقق'}</button></div><div id="gameResult" class="status"></div></div>`;return;}
  if(name==='chess'){renderChessGame();return;}
  if(name==='xo'){renderXOGame();return;}
  if(name==='adventure'){renderAdventureGame();return;}
@@ -1125,56 +1218,173 @@ function openMiniGame(name){
 function closeMiniGame(){const a=$('miniGameArea');if(a)a.innerHTML='';}
 
 let xoBoard=Array(9).fill(''),xoTurn='X',xoMode='cpu',xoDone=false;
-let xoScores={X:0,O:0,D:0};
+let xoDifficulty='hard',xoSeriesTarget=3,xoMatchDone=false;
+let xoScores={X:0,O:0,D:0},xoMatchWins={X:0,O:0};
+
+function xoLoadStats(){
+ try{
+  const v=JSON.parse(get('xoStats','{}'));
+  if(v.scores)xoScores={X:Number(v.scores.X)||0,O:Number(v.scores.O)||0,D:Number(v.scores.D)||0};
+  if(v.wins)xoMatchWins={X:Number(v.wins.X)||0,O:Number(v.wins.O)||0};
+ }catch(e){}
+}
+function xoSaveStats(){
+ set('xoStats',JSON.stringify({scores:xoScores,wins:xoMatchWins}));
+}
+xoLoadStats();
+
 function renderXOGame(){
  const a=$('miniGameArea');if(!a)return;
- xoBoard=Array(9).fill('');xoTurn='X';xoDone=false;
- a.innerHTML=`<div class="panel">
- <button class="secondary" onclick="closeMiniGame()">← ${en?'Games':'الألعاب'}</button>
- <h3>${en?'Tic Tac Toe':'لعبة إكس أو'}</h3>
- <div class="row">
- <button onclick="xoSetMode('cpu')" class="secondary">${en?'Vs Computer':'ضد الكمبيوتر'}</button>
- <button onclick="xoSetMode('two')" class="secondary">${en?'Two Players':'لاعبان'}</button>
+ xoBoard=Array(9).fill('');xoTurn='X';xoDone=false;xoMatchDone=false;
+ a.innerHTML=`<div class="panel xo-panel">
+ <style>
+ .xo-panel{overflow:hidden}
+ .xo-top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+ .xo-controls{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}
+ .xo-control{border:1px solid rgba(229,173,105,.3);background:rgba(255,255,255,.045);color:inherit;border-radius:12px;padding:9px 13px;cursor:pointer}
+ .xo-control.active{background:rgba(201,143,77,.2);border-color:#d9a568;color:#f2c58f;box-shadow:0 0 15px rgba(201,143,77,.12)}
+ .xo-board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;max-width:350px;margin:17px auto}
+ .xo-cell{aspect-ratio:1;min-height:0!important;border:1px solid rgba(229,173,105,.22)!important;border-radius:17px!important;background:linear-gradient(145deg,rgba(255,255,255,.09),rgba(255,255,255,.025))!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 7px 18px rgba(0,0,0,.2);font-size:clamp(38px,10vw,58px)!important;font-weight:800;transition:transform .16s,border-color .16s,background .16s;cursor:pointer}
+ .xo-cell:not(:disabled):active{transform:scale(.94)}
+ .xo-cell:disabled{opacity:1;cursor:default}
+ .xo-cell.x{color:#e5ad69!important;text-shadow:0 0 17px rgba(229,173,105,.45)}
+ .xo-cell.o{color:#f3eee7!important;text-shadow:0 0 17px rgba(255,255,255,.3)}
+ .xo-cell.winner{border-color:#e5ad69!important;background:rgba(201,143,77,.2)!important;box-shadow:0 0 20px rgba(229,173,105,.22)}
+ .xo-status{border:1px solid rgba(229,173,105,.2);background:rgba(255,255,255,.035);border-radius:14px;padding:12px;text-align:center;margin:12px 0}
+ .xo-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+ .xo-stat{background:rgba(255,255,255,.045);border:1px solid rgba(229,173,105,.16);border-radius:13px;padding:10px 5px;text-align:center}
+ .xo-stat b{display:block;color:#e5ad69;font-size:22px;margin-top:4px}
+ .xo-label{font-size:12px;opacity:.7}
+ </style>
+ <div class="xo-top">
+  <button class="secondary" onclick="closeMiniGame()">← ${en?'Games':'الألعاب'}</button>
+  <span class="muted">✦ NEXORA GAME</span>
  </div>
- <div id="xoStatus" class="status"></div>
- <div id="xoBoard" class="grid" style="grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;max-width:330px;margin:14px auto"></div>
- <div id="xoScore" class="status"></div>
- <button onclick="xoRestart()">${en?'New Round':'جولة جديدة'}</button>
+ <h3 style="text-align:center;margin:15px 0">${en?'Tic Tac Toe':'لعبة إكس أو'}</h3>
+ <div class="xo-label">${en?'PLAY MODE':'طريقة اللعب'}</div>
+ <div class="xo-controls">
+  <button id="xoCpuMode" class="xo-control active" onclick="xoSetMode('cpu')">${en?'Vs Computer':'ضد الكمبيوتر'}</button>
+  <button id="xoTwoMode" class="xo-control" onclick="xoSetMode('two')">${en?'Two Players':'لاعبان'}</button>
+ </div>
+ <div id="xoDifficultyArea">
+  <div class="xo-label">${en?'COMPUTER LEVEL':'مستوى الكمبيوتر'}</div>
+  <div class="xo-controls">
+   <button id="xoEasy" class="xo-control" onclick="xoSetDifficulty('easy')">${en?'Easy':'سهل'}</button>
+   <button id="xoMedium" class="xo-control" onclick="xoSetDifficulty('medium')">${en?'Medium':'متوسط'}</button>
+   <button id="xoHard" class="xo-control active" onclick="xoSetDifficulty('hard')">${en?'Hard':'صعب'}</button>
+  </div>
+ </div>
+ <div class="xo-label">${en?'MATCH FORMAT':'نظام المباراة'}</div>
+ <div class="xo-controls">
+  <button id="xoBest3" class="xo-control active" onclick="xoSetSeries(3)">${en?'Best of 3':'الأفضل من 3'}</button>
+  <button id="xoBest5" class="xo-control" onclick="xoSetSeries(5)">${en?'Best of 5':'الأفضل من 5'}</button>
+ </div>
+ <div id="xoStatus" class="xo-status"></div>
+ <div id="xoBoard" class="xo-board"></div>
+ <div class="xo-stats">
+  <div class="xo-stat"><span class="xo-label">${en?'X WINS':'فوز X'}</span><b id="xoScoreX">0</b></div>
+  <div class="xo-stat"><span class="xo-label">${en?'DRAWS':'تعادل'}</span><b id="xoScoreD">0</b></div>
+  <div class="xo-stat"><span class="xo-label">${en?'O WINS':'فوز O'}</span><b id="xoScoreO">0</b></div>
+ </div>
+ <div class="xo-status" id="xoMatchScore"></div>
+ <div class="xo-controls">
+  <button onclick="xoRestart()">${en?'New Round':'جولة جديدة'}</button>
+  <button class="secondary" onclick="xoResetScores()">${en?'Reset Scores':'تصفير النتائج'}</button>
+ </div>
  </div>`;
+ xoUpdateControls();
  xoDraw();
 }
-function xoSetMode(mode){xoMode=mode;xoRestart();}
+
+function xoSetMode(mode){
+ xoMode=mode;xoMatchWins={X:0,O:0};xoMatchDone=false;
+ xoRestart();
+ xoUpdateControls();
+}
+function xoSetDifficulty(level){
+ xoDifficulty=level;
+ xoUpdateControls();
+ xoRestart();
+}
+function xoSetSeries(n){
+ xoSeriesTarget=n;xoMatchWins={X:0,O:0};xoMatchDone=false;
+ xoUpdateControls();
+ xoRestart();
+}
+function xoUpdateControls(){
+ const ids={cpu:'xoCpuMode',two:'xoTwoMode',easy:'xoEasy',medium:'xoMedium',hard:'xoHard'};
+ Object.entries(ids).forEach(([k,id])=>{
+  const el=$(id);if(el)el.classList.toggle('active',
+   k===xoMode||(k===xoDifficulty&&xoMode==='cpu'));
+ });
+ const d=$('xoDifficultyArea');if(d)d.style.display=xoMode==='cpu'?'':'none';
+ ['xoBest3','xoBest5'].forEach((id,i)=>{
+  const el=$(id);if(el)el.classList.toggle('active',xoSeriesTarget===(i?5:3));
+ });
+}
+
 function xoWinner(b){
  for(const [a,c,d] of [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]])
   if(b[a]&&b[a]===b[c]&&b[a]===b[d])return b[a];
  return b.every(Boolean)?'D':'';
 }
+function xoWinningCells(){
+ for(const line of [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]){
+  if(xoBoard[line[0]]&&xoBoard[line[0]]===xoBoard[line[1]]&&xoBoard[line[1]]===xoBoard[line[2]])return line;
+ }
+ return [];
+}
 function xoDraw(){
  const board=$('xoBoard');if(!board)return;
- board.innerHTML=xoBoard.map((v,i)=>`<button class="tile" style="min-height:88px;font-size:34px;color:${v==='X'?'#e5ad69':'#eee'}" onclick="xoPlay(${i})" ${v||xoDone?'disabled':''}>${v||'·'}</button>`).join('');
+ const winning=xoWinningCells();
+ board.innerHTML=xoBoard.map((v,i)=>`<button class="xo-cell ${v==='X'?'x':v==='O'?'o':''} ${winning.includes(i)?'winner':''}" aria-label="${en?'Cell ':'الخانة '}${i+1}" onclick="xoPlay(${i})" ${v||xoDone||xoMatchDone?'disabled':''}>${v||'·'}</button>`).join('');
  const w=xoWinner(xoBoard);
- $('xoStatus').textContent=xoDone?(w==='D'?(en?'Draw!':'تعادل!'):(en?'Winner: ':'الفائز: ')+w):(en?'Turn: ':'الدور: ')+xoTurn;
- $('xoScore').textContent=(en?'X: ':'إكس: ')+xoScores.X+'   '+(en?'O: ':'أو: ')+xoScores.O+'   '+(en?'Draws: ':'تعادلات: ')+xoScores.D;
+ let status=xoDone?(w==='D'?(en?'Draw!':'تعادل!'):(en?'Round winner: ':'فائز الجولة: ')+w):(en?'Turn: ':'الدور: ')+xoTurn;
+ if(xoMatchDone)status=(en?'🏆 Match winner: ':'🏆 فائز المباراة: ')+(xoMatchWins.X>xoMatchWins.O?'X':'O');
+ $('xoStatus').textContent=status;
+ $('xoScoreX').textContent=xoScores.X;
+ $('xoScoreO').textContent=xoScores.O;
+ $('xoScoreD').textContent=xoScores.D;
+ $('xoMatchScore').textContent=(en?'Match points — X: ':'نتيجة المباراة — X: ')+xoMatchWins.X+' | O: '+xoMatchWins.O+' | '+(en?'First to ':'الفوز عند ')+Math.ceil(xoSeriesTarget/2);
 }
 function xoFinish(){
+ if(xoDone)return false;
  const w=xoWinner(xoBoard);if(!w)return false;
- xoDone=true;xoScores[w]++;xoDraw();return true;
-}
-function xoPlay(i){
- if(xoDone||xoBoard[i])return;
- if(xoMode==='cpu'&&xoTurn==='O')return;
- xoBoard[i]=xoTurn;
- if(xoFinish())return;
- xoTurn=xoTurn==='X'?'O':'X';
- if(xoMode==='cpu'&&xoTurn==='O'){
-  const move=xoBestMove();if(move>=0)xoBoard[move]='O';
-  if(!xoFinish())xoTurn='X';
+ xoDone=true;
+ xoScores[w]++;
+ if(w!=='D'){
+  xoMatchWins[w]++;
+  if(xoMatchWins[w]>=Math.ceil(xoSeriesTarget/2))xoMatchDone=true;
+ }
+ xoSaveStats();
+ if(xoMode==='cpu'&&w==='X'){
+  addAccountPoints(15,'xo_round_win');
+  if(xoMatchDone)addAccountPoints(5,'xo_match_win');
  }
  xoDraw();
+ return true;
+}
+function xoFindTactical(mark){
+ for(let i=0;i<9;i++)if(!xoBoard[i]){
+  xoBoard[i]=mark;const wins=xoWinner(xoBoard)===mark;xoBoard[i]='';
+  if(wins)return i;
+ }
+ return -1;
 }
 function xoBestMove(){
+ const empty=xoBoard.map((v,i)=>v? -1:i).filter(i=>i>=0);
+ if(!empty.length)return -1;
+ if(xoDifficulty==='easy')return empty[Math.floor(Math.random()*empty.length)];
+ if(xoDifficulty==='medium'){
+  let move=xoFindTactical('O');if(move>=0)return move;
+  move=xoFindTactical('X');if(move>=0)return move;
+  if(!xoBoard[4])return 4;
+  const corners=[0,2,6,8].filter(i=>!xoBoard[i]);
+  if(corners.length)return corners[Math.floor(Math.random()*corners.length)];
+  return empty[Math.floor(Math.random()*empty.length)];
+ }
  let best=-Infinity,choice=-1;
- for(let i=0;i<9;i++)if(!xoBoard[i]){
+ for(const i of empty){
   xoBoard[i]='O';const score=xoMinimax(false);xoBoard[i]='';
   if(score>best){best=score;choice=i;}
  }
@@ -1191,10 +1401,27 @@ function xoMinimax(maximize){
  }
  return best;
 }
-function xoRestart(){xoBoard=Array(9).fill('');xoTurn='X';xoDone=false;xoDraw();}
-
-let gameValue=0;function newGame(){let a=Math.floor(Math.random()*12)+1,b=Math.floor(Math.random()*12)+1;gameValue=a*b;$('gameQuestion').textContent=`${a} × ${b} = ؟`;$('gameAnswer').value='';$('gameResult').textContent=''}
-function checkGame(){if($('gameAnswer').value==='')return;$('gameResult').textContent=Number($('gameAnswer').value)===gameValue?(en?'Correct ✓':'إجابة صحيحة ✓'):(en?'Try again':'حاول مرة أخرى')}
+function xoPlay(i){
+ if(xoDone||xoMatchDone||xoBoard[i])return;
+ if(xoMode==='cpu'&&xoTurn==='O')return;
+ xoBoard[i]=xoTurn;
+ if(xoFinish())return;
+ xoTurn=xoTurn==='X'?'O':'X';
+ if(xoMode==='cpu'&&xoTurn==='O'){
+  const move=xoBestMove();if(move>=0)xoBoard[move]='O';
+  if(!xoFinish())xoTurn='X';
+ }
+ xoDraw();
+}
+function xoRestart(){
+ if(xoMatchDone){xoMatchWins={X:0,O:0};xoMatchDone=false;}
+ xoBoard=Array(9).fill('');xoTurn='X';xoDone=false;xoDraw();
+}
+function xoResetScores(){
+ if(!confirm(en?'Reset all Tic Tac Toe scores?':'هل تريد تصفير جميع نتائج إكس أو؟'))return;
+ xoScores={X:0,O:0,D:0};xoMatchWins={X:0,O:0};xoMatchDone=false;
+ xoSaveStats();xoRestart();
+}
 
 
 let chessGame=null,chessSelected=null,chessPromotion=null;
@@ -1262,49 +1489,223 @@ function chessUndo(){if(!chessGame)return;chessGame.undo();chessPromotion=null;c
 function chessRestart(){chessGame=new window.ChessEngine.Chess();chessSelected=null;chessPromotion=null;if($('chessPromotion'))$('chessPromotion').innerHTML='';chessDraw();}
 
 
-const adventureLevels=[
- {name:'الغابة الغامضة',q:'ما العدد التالي؟ 2، 4، 6، ؟',a:['7','8','10'],c:1},
- {name:'كهف الأسرار',q:'ما ناتج 9 × 7؟',a:['63','56','72'],c:0},
- {name:'جزيرة الكنز',q:'أي كلمة اسم حيوان؟',a:['كتاب','أسد','قلم'],c:1},
- {name:'قصر النجوم',q:'كم ضلعًا للمربع؟',a:['3','4','5'],c:1},
- {name:'بوابة الأبطال',q:'ما عاصمة السعودية؟',a:['جدة','الرياض','مكة'],c:1}
+const questWorld=[
+ {
+  id:'forest',name:'الغابة المنسية',icon:'🌲',subtitle:'بداية الحكاية',
+  description:'تستيقظ في غابة قديمة، والضباب يغطي الطريق. نقوش غريبة تلمع على صخرة قريبة، وهناك ممر مغلق.',
+  actions:[
+   {id:'forest_rune',title:'افحص النقوش القديمة',description:'اكتشف سر الرموز على الصخرة.',item:'رمز الغابة',xp:15},
+   {id:'forest_key',title:'ابحث بين الجذور',description:'شيء معدني يلمع تحت شجرة ضخمة.',item:'المفتاح النحاسي',xp:15},
+   {id:'forest_gate',title:'افتح بوابة الكهف',description:'استخدم ما وجدته لفتح الممر.',requires:['رمز الغابة','المفتاح النحاسي'],unlock:'cave',xp:25}
+  ]
+ },
+ {
+  id:'cave',name:'كهف الصدى',icon:'🪨',subtitle:'أول اختبار',
+  description:'تدخل كهفًا واسعًا، وتتردد خطواتك بين الجدران. بلورة زرقاء تضيء في نهاية الممر.',
+  actions:[
+   {id:'cave_crystal',title:'التقط البلورة الزرقاء',description:'اجمع البلورة التي تنير الكهف.',item:'البلورة الزرقاء',xp:20},
+   {id:'cave_riddle',title:'حل لغز الصدى',description:'الباب الحجري لن يفتح دون الإجابة الصحيحة.',requires:['البلورة الزرقاء'],kind:'puzzle',question:'ما الشيء الذي يجيبك دون أن يتكلم؟',options:['الصدى','النهر','الظل'],answer:0,unlock:'island',xp:35}
+  ]
+ },
+ {
+  id:'island',name:'جزيرة النجوم',icon:'🏝️',subtitle:'طريق مجهول',
+  description:'تصل إلى جزيرة هادئة تحت سماء مليئة بالنجوم. جسر قديم يقود إلى قلعة بعيدة.',
+  actions:[
+   {id:'island_compass',title:'استكشف صندوق البحّار',description:'افتح الصندوق وابحث عن أداة تساعدك.',item:'البوصلة القديمة',xp:20},
+   {id:'island_bridge',title:'افتح جسر النجوم',description:'أجب عن اللغز لتعرف طريق القلعة.',requires:['البوصلة القديمة'],kind:'puzzle',question:'أي شيء يساعد المسافر على معرفة الاتجاهات؟',options:['المرآة','البوصلة','الساعة'],answer:1,unlock:'castle',xp:40}
+  ]
+ },
+ {
+  id:'castle',name:'قلعة النور',icon:'🏰',subtitle:'المهمة الأخيرة',
+  description:'أمامك بوابة القلعة الأخيرة. الأدوات التي جمعتها ستساعدك على حل اللغز وإكمال الرحلة.',
+  actions:[
+   {id:'castle_final',title:'اكتشف سر البوابة',description:'اجمع الأدوات المطلوبة وأجب عن اللغز الأخير.',requires:['رمز الغابة','المفتاح النحاسي','البلورة الزرقاء','البوصلة القديمة'],kind:'puzzle',question:'ما الذي يجعل المعرفة أقوى؟',options:['الفضول والتعلّم','التوقف عن المحاولة','تجاهل الأدلة'],answer:0,finish:true,xp:100}
+  ]
+ }
 ];
-let adventureIndex=0,adventureStars=0,adventureAnswered=false;
-function renderAdventureGame(){
- adventureIndex=Number(get('adventureLevel','0'));
- adventureStars=Number(get('adventureStars','0'));
- adventureAnswered=false;
- const a=$('miniGameArea');if(!a)return;
- a.innerHTML=`<div class="panel">
- <button class="secondary" onclick="closeMiniGame()">← ${en?'Games':'الألعاب'}</button>
- <h3>🗺️ NEXORA Adventure</h3>
- <p class="status">${en?'Stars':'النجوم'}: ⭐ <span id="adventureStars">${adventureStars}</span></p>
- <div id="adventureContent"></div>
- </div>`;
- adventureDraw();
+
+let questState={current:'forest',unlocked:['forest'],done:[],items:[],xp:0,finished:false};
+let questActivePuzzle='',questNotice='';
+
+function questLoad(){
+ try{
+  const saved=JSON.parse(get('nexoraQuest','null'));
+  if(saved&&Array.isArray(saved.unlocked)&&Array.isArray(saved.done)&&Array.isArray(saved.items)){
+   questState={
+    current:typeof saved.current==='string'?saved.current:'forest',
+    unlocked:saved.unlocked,
+    done:saved.done,
+    items:saved.items,
+    xp:Math.max(0,Number(saved.xp)||0),
+    finished:!!saved.finished
+   };
+  }
+ }catch(e){}
+ if(!questState.unlocked.includes('forest'))questState.unlocked.unshift('forest');
+ if(!questState.unlocked.includes(questState.current))questState.current='forest';
 }
-function adventureDraw(){
- const box=$('adventureContent');if(!box)return;
- if(adventureIndex>=adventureLevels.length){
-  box.innerHTML=`<h3>${en?'Adventure completed!':'أكملت المغامرة!'}</h3><p>🏆 ⭐ ${adventureStars}</p><button onclick="adventureReset()">${en?'Play again':'العب من جديد'}</button>`;
+function questSave(){
+ set('nexoraQuest',JSON.stringify(questState));
+}
+function renderAdventureGame(){
+ questLoad();
+ questActivePuzzle='';
+ questNotice='';
+ const a=$('miniGameArea');if(!a)return;
+ a.innerHTML=`<div class="panel quest-panel">
+ <style>
+ .quest-panel{overflow:hidden}
+ .quest-hero{position:relative;padding:22px 16px;border:1px solid rgba(218,164,99,.3);border-radius:19px;background:radial-gradient(ellipse at 50% 0%,rgba(174,111,49,.22),transparent 70%),linear-gradient(145deg,#17130f,#0b0c0e);text-align:center;margin:14px 0}
+ .quest-kicker{font-size:10px;letter-spacing:3px;color:#d9a568}
+ .quest-title{font-size:25px;color:#f1d2a8;margin:8px 0}
+ .quest-muted{font-size:12px;opacity:.7;line-height:1.8}
+ .quest-xp{display:flex;justify-content:space-between;gap:10px;font-size:12px;margin:12px 0 6px}
+ .quest-track{height:7px;border-radius:20px;background:#29231c;overflow:hidden}
+ .quest-track span{display:block;height:100%;background:linear-gradient(90deg,#94602f,#f0c58e);border-radius:20px;transition:width .3s}
+ .quest-map{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0}
+ .quest-zone{padding:13px 8px;border:1px solid rgba(218,164,99,.2);border-radius:14px;background:rgba(255,255,255,.035);color:inherit;text-align:center;cursor:pointer}
+ .quest-zone.active{border-color:#d9a568;background:rgba(174,111,49,.16);box-shadow:0 0 16px rgba(174,111,49,.12)}
+ .quest-zone:disabled{opacity:.35;cursor:not-allowed}
+ .quest-zone-icon{font-size:25px;display:block;margin-bottom:5px}
+ .quest-zone small{display:block;font-size:10px;opacity:.65;margin-top:4px}
+ .quest-scene{padding:16px;border-radius:17px;border:1px solid rgba(218,164,99,.22);background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.015));margin:12px 0}
+ .quest-scene h3{color:#e8bd89;margin:5px 0 9px}
+ .quest-action{display:block;width:100%;text-align:right;padding:13px;margin:9px 0;border-radius:13px;border:1px solid rgba(218,164,99,.22);background:rgba(255,255,255,.035);color:inherit}
+ .quest-action:disabled{opacity:.48}
+ .quest-action b{display:block;color:#e7bd8e;margin-bottom:4px}
+ .quest-action small{opacity:.7;line-height:1.6}
+ .quest-inventory{display:flex;gap:7px;flex-wrap:wrap;margin:9px 0}
+ .quest-item{font-size:11px;padding:7px 10px;border:1px solid rgba(218,164,99,.25);border-radius:20px;background:rgba(174,111,49,.1)}
+ .quest-puzzle{padding:14px;border:1px solid rgba(218,164,99,.35);border-radius:15px;margin-top:12px;background:rgba(174,111,49,.07)}
+ .quest-option{display:block;width:100%;margin:8px 0}
+ .quest-note{padding:10px;border-radius:11px;background:rgba(174,111,49,.1);font-size:13px;line-height:1.7}
+ @media(min-width:600px){.quest-map{grid-template-columns:repeat(4,minmax(0,1fr))}}
+ </style>
+ <button class="secondary" onclick="closeMiniGame()">← ${en?'Games':'الألعاب'}</button>
+ <div class="quest-hero">
+  <div class="quest-kicker">N E X O R A · O R I G I N A L</div>
+  <div class="quest-title">NEXORA QUEST</div>
+  <div class="quest-muted">${en?'A world of secrets is waiting for you':'عالم من الأسرار ينتظرك لاكتشافه'}</div>
+ </div>
+ <div class="quest-xp"><span>${en?'EXPERIENCE':'نقاط الخبرة'}</span><b id="questXP">${questState.xp} XP</b></div>
+ <div class="quest-track"><span id="questProgress" style="width:${Math.min(100,questState.unlocked.length/4*100)}%"></span></div>
+ <h4>${en?'WORLD MAP':'خريطة العالم'}</h4>
+ <div id="questMap" class="quest-map"></div>
+ <div id="questScene"></div>
+ <div class="quest-scene">
+  <h4>${en?'YOUR INVENTORY':'حقيبتك'}</h4>
+  <div id="questInventory" class="quest-inventory"></div>
+ </div>
+ <button class="secondary" onclick="questReset()">${en?'Restart adventure':'إعادة المغامرة من البداية'}</button>
+ </div>`;
+ questDraw();
+}
+function questDraw(){
+ const map=$('questMap'),scene=$('questScene'),inventory=$('questInventory');
+ if(!map||!scene||!inventory)return;
+ map.innerHTML=questWorld.map(z=>{
+  const open=questState.unlocked.includes(z.id);
+  return `<button class="quest-zone ${questState.current===z.id?'active':''}" onclick="questOpenZone('${z.id}')" ${open?'':'disabled'}>
+   <span class="quest-zone-icon">${open?z.icon:'🔒'}</span>${open?z.name:(en?'Locked area':'منطقة مغلقة')}
+   <small>${open?(questState.done.some(id=>id.startsWith(z.id+'_'))?(en?'Explored':'تم استكشافها'):z.subtitle):(en?'Unlock by exploring':'افتحها بالتقدم')}</small>
+  </button>`;
+ }).join('');
+ inventory.innerHTML=questState.items.length?questState.items.map(x=>`<span class="quest-item">✦ ${x}</span>`).join(''):`<span class="quest-muted">${en?'Your bag is empty':'حقيبتك فارغة، ابدأ الاستكشاف'}</span>`;
+ $('questXP').textContent=questState.xp+' XP';
+ $('questProgress').style.width=Math.min(100,questState.unlocked.length/4*100)+'%';
+ if(questState.finished){
+  scene.innerHTML=`<div class="quest-hero"><div style="font-size:48px">🏆</div><h2 class="quest-title">${en?'QUEST COMPLETED':'اكتملت المغامرة!'}</h2><p class="quest-muted">${en?'You uncovered the secret of the castle and completed your journey.':'اكتشفت سر القلعة وأتممت الرحلة بنجاح.'}</p><b>${questState.xp} XP ✦</b></div>`;
   return;
  }
- const level=adventureLevels[adventureIndex];
- box.innerHTML=`<h3>🌍 ${en?'Stage':'المرحلة'} ${adventureIndex+1}: ${level.name}</h3><p>${level.q}</p><div class="col">${level.a.map((v,i)=>`<button class="secondary" onclick="adventureAnswer(${i})">${v}</button>`).join('')}</div><p class="muted">${en?'Complete the challenge to find the treasure.':'أجب إجابة صحيحة للعثور على الكنز.'}</p>`;
+ const zone=questWorld.find(z=>z.id===questState.current);
+ if(!zone){questState.current='forest';questSave();return questDraw();}
+ const actions=zone.actions.map(a=>{
+  const done=questState.done.includes(a.id);
+  const missing=(a.requires||[]).filter(x=>!questState.items.includes(x));
+  return `<button class="quest-action" onclick="questStartAction('${a.id}')" ${done||missing.length?'disabled':''}>
+   <b>${done?'✓ ':''}${a.title}</b><small>${done?(en?'Completed':'تم الإنجاز'):missing.length?(en?'Requires: ':'يتطلب: ')+missing.join('، '):a.description}</small>
+  </button>`;
+ }).join('');
+ scene.innerHTML=`<div class="quest-scene">
+  <div class="quest-kicker">${zone.subtitle}</div>
+  <h3>${zone.icon} ${zone.name}</h3>
+  <p class="quest-muted">${zone.description}</p>
+  ${questNotice?`<p class="quest-note">${questNotice}</p>`:''}
+  ${actions}
+  <div id="questPuzzle"></div>
+ </div>`;
+ if(questActivePuzzle)questShowPuzzle();
 }
-function adventureAnswer(i){
- if(adventureAnswered)return;adventureAnswered=true;
- const level=adventureLevels[adventureIndex],box=$('adventureContent');
- if(i===level.c){
-  adventureStars++;set('adventureStars',adventureStars);
-  adventureIndex++;set('adventureLevel',adventureIndex);
-  if($('adventureStars'))$('adventureStars').textContent=adventureStars;
-  box.innerHTML=`<h3>🎁 ${en?'Treasure found!':'وجدت الكنز!'}</h3><p>⭐ +1</p><button onclick="adventureAnswered=false;adventureDraw()">${en?'Continue':'تابع'}</button>`;
- }else{
-  box.innerHTML=`<p class="status">${en?'Not quite. Try the level again.':'ليست الإجابة الصحيحة، حاول مرة أخرى.'}</p><button onclick="adventureAnswered=false;adventureDraw()">${en?'Try again':'حاول مجددًا'}</button>`;
+function questOpenZone(id){
+ if(!questState.unlocked.includes(id))return;
+ questState.current=id;questActivePuzzle='';questNotice='';questSave();questDraw();
+}
+function questStartAction(id){
+ const zone=questWorld.find(z=>z.id===questState.current);
+ const action=zone&&zone.actions.find(a=>a.id===id);
+ if(!action||questState.done.includes(id))return;
+ if((action.requires||[]).some(x=>!questState.items.includes(x)))return;
+ if(action.kind==='puzzle'){
+  questActivePuzzle=id;questNotice='';questShowPuzzle();return;
+ }
+ questCompleteAction(action);
+}
+function questShowPuzzle(){
+ const zone=questWorld.find(z=>z.id===questState.current);
+ const action=zone&&zone.actions.find(a=>a.id===questActivePuzzle);
+ const box=$('questPuzzle');if(!action||!box)return;
+ box.innerHTML=`<div class="quest-puzzle"><div class="quest-kicker">${en?'PUZZLE':'لغز المنطقة'}</div><h4>${action.question}</h4>
+ ${action.options.map((v,i)=>`<button class="secondary quest-option" onclick="questAnswer(${i})">${v}</button>`).join('')}
+ </div>`;
+}
+function questAnswer(i){
+ const zone=questWorld.find(z=>z.id===questState.current);
+ const action=zone&&zone.actions.find(a=>a.id===questActivePuzzle);
+ if(!action)return;
+ if(i!==action.answer){
+  questNotice=en?'That is not the answer. Explore and try again.':'ليست الإجابة الصحيحة. حاول مرة أخرى!';
+  questActivePuzzle='';questDraw();return;
+ }
+ questActivePuzzle='';
+ questCompleteAction(action);
+}
+function rewardQuestAccount(action){
+ const account=activeLocalAccount();
+ if(!account||!action||!action.id)return;
+ const storageKey='questAccountRewards_'+account.id;
+ let rewarded=[];
+ try{
+  const saved=JSON.parse(get(storageKey,'[]'));
+  if(Array.isArray(saved))rewarded=saved;
+ }catch{}
+ if(rewarded.includes(action.id))return;
+ rewarded.push(action.id);
+ set(storageKey,JSON.stringify(rewarded));
+ const points=Math.max(0,Number(action.xp)||0);
+ if(points>0||action.finish){
+  addAccountPoints(points,action.finish?'quest_complete':undefined);
  }
 }
-function adventureReset(){adventureIndex=0;adventureStars=0;set('adventureLevel',0);set('adventureStars',0);adventureAnswered=false;adventureDraw();}
+
+function questCompleteAction(action){
+ if(questState.done.includes(action.id))return;
+ questState.done.push(action.id);
+ if(action.item&&!questState.items.includes(action.item))questState.items.push(action.item);
+ questState.xp+=action.xp||0;
+ rewardQuestAccount(action);
+ if(action.unlock&&!questState.unlocked.includes(action.unlock)){
+  questState.unlocked.push(action.unlock);
+ }
+ if(action.finish)questState.finished=true;
+ questNotice=action.finish?(en?'The secret is revealed!':'انكشف السر! لقد أنهيت الرحلة!'):(en?'Discovery successful!':'أحسنت! اكتشاف جديد أُضيف إلى رحلتك.');
+ questSave();
+ questDraw();
+}
+function questReset(){
+ if(!confirm(en?'Restart NEXORA QUEST and erase saved progress?':'هل تريد بدء المغامرة من جديد ومسح تقدمك المحفوظ؟'))return;
+ questState={current:'forest',unlocked:['forest'],done:[],items:[],xp:0,finished:false};
+ questActivePuzzle='';questNotice='';questSave();questDraw();
+}
 
 
 let quizState = {category:'', index:0, score:0, answered:false};
@@ -1742,10 +2143,20 @@ function openAccount(){
  $('sectionTitle').textContent=en?'My Account':'حسابي';
  $('content').innerHTML=accountPage();
 }
+function accountLevelInfo(points){
+ const p=Math.max(0,Number(points)||0);
+ const level=Math.floor(p/100)+1;
+ const progress=p%100;
+ return {level,progress,remaining:100-progress,percent:progress};
+}
+
 function accountPage(){
  const a=activeLocalAccount();
  if(a){
   const achievements=Array.isArray(a.achievements)?a.achievements:[];
+  const levelInfo=accountLevelInfo(a.points);
+  const ranking=readLocalAccounts().sort((x,y)=>(Number(y.points)||0)-(Number(x.points)||0));
+  const rank=ranking.findIndex(x=>x.id===a.id)+1;
   return `<div class="account-card">
    <div class="account-avatar">${escapeHtml(a.avatar||'👤')}</div>
    <h3 class="account-title">${escapeHtml(a.name)}</h3>
@@ -1754,8 +2165,35 @@ function accountPage(){
     <div class="account-stat"><strong>${Number(a.points)||0}</strong><span>${en?'Points':'النقاط'}</span></div>
     <div class="account-stat"><strong>${achievements.length}</strong><span>${en?'Achievements':'الإنجازات'}</span></div>
    </div>
+   <div style="margin:16px 0;padding:14px;border:1px solid #c49a6040;border-radius:15px;background:#c49a600d">
+    <div style="display:flex;justify-content:space-between;gap:8px">
+     <b>⭐ ${en?'Level':'المستوى'} ${levelInfo.level}</b>
+     <span>${Number(a.points)||0} XP</span>
+    </div>
+    <div style="height:9px;background:#ffffff18;border-radius:20px;overflow:hidden;margin:10px 0">
+     <div style="height:100%;width:${levelInfo.percent}%;background:linear-gradient(90deg,#9b713c,#e5c18b);border-radius:20px"></div>
+    </div>
+    <small>${en?levelInfo.remaining+' points to next level':'باقي '+levelInfo.remaining+' نقطة للمستوى التالي'}</small>
+    <div style="margin-top:8px;color:#d9b77f;font-size:13px">${en?'Your local rank: ':'ترتيبك على هذا الجهاز: '}#${rank}</div>
+   </div>
+   <h3>${en?'Top 10 leaderboard':'أفضل 10 لاعبين'}</h3>
+   ${ranking.slice(0,10).map((x,i)=>{
+    const playerLevel=accountLevelInfo(x.points);
+    const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.';
+    return `<div class="account-achievement" style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin:7px 0;padding:11px;border:1px solid #c49a6030;border-radius:12px">
+     <span style="display:flex;align-items:center;gap:8px;min-width:0">
+      <b>${medal}</b>
+      <span>${escapeHtml(x.avatar||'👤')}</span>
+      <span style="overflow:hidden;text-overflow:ellipsis">${escapeHtml(x.name)}</span>
+     </span>
+     <span style="text-align:left;white-space:nowrap">
+      <b>${Number(x.points)||0} XP</b>
+      <small style="display:block;color:#d9b77f">${en?'Level ':'المستوى '}${playerLevel.level}</small>
+     </span>
+    </div>`;
+   }).join('')}
    <h3>${en?'Achievements':'الإنجازات'}</h3>
-   ${achievements.length?achievements.map(x=>`<div class="account-achievement">✦ ${escapeHtml(x)}</div>`).join(''):`<p class="account-muted">${en?'Your achievements will appear here.':'ستظهر إنجازاتك هنا عند إضافتها.'}</p>`}
+   ${achievements.length?achievements.map(x=>`<div class="account-achievement">✦ ${escapeHtml(achievementLabel(x))}</div>`).join(''):`<p class="account-muted">${en?'Your achievements will appear here.':'ستظهر إنجازاتك هنا عند إضافتها.'}</p>`}
    <button class="secondary" style="width:100%;margin-top:16px" onclick="logoutLocalAccount()">${en?'Log out':'تسجيل الخروج'}</button>
   </div>
   <div class="account-note">${en?'This profile and its points are stored on this device only.':'هذا الملف ونقاطه محفوظة على هذا الجهاز فقط.'}</div>`;
@@ -1849,7 +2287,13 @@ function achievementLabel(id){
  const labels={
   quiz_complete_anime:en?'Anime challenge completed':'إكمال تحدي الأنمي',
   quiz_complete_series:en?'Series challenge completed':'إكمال تحدي المسلسلات',
-  quiz_complete_movies:en?'Movies challenge completed':'إكمال تحدي الأفلام'
+  quiz_complete_movies:en?'Movies challenge completed':'إكمال تحدي الأفلام',
+  first_points:en?'First points earned':'أول نقاط',
+  points_100:en?'100 points reached':'الوصول إلى 100 نقطة',
+  points_500:en?'500 points reached':'الوصول إلى 500 نقطة',
+  quest_complete:en?'NEXORA QUEST completed':'إكمال مغامرة NEXORA QUEST',
+  xo_round_win:en?'Tic Tac Toe round winner':'الفوز بجولة إكس أو',
+  xo_match_win:en?'Tic Tac Toe match champion':'بطل مباراة إكس أو'
  };
  return labels[id]||id;
 }
@@ -1859,6 +2303,18 @@ function rewardQuizCompletion(category){
  if(!account)return;
  const allowed=['anime','series','movies'];
  if(!allowed.includes(category))return;
+
+ const storageKey='quizCompletionRewards_'+account.id;
+ let rewarded=[];
+ try{
+  const saved=JSON.parse(get(storageKey,'[]'));
+  if(Array.isArray(saved))rewarded=saved;
+ }catch{}
+
+ if(rewarded.includes(category))return;
+ rewarded.push(category);
+ set(storageKey,JSON.stringify(rewarded));
+
  addAccountPoints(0,'quiz_complete_'+category);
 }
 
@@ -1869,15 +2325,20 @@ function addAccountPoints(amount,achievement){
  const item=accounts.find(x=>x.id===a.id);
  if(!item)return;
  item.points=Math.max(0,(Number(item.points)||0)+Number(amount));
- if(achievement){
-  if(!Array.isArray(item.achievements))item.achievements=[];
-  if(!item.achievements.includes(achievement))item.achievements.push(achievement);
- }
+ if(!Array.isArray(item.achievements))item.achievements=[];
+ const earned=[];
+ if(item.points>=10)earned.push('first_points');
+ if(item.points>=100)earned.push('points_100');
+ if(item.points>=500)earned.push('points_500');
+ if(achievement)earned.push(achievement);
+ earned.forEach(id=>{
+  if(!item.achievements.includes(id))item.achievements.push(id);
+ });
  saveLocalAccounts(accounts);
  if(current==='account')openAccount();
 }
 
-function admin(){return `<div class="panel"><h3>${en?'App settings':'إعدادات التطبيق'}</h3><p>${en?'Language and local data controls.':'اللغة والتحكم في البيانات المحلية.'}</p><button onclick="toggleLang()">${en?'Switch language':'تغيير اللغة'}</button><button class="secondary" onclick="backupData()">${en?'Export backup':'تصدير نسخة احتياطية'}</button><div style="margin-top:12px"><label>${en?'Restore backup file':'استعادة نسخة احتياطية'}</label><input type="file" id="backupFile" accept="application/json,.json"><button onclick="restoreData()">${en?'Restore':'استعادة'}</button></div></div><div class="panel"><h3>${en?'About NEXORA':'حول NEXORA'}</h3><p>NEXORA · منصة للتعلم والترفيه</p><small>${en?'Version 1.9 · Data stored locally on this device.':'الإصدار 1.9 · البيانات محفوظة محليًا على هذا الجهاز.'}</small></div><div class="note">${en?'Admin panel controls this app on this device; it is not a remote server dashboard.':'لوحة الإدارة تتحكم في التطبيق على هذا الجهاز، وليست لوحة تحكم بخادم خارجي.'}</div>`}
+function admin(){return `<div class="panel"><h3>${en?'App settings':'إعدادات التطبيق'}</h3><p>${en?'Language and local data controls.':'اللغة والتحكم في البيانات المحلية.'}</p><button onclick="toggleLang()">${en?'Switch language':'تغيير اللغة'}</button><button class="secondary" onclick="backupData()">${en?'Export backup':'تصدير نسخة احتياطية'}</button><div style="margin-top:12px"><label>${en?'Restore backup file':'استعادة نسخة احتياطية'}</label><input type="file" id="backupFile" accept="application/json,.json"><button onclick="restoreData()">${en?'Restore':'استعادة'}</button></div></div><div class="panel"><h3>${en?'About NEXORA':'حول NEXORA'}</h3><p>NEXORA · منصة للتعلم والترفيه</p><small>${en?'Version 2.1 · Data stored locally on this device.':'الإصدار 2.1 · البيانات محفوظة محليًا على هذا الجهاز.'}</small></div><div class="note">${en?'Admin panel controls this app on this device; it is not a remote server dashboard.':'لوحة الإدارة تتحكم في التطبيق على هذا الجهاز، وليست لوحة تحكم بخادم خارجي.'}</div>`}
 function backupData(){let data={};for(let i=0;i<localStorage.length;i++){let k=localStorage.key(i);if(k.startsWith('om_'))data[k]=localStorage.getItem(k)}let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download='omnix-backup.json';a.click();URL.revokeObjectURL(a.href)}
 function restoreData(){let f=$('backupFile').files[0];if(!f)return showToast(en?'Choose a backup':'اختر نسخة احتياطية');let r=new FileReader();r.onload=()=>{try{let d=JSON.parse(r.result);Object.keys(d).forEach(k=>{if(k.startsWith('om_'))localStorage.setItem(k,d[k])});showToast(en?'Backup restored':'تمت استعادة النسخة');setTimeout(()=>location.reload(),700)}catch{showToast(en?'Invalid backup file':'ملف النسخة غير صالح')}};r.readAsText(f)}
 function copyText(t){if(navigator.clipboard)navigator.clipboard.writeText(t).then(()=>showToast(en?'Copied':'تم النسخ')).catch(()=>showToast(en?'Copy unavailable':'تعذر النسخ'));else showToast(en?'Copy unavailable':'النسخ غير متاح')}
@@ -1889,6 +2350,7 @@ $('secretMark').addEventListener('click',()=>{secretTapCount++;clearTimeout(secr
 function openAdminSecret(){let pin=prompt(en?'Set or enter your local admin PIN:':'أنشئ أو أدخل رمز لوحة الإدارة المحلية:');if(pin===null||!pin.trim())return;let saved=get('adminPin');if(!saved){if(pin.trim().length<4)return alert(en?'PIN must be at least 4 characters':'يجب أن يكون الرمز 4 خانات على الأقل');set('adminPin',pin.trim());alert(en?'Local admin PIN saved':'تم حفظ رمز الإدارة على هذا الجهاز');}else if(pin.trim()!==saved){alert(en?'Incorrect PIN':'الرمز غير صحيح');return;}current='admin';$('home').classList.add('hidden');$('section').classList.remove('hidden');$('sectionTitle').textContent=en?'Hidden Admin':'لوحة الإدارة المخفية';$('content').innerHTML=admin();}
 if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}
 renderHome();
+initNexoraScreenTime();
 </script>
 <script src="./nexora-hidden-room.js"></script>
 </body></html>
