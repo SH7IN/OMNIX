@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#070912">
 <meta name="description" content="NEXORA — أدواتك وتعلمك ومساعدك الذكي في مكان واحد.">
 <link rel="manifest" href="manifest.webmanifest">
-<title>NEXORA 1.9</title>
+<title>NEXORA 2.1</title>
 <style>
 :root{--bg:#070912;--panel:#111626;--panel2:#17152b;--copper:#55c8ff;--soft:#d8eaff;--muted:#9aaac4;--line:#293b61;--white:#edf4ff}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#111a30 0,#070912 42%);color:var(--white);font-family:Arial,sans-serif;min-height:100vh}
@@ -956,8 +956,565 @@ button.marble-square.marble-dark{
  color:inherit!important;
 }
 
+
+/* NEXORA CHAT - isolated black and copper theme */
+.nx-chat{background:#090909;color:#f4eee7;border:1px solid #493321;border-radius:22px;padding:18px;min-height:520px}
+.nx-chat *{box-sizing:border-box}
+.nx-chat-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border-bottom:1px solid #493321;padding-bottom:16px}
+.nx-chat-brand{font-size:22px;font-weight:800;letter-spacing:1px;color:#d6a16b}
+.nx-chat-sub{font-size:12px;color:#9b8a7a;margin-top:5px}
+.nx-chat-tabs{display:flex;gap:8px;overflow-x:auto;margin:18px 0}
+.nx-chat-tab,.nx-chat-btn{background:#17120e;color:#d9b18b;border:1px solid #68482e;border-radius:12px;padding:10px 14px;cursor:pointer}
+.nx-chat-tab.active,.nx-chat-btn.primary{background:#9b6338;color:#fff;border-color:#bd8959}
+.nx-chat-panel{background:#100e0c;border:1px solid #34271d;border-radius:16px;padding:15px;margin-top:12px}
+.nx-chat-input{width:100%;background:#080808;color:#fff;border:1px solid #60452f;border-radius:12px;padding:12px;margin:7px 0}
+.nx-chat-row{display:flex;align-items:center;gap:12px;padding:12px 4px;border-bottom:1px solid #292019}
+.nx-chat-avatar{width:42px;height:42px;flex:0 0 42px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#b77b48,#342015);color:white;font-weight:bold}
+.nx-chat-muted{color:#9b8a7a;font-size:12px}
+.nx-chat-message{max-width:85%;padding:11px 14px;border-radius:15px;margin:9px 0;background:#211910;color:#f4eee7}
+.nx-chat-message.mine{margin-right:auto;background:#754a2b}
+.nx-chat-empty{text-align:center;padding:35px 12px;color:#a99786}
+.nx-chat-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+
 </style>
 <link rel="stylesheet" href="./nexora-hidden-room.css">
+
+<style id="nexora-ultimate-visual">
+/* NEXORA ULTIMATE VISUAL SYSTEM */
+:root{
+ --bg:#08090b;--panel:#121110;--panel2:#1b1712;
+ --copper:#c9955a;--soft:#f4eadc;--muted:#b6a694;
+ --line:#493a2b;--white:#f8f4ee;
+ --violet:#b58a62;--blue:#c9955a;color-scheme:dark;
+}
+html{scroll-behavior:smooth;scroll-padding-top:85px}
+body{
+ background:
+ radial-gradient(ellipse at 50% -18%,#80552d35,transparent 48%),
+ radial-gradient(ellipse at 100% 55%,#9b6b3210,transparent 40%),
+ linear-gradient(145deg,#08090b,#100e0b 52%,#08090b)!important;
+ color:#f8f4ee!important;
+}
+::selection{background:#c9955a55;color:#fff}
+.apple-header{
+ background:rgba(10,10,10,.84)!important;
+ border-bottom:1px solid #c9955a35!important;
+ box-shadow:0 8px 35px #0009!important;
+ backdrop-filter:blur(26px) saturate(145%);
+ -webkit-backdrop-filter:blur(26px) saturate(145%);
+}
+.apple-header .mark{
+ background:linear-gradient(145deg,#654326,#21170f)!important;
+ border:1px solid #d6a56d!important;
+ box-shadow:0 0 24px #c9955a30,inset 0 1px #ffffff35!important;
+}
+.apple-header .logo{color:#f8e9d4!important;letter-spacing:2px;text-shadow:0 0 22px #c9955a25!important}
+.header-meta,.sub{color:#bba68d!important}
+#appleNav,#mobileNav{
+ background:rgba(15,13,11,.9)!important;
+ border:1px solid #c9955a30!important;
+ box-shadow:0 12px 38px #0009!important;
+ backdrop-filter:blur(26px) saturate(140%);
+ -webkit-backdrop-filter:blur(26px) saturate(140%);
+}
+.nav-caption{color:#ad9271!important}
+.nav-item{color:#d1c2af!important;transition:background .2s,color .2s}
+.nav-item span{color:#d3a16a!important}
+.nav-item:hover,.nav-item.active{
+ background:linear-gradient(100deg,#c9955a25,#c9955a08)!important;
+ box-shadow:inset -2px 0 #d5a36b!important;color:#fff8ef!important;
+}
+#mobileNav{padding-bottom:calc(8px + env(safe-area-inset-bottom));border-radius:20px 20px 12px 12px!important}
+#mobileNav button{min-height:48px;color:#d4c4b1!important}
+#mobileNav button span{color:#d5a36b!important}
+.panel,.tile,.cc-stat,.command-center,.note{
+ border-color:#c9955a35!important;
+ box-shadow:0 12px 32px #0006,inset 0 1px #ffffff0c!important;
+}
+.panel,.tile{
+ background:linear-gradient(145deg,rgba(35,29,22,.92),rgba(15,14,12,.96))!important;
+ backdrop-filter:blur(18px) saturate(125%);
+ -webkit-backdrop-filter:blur(18px) saturate(125%);
+ border-radius:20px!important;
+}
+.tile{transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease!important}
+.tile:hover{
+ transform:translateY(-3px);border-color:#c9955a99!important;
+ box-shadow:0 16px 36px #0008,0 0 20px #c9955a12!important;
+}
+.tile .ico{color:#e0b77f!important;text-shadow:0 0 16px #c9955a35!important}
+button:not(.marble-square):not(.xo-cell),.btn{
+ border-radius:13px!important;
+ transition:transform .18s ease,filter .18s ease,border-color .18s ease,box-shadow .18s ease!important;
+}
+button:not(.marble-square):not(.xo-cell):focus-visible,.btn:focus-visible,
+a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{
+ outline:2px solid #d5a36b!important;outline-offset:3px;
+}
+button:not(.marble-square):not(.xo-cell):hover,.btn:hover{
+ filter:brightness(1.12);border-color:#e0b77f!important;
+ box-shadow:0 0 20px #c9955a20,inset 0 1px #ffffff20!important;
+}
+button:not(.marble-square):not(.xo-cell):active,.btn:active{transform:scale(.985)}
+input,textarea,select{
+ background:rgba(13,12,10,.9)!important;
+ border:1px solid #80634477!important;color:#f8f4ee!important;border-radius:13px!important;
+}
+input:focus,textarea:focus,select:focus{
+ border-color:#d0a16b!important;box-shadow:0 0 0 3px #c9955a20!important;
+}
+::placeholder{color:#988674!important}
+.status,.big,.cc-number{color:#e0b77f!important}
+.cc-stat{background:linear-gradient(145deg,#292117,#15120f)!important;border-radius:16px!important}
+.cc-stat:before{background:linear-gradient(90deg,transparent,#c9955a,#f0d0a2,transparent)!important;box-shadow:0 0 12px #c9955a55!important}
+.cc-heading h3{color:#f1dfc5!important}
+.command-center{border-radius:22px!important;box-shadow:0 0 28px #c9955a12,inset 0 0 30px #c9955a08!important}
+.chat-log{background:#100e0c!important;border-color:#80634477!important;border-radius:16px!important}
+.chat-msg.user{background:#38291b!important;border-color:#a47b4b!important}
+.chat-msg.bot{background:#1d1914!important;border-color:#765a39!important}
+#chessStatus,#chessMoves{border-color:#c9955a66!important}
+footer{color:#a99479!important}
+a{transition:color .2s ease}
+@media(max-width:600px){
+ .panel,.tile{border-radius:17px!important}
+ .nx-chat{padding:13px!important;border-radius:18px!important}
+ .nx-chat-head{gap:9px}.nx-chat-tabs{padding-bottom:4px}
+}
+@media(prefers-reduced-motion:reduce){
+ html{scroll-behavior:auto}
+ .tile,button,.btn,a{transition:none!important}
+}
+</style>
+
+
+<style id="nexora-home-experience">
+/* NEXORA HOME EXPERIENCE 2.0 */
+#home{
+ width:100%;
+ max-width:1180px;
+ margin-inline:auto;
+ padding:8px 0 30px;
+}
+#home>.panel:first-child{
+ position:relative;
+ isolation:isolate;
+ overflow:hidden;
+ min-height:178px;
+ padding:clamp(23px,4vw,38px)!important;
+ margin:8px 0 18px!important;
+ border:1px solid #c9955a66!important;
+ border-radius:26px!important;
+ background:
+  radial-gradient(ellipse at 88% 5%,#c9955a25,transparent 48%),
+  radial-gradient(ellipse at 5% 100%,#c9955a12,transparent 42%),
+  linear-gradient(135deg,#211a13 0%,#12100e 58%,#0c0c0b 100%)!important;
+ box-shadow:0 18px 48px #0008,inset 0 1px #ffffff12,0 0 30px #c9955a0c!important;
+}
+#home>.panel:first-child:before{
+ content:"N E X O R A   /   YOUR DIGITAL SPACE";
+ display:inline-flex;
+ align-items:center;
+ min-height:27px;
+ margin-bottom:15px;
+ padding:5px 11px;
+ border:1px solid #c9955a55;
+ border-radius:30px;
+ background:#c9955a12;
+ color:#dfb982;
+ font-size:9px;
+ font-weight:800;
+ letter-spacing:1.5px;
+}
+#home>.panel:first-child:after{
+ content:"∞";
+ position:absolute;
+ z-index:-1;
+ inset-inline-end:5%;
+ top:50%;
+ transform:translateY(-50%);
+ color:#c9955a0c;
+ font-size:clamp(130px,22vw,230px);
+ line-height:1;
+ pointer-events:none;
+}
+#heroTitle{
+ position:relative;
+ margin:0 0 8px!important;
+ color:#fff3e3!important;
+ font-size:clamp(23px,4vw,34px)!important;
+ font-weight:850!important;
+ letter-spacing:-.5px;
+ line-height:1.5!important;
+}
+#heroText{
+ position:relative;
+ max-width:620px;
+ margin:0!important;
+ color:#c6b39d!important;
+ font-size:14px!important;
+ line-height:1.9!important;
+}
+#progressSummary{
+ position:relative;
+ display:inline-flex;
+ align-items:center;
+ gap:8px;
+ margin-top:17px;
+ padding:8px 12px;
+ border:1px solid #c9955a35;
+ border-radius:30px;
+ background:#08080766;
+ color:#e2bd8e!important;
+ font-size:11px;
+}
+#progressSummary:before{
+ content:"";
+ width:7px;
+ height:7px;
+ flex:0 0 7px;
+ border-radius:50%;
+ background:#d7aa70;
+ box-shadow:0 0 10px #d7aa70aa;
+}
+#sectionsTitle{
+ display:flex;
+ align-items:center;
+ gap:11px;
+ margin:27px 3px 15px!important;
+ color:#f4e5d1!important;
+ font-size:19px!important;
+ font-weight:800!important;
+}
+#sectionsTitle:before{
+ content:"";
+ width:4px;
+ height:23px;
+ border-radius:5px;
+ background:linear-gradient(#f0d0a2,#a36d38);
+ box-shadow:0 0 12px #c9955a55;
+}
+#home .grid{
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:13px;
+}
+#home .tile{
+ position:relative;
+ isolation:isolate;
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ justify-content:center;
+ gap:9px;
+ min-width:0;
+ min-height:132px;
+ padding:19px 12px!important;
+ overflow:hidden;
+ border:1px solid #c9955a35!important;
+ border-radius:21px!important;
+ background:
+  radial-gradient(circle at 50% 0%,#c9955a12,transparent 65%),
+  linear-gradient(145deg,#211a13,#12110f 72%)!important;
+ color:#f4e9dc!important;
+ font-size:13px!important;
+ font-weight:750!important;
+ line-height:1.7;
+ text-align:center;
+ box-shadow:0 9px 25px #0005,inset 0 1px #ffffff0b!important;
+ transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease!important;
+}
+#home .tile:before{
+ content:"";
+ position:absolute;
+ z-index:-1;
+ inset:0;
+ background:linear-gradient(120deg,transparent 20%,#ffffff08 48%,transparent 75%);
+ opacity:.7;
+ pointer-events:none;
+}
+#home .tile:after{display:none!important}
+#home .tile .ico{
+ display:grid;
+ place-items:center;
+ width:48px;
+ height:48px;
+ margin:0!important;
+ border:1px solid #c9955a50;
+ border-radius:16px;
+ background:linear-gradient(145deg,#c9955a22,#c9955a08);
+ color:#e4bb83!important;
+ font-size:25px!important;
+ text-shadow:0 0 16px #c9955a35!important;
+}
+#home .tile:hover{
+ transform:translateY(-4px)!important;
+ border-color:#d5a36b!important;
+ box-shadow:0 15px 32px #0008,0 0 22px #c9955a16!important;
+}
+#home .tile:active{transform:scale(.98)!important}
+#commandCenter{
+ margin-top:17px!important;
+ border-radius:24px!important;
+}
+@media(min-width:650px){
+ #home .grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+ #home .tile{min-height:145px}
+}
+@media(min-width:1050px){
+ #home .grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media(max-width:390px){
+ #home>.panel:first-child{padding:21px 17px!important;border-radius:20px!important}
+ #home .grid{gap:9px}
+ #home .tile{min-height:116px;padding:14px 7px!important;font-size:12px!important}
+ #home .tile .ico{width:42px;height:42px;font-size:22px!important}
+ #sectionsTitle{font-size:17px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ #home .tile{transition:none!important}
+}
+</style>
+
+
+<style id="nexora-v3-design">
+/* NEXORA 3.0 — PREMIUM APP REDESIGN */
+:root{
+ --bg:#090a0c;
+ --panel:#141311;
+ --panel2:#1c1915;
+ --copper:#c9955a;
+ --gold:#e4c18f;
+ --soft:#f7f0e7;
+ --muted:#a99a87;
+ --line:#493827;
+ color-scheme:dark;
+}
+html{scroll-behavior:smooth;scroll-padding-top:95px}
+body{
+ background:
+ radial-gradient(ellipse at 50% -15%,#80552d30,transparent 45%),
+ radial-gradient(circle at 100% 65%,#c9955a0b,transparent 35%),
+ #090a0c!important;
+ color:var(--soft)!important;
+}
+.apple-header{
+ position:sticky;top:0;z-index:100;
+ height:76px!important;
+ padding:0 clamp(16px,3vw,36px)!important;
+ background:rgba(10,10,10,.88)!important;
+ border-bottom:1px solid #c9955a35!important;
+ backdrop-filter:blur(28px) saturate(150%);
+ -webkit-backdrop-filter:blur(28px) saturate(150%);
+}
+.apple-header .mark{
+ width:45px!important;height:45px!important;
+ border-radius:15px!important;
+ background:linear-gradient(145deg,#704a28,#21170f)!important;
+ border:1px solid #d6a56d!important;
+ box-shadow:0 0 24px #c9955a25!important;
+}
+.apple-header .logo{
+ font-size:24px!important;letter-spacing:3px!important;
+ color:#f8e9d4!important;
+}
+.header-meta{
+ padding:7px 12px;border:1px solid #c9955a35;
+ border-radius:30px;background:#c9955a0c;
+ color:#d3b58d!important;font-size:10px;
+}
+.apple-top{
+ display:flex;align-items:center;justify-content:space-between;
+ gap:12px;max-width:1200px!important;
+ padding:18px 25px!important;
+}
+.apple-top strong{font-size:15px!important;color:#eee0ce}
+.apple-lang{
+ background:#201a14!important;border:1px solid #c9955a55!important;
+ color:#e6c69d!important;border-radius:30px!important;
+}
+#appleNav{
+ position:fixed;z-index:90;top:100px;right:18px;
+ width:205px;padding:15px 11px!important;
+ border:1px solid #c9955a38!important;
+ border-radius:22px!important;
+ background:rgba(16,14,12,.92)!important;
+ box-shadow:0 18px 50px #0009!important;
+ backdrop-filter:blur(28px);
+}
+.nav-caption{padding:10px 13px!important;color:#a88b68!important}
+.nav-item{
+ min-height:46px!important;padding:11px 13px!important;
+ border-radius:13px!important;color:#d4c4b1!important;
+ font-size:13px!important;transition:.2s ease!important;
+}
+.nav-item span{color:#d5a36b!important}
+.nav-item:hover,.nav-item.active{
+ background:linear-gradient(100deg,#c9955a27,#c9955a08)!important;
+ box-shadow:inset -3px 0 #d5a36b!important;
+}
+main{
+ max-width:1240px!important;
+ margin:0 240px 0 auto!important;
+ padding:18px 28px 55px!important;
+}
+#home{max-width:1180px;margin:auto}
+#section{max-width:1180px;margin:auto;padding-top:10px}
+#section>h2{
+ font-size:25px!important;font-weight:800!important;
+ color:#f5e6d2!important;margin:18px 0 22px!important;
+}
+.back{margin-bottom:12px}
+.panel,.tile,.cc-stat,.note{
+ border:1px solid #c9955a35!important;
+ background:linear-gradient(145deg,#211a13,#12110f)!important;
+ box-shadow:0 12px 34px #0007,inset 0 1px #ffffff0b!important;
+ backdrop-filter:blur(18px);
+}
+.panel{border-radius:22px!important;padding:20px!important}
+#home>.panel:first-child{
+ border-radius:25px!important;
+}
+#commandCenter{
+ margin-top:16px!important;padding:clamp(17px,3vw,27px)!important;
+ border-radius:25px!important;
+}
+.cc-heading{
+ display:flex;align-items:center;justify-content:space-between;
+ gap:12px;flex-wrap:wrap;margin-bottom:17px;
+}
+.cc-heading h3{font-size:19px!important;color:#f4e4d0!important}
+.cc-label{
+ color:#d2a66f!important;font-size:9px;
+ letter-spacing:1.5px;padding:6px 10px;
+ border:1px solid #c9955a35;border-radius:20px;
+}
+.future-hud{
+ display:flex;align-items:center;justify-content:center;
+ gap:clamp(15px,5vw,55px);flex-wrap:wrap;
+ padding:22px 15px;margin:12px 0;
+ border:1px solid #c9955a28;border-radius:20px;
+ background:radial-gradient(ellipse at 50% 50%,#c9955a12,transparent 70%),#09090855;
+}
+.hud-core,.hud-kicker,.hud-wave{color:#d9ae78!important}
+.hud-readout strong{color:#f5e8d5!important}
+.hud-state{color:#a8c99b!important}
+.hud-state i{background:#a8c99b!important}
+.cc-stats{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+ gap:11px;margin-top:15px;
+}
+.cc-stat{
+ min-width:0;padding:15px!important;
+ border-radius:17px!important;
+}
+.cc-number{font-size:25px!important;color:#e4bd87!important}
+.cc-stat small{color:#b9a991!important}
+.cc-action{
+ min-height:43px!important;
+ border:1px solid #c9955a55!important;
+ border-radius:13px!important;
+ background:linear-gradient(135deg,#382719,#19130e)!important;
+ color:#f0d6b1!important;
+}
+.cc-quick{gap:10px!important}
+.cc-quiz{
+ padding:12px 14px;border:1px solid #c9955a28;
+ border-radius:13px;background:#c9955a0a;
+ color:#d8c3a6!important;
+}
+#home .grid{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:13px;
+}
+#home .tile{
+ min-height:135px!important;border-radius:20px!important;
+ background:linear-gradient(145deg,#211a13,#12110f)!important;
+ border:1px solid #c9955a40!important;
+}
+#home .tile .ico{
+ border-radius:15px!important;
+ background:linear-gradient(145deg,#c9955a25,#c9955a08)!important;
+ border:1px solid #c9955a45!important;
+ color:#e5bd88!important;
+}
+#sectionsTitle{margin-top:30px!important}
+button,.btn{
+ border-radius:13px!important;
+}
+button:focus-visible,a:focus-visible,input:focus-visible,
+textarea:focus-visible,select:focus-visible{
+ outline:2px solid #e0b77f!important;outline-offset:3px;
+}
+input,textarea,select{
+ background:#100e0c!important;
+ border:1px solid #80634477!important;
+ color:#f8f4ee!important;
+}
+#mobileNav{display:none}
+footer{
+ padding:22px 15px!important;
+ color:#a99479!important;
+ border-top:1px solid #c9955a20;
+}
+.nx-chat{border-radius:22px!important}
+@media(min-width:900px){
+ main{margin-right:240px!important;margin-left:auto!important}
+ .apple-top{margin-right:240px!important;margin-left:auto!important}
+}
+@media(max-width:899px){
+ .apple-header{height:68px!important}
+ .apple-header .logo{font-size:21px!important}
+ .header-meta{font-size:9px}
+ #appleNav{display:none!important}
+ main{
+  margin:0!important;padding:12px 15px 120px!important;
+ }
+ .apple-top{padding:13px 16px!important}
+ #mobileNav{
+  display:flex!important;position:fixed!important;
+  z-index:120!important;left:9px!important;right:9px!important;
+  bottom:7px!important;top:auto!important;
+  justify-content:flex-start!important;
+  overflow-x:auto!important;overflow-y:hidden!important;
+  gap:2px!important;
+  padding:8px 5px calc(8px + env(safe-area-inset-bottom))!important;
+  border:1px solid #c9955a55!important;
+  border-radius:19px!important;
+  background:rgba(16,14,12,.94)!important;
+  box-shadow:0 0 35px #000b!important;
+  backdrop-filter:blur(28px)!important;
+ }
+ #mobileNav button{
+  flex:0 0 62px!important;min-width:62px!important;
+  min-height:48px!important;padding:5px 2px!important;
+  display:flex!important;flex-direction:column!important;
+  align-items:center!important;justify-content:center!important;
+  gap:4px!important;font-size:9px!important;
+  color:#d5c4ae!important;
+ }
+ #mobileNav button span{font-size:19px!important;color:#d5a36b!important}
+ #home>.panel:first-child{min-height:160px}
+ .future-hud{gap:12px}
+}
+@media(max-width:420px){
+ .cc-stats{gap:7px}
+ .cc-stat{padding:10px 6px!important}
+ .cc-number{font-size:20px!important}
+ .cc-stat small{font-size:10px!important}
+ #home .tile{min-height:115px!important}
+ .apple-top strong{font-size:13px!important}
+}
+@media(min-width:650px){
+ #home .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(min-width:1100px){
+ #home .grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media(prefers-reduced-motion:reduce){
+ *,*:before,*:after{scroll-behavior:auto!important;animation:none!important;transition:none!important}
+}
+</style>
+
 </head>
 <body>
 <header class="apple-header">
@@ -965,7 +1522,7 @@ button.marble-square.marble-dark{
   <div class="mark" id="secretMark" title="NEXORA"><span>∞</span></div>
   <div class="logo">NEXORA</div>
  </div>
- <div class="header-meta">VERSION 1.9</div>
+ <div class="header-meta">VERSION 2.1</div>
 </header>
 <div class="top apple-top">
  <strong id="welcome">مرحباً بك في NEXORA</strong>
@@ -978,8 +1535,9 @@ button.marble-square.marble-dark{
  <button onclick="openSection('3')" class="nav-item"><span>۞</span> القرآن الكريم</button>
  <button onclick="openSection('4')" class="nav-item"><span>▦</span> الإنتاجية</button>
  <button onclick="openSection('7')" class="nav-item"><span>✧</span> NEXORA AI</button>
+ <button class="nav-item" onclick="openSection('9')"><span>◈</span> NEXORA CHAT</button>
  <button class="nav-item" onclick="openAccount()"><span>♙</span> <span id="accountNavLabel">حسابي</span></button>
- <div class="nav-caption nav-bottom-caption">NEXORA 1.9</div>
+ <div class="nav-caption nav-bottom-caption">NEXORA 2.1</div>
 </nav>
 <nav id="mobileNav" aria-label="التنقل السفلي">
  <button onclick="goHome()"><span>⌂</span>الرئيسية</button>
@@ -987,6 +1545,7 @@ button.marble-square.marble-dark{
  <button onclick="openSection('3')"><span>۞</span>القرآن</button>
  <button onclick="openSection('4')"><span>▦</span>المهام</button>
  <button onclick="openSection('7')"><span>✧</span>AI</button>
+ <button onclick="openSection('9')"><span>◈</span>CHAT</button>
  <button onclick="openAccount()"><span>♙</span><span id="mobileAccountNavLabel">حسابي</span></button>
 </nav>
 <main>
@@ -1012,7 +1571,7 @@ button.marble-square.marble-dark{
 <script>
 const $=id=>document.getElementById(id);
 let en=localStorage.getItem('omnixLang')==='en', current='';
-const names=[['الحساب والأدوات','Accounts & Tools','⌗'],['التعليم','Education','▤'],['الألعاب','Games','◇'],['القرآن الكريم','Holy Quran','۞'],['الإنتاجية','Productivity','▦'],['اللغات والترجمة','Languages','文'],['إدارة الملفات','File Manager','▣'],['NEXORA AI','NEXORA AI','✧'],['التقويم والمناسبات','Calendar & Events','▦']];
+const names=[['الحساب والأدوات','Accounts & Tools','⌗'],['التعليم','Education','▤'],['الألعاب','Games','◇'],['القرآن الكريم','Holy Quran','۞'],['الإنتاجية','Productivity','▦'],['اللغات والترجمة','Languages','文'],['إدارة الملفات','File Manager','▣'],['NEXORA AI','NEXORA AI','✧'],['التقويم والمناسبات','Calendar & Events','▦'],['NEXORA CHAT','NEXORA CHAT','◈']];
 const get=(k,d='')=>localStorage.getItem('om_'+k)??d;
 const set=(k,v)=>localStorage.setItem('om_'+k,v);
 
@@ -1183,7 +1742,162 @@ function renderHome(){
  $('grid').innerHTML=names.map((n,i)=>`<button class="tile" onclick="openSection('${i}')"><span class="ico">${n[2]}</span>${n[en?1:0]}</button>`).join('');
 }
 function goHome(){current='';$('section').classList.add('hidden');$('home').classList.remove('hidden');renderHome()}
-function openSection(i){current=String(i);$('home').classList.add('hidden');$('section').classList.remove('hidden');$('sectionTitle').textContent=names[+i][en?1:0];const f=[tools,education,games,quran,productivity,languages,files,omnixAI,calendar];$('content').innerHTML=f[+i]()}
+function openSection(i){current=String(i);$('home').classList.add('hidden');$('section').classList.remove('hidden');$('sectionTitle').textContent=names[+i][en?1:0];const f=[tools,education,games,quran,productivity,languages,files,omnixAI,calendar,nexoraChat];$('content').innerHTML=f[+i]()}
+
+function nxChatData(key, fallback){
+ try{
+  const value=JSON.parse(get(key,'null'));
+  return value===null?fallback:value;
+ }catch{return fallback}
+}
+function nxChatProfiles(){return nxChatData('nxchat_profiles',{})}
+function nxChatMessages(){return nxChatData('nxchat_messages',[])}
+function nxChatMoments(){return nxChatData('nxchat_moments',[])}
+function nxChatRender(){
+ const content=$('content');
+ if(content)content.innerHTML=nexoraChat();
+}
+function nxChatTab(tab){
+ set('nxchat_tab',tab);
+ set('nxchat_active','');
+ nxChatRender();
+}
+function nxChatSaveProfile(){
+ const me=activeLocalAccount();
+ if(!me)return;
+ const input=$('nxChatUsername');
+ const username=(input?input.value:'').trim().toLowerCase();
+ if(!/^[a-z0-9_]{3,20}$/.test(username)){
+  showToast('اسم المستخدم: 3 إلى 20 حرفًا أو رقمًا أو _');
+  return;
+ }
+ const profiles=nxChatProfiles();
+ if(Object.keys(profiles).some(id=>id!==me.id&&profiles[id].username===username)){
+  showToast('اسم المستخدم مستخدم بالفعل على هذا الجهاز');
+  return;
+ }
+ profiles[me.id]={username,name:me.name||'مستخدم'};
+ set('nxchat_profiles',JSON.stringify(profiles));
+ set('nxchat_tab','chats');
+ nxChatRender();
+}
+function nxChatDiscover(){
+ const input=$('nxChatSearch');
+ set('nxchat_query',input?input.value.trim().toLowerCase():'');
+ nxChatRender();
+}
+function nxChatStart(id){
+ set('nxchat_active',id);
+ set('nxchat_tab','chats');
+ nxChatRender();
+}
+function nxChatSend(){
+ const me=activeLocalAccount();
+ const other=get('nxchat_active','');
+ const input=$('nxChatMessage');
+ const body=(input?input.value:'').trim();
+ if(!me||!other||!body)return;
+ const messages=nxChatMessages();
+ messages.push({id:Date.now().toString(36),from:me.id,to:other,text:body,time:new Date().toISOString()});
+ set('nxchat_messages',JSON.stringify(messages));
+ nxChatRender();
+}
+function nxChatPostMoment(){
+ const me=activeLocalAccount();
+ const input=$('nxChatMomentInput');
+ const body=(input?input.value:'').trim();
+ if(!me||!body)return;
+ const moments=nxChatMoments();
+ moments.unshift({user:me.id,text:body,time:new Date().toISOString()});
+ set('nxchat_moments',JSON.stringify(moments.slice(0,50)));
+ nxChatRender();
+}
+function nexoraChat(){
+ const me=activeLocalAccount();
+ if(!me)return `
+ <div class="nx-chat">
+  <div class="nx-chat-head"><div><div class="nx-chat-brand">◈ NEXORA CHAT</div><div class="nx-chat-sub">مساحة التواصل الذكية</div></div></div>
+  <div class="nx-chat-empty">سجّل الدخول إلى حساب NEXORA أولًا لاستخدام الشات.</div>
+  <button class="nx-chat-btn primary" onclick="openAccount()">تسجيل الدخول</button>
+ </div>`;
+ const profiles=nxChatProfiles();
+ const myProfile=profiles[me.id];
+ if(!myProfile)return `
+ <div class="nx-chat">
+  <div class="nx-chat-head"><div><div class="nx-chat-brand">◈ NEXORA CHAT</div><div class="nx-chat-sub">أنشئ هويتك داخل الشات</div></div></div>
+  <div class="nx-chat-panel">
+   <h3>مرحبًا ${escapeHtml(me.name||'')}</h3>
+   <p class="nx-chat-muted">اختر اسم مستخدم للعثور عليك محليًا داخل هذا الجهاز.</p>
+   <input id="nxChatUsername" class="nx-chat-input" placeholder="username" maxlength="20" dir="ltr">
+   <button class="nx-chat-btn primary" onclick="nxChatSaveProfile()">إنشاء الملف الشخصي</button>
+  </div>
+  <p class="nx-chat-muted">الأسماء والحسابات في هذه المرحلة محفوظة على هذا الجهاز فقط.</p>
+ </div>`;
+ const tab=get('nxchat_tab','chats');
+ const active=get('nxchat_active','');
+ const messages=nxChatMessages();
+ const moments=nxChatMoments();
+ const accounts=readLocalAccounts();
+ const otherName=id=>{
+  const account=accounts.find(a=>a.id===id);
+  return account?escapeHtml(account.name||'مستخدم'):'مستخدم';
+ };
+ const otherUser=id=>profiles[id]?escapeHtml('@'+profiles[id].username):'';
+ let body='';
+ if(tab==='discover'){
+  const query=get('nxchat_query','');
+  const people=accounts.filter(a=>a.id!==me.id&&profiles[a.id]&&
+   (!query||(profiles[a.id].username+' '+(a.name||'')).toLowerCase().includes(query)));
+  body=`<div class="nx-chat-panel">
+   <h3>اكتشف المستخدمين</h3>
+   <input id="nxChatSearch" class="nx-chat-input" placeholder="ابحث بالاسم أو اسم المستخدم" value="${escapeHtml(query)}">
+   <button class="nx-chat-btn primary" onclick="nxChatDiscover()">بحث</button>
+   ${people.length?people.map(a=>`<div class="nx-chat-row"><div class="nx-chat-avatar">${escapeHtml((a.name||'N').slice(0,1))}</div><div style="flex:1"><b>${escapeHtml(a.name||'مستخدم')}</b><div class="nx-chat-muted">${otherUser(a.id)}</div></div><button class="nx-chat-btn" onclick="nxChatStart('${escapeHtml(a.id)}')">مراسلة</button></div>`).join(''):'<div class="nx-chat-empty">لا توجد حسابات محلية مطابقة.</div>'}
+  </div>`;
+ }else if(tab==='moments'){
+  body=`<div class="nx-chat-panel"><h3>لحظاتي</h3>
+   <input id="nxChatMomentInput" class="nx-chat-input" placeholder="شارك لحظة قصيرة..." maxlength="240">
+   <button class="nx-chat-btn primary" onclick="nxChatPostMoment()">نشر اللحظة</button></div>
+   <div class="nx-chat-panel"><h3>اللحظات</h3>
+   ${moments.length?moments.map(m=>`<div class="nx-chat-row"><div class="nx-chat-avatar">${escapeHtml((accounts.find(a=>a.id===m.user)?.name||'N').slice(0,1))}</div><div><b>${otherName(m.user)}</b><div>${escapeHtml(m.text)}</div><div class="nx-chat-muted">${escapeHtml(new Date(m.time).toLocaleString())}</div></div></div>`).join(''):'<div class="nx-chat-empty">لا توجد لحظات منشورة بعد.</div>'}
+   </div>`;
+ }else if(tab==='profile'){
+  body=`<div class="nx-chat-panel"><h3>ملفي الشخصي</h3>
+   <div class="nx-chat-row"><div class="nx-chat-avatar">${escapeHtml((me.name||'N').slice(0,1))}</div><div><b>${escapeHtml(me.name||'مستخدم')}</b><div class="nx-chat-muted">@${escapeHtml(myProfile.username)}</div></div></div>
+   <p class="nx-chat-muted">حساب NEXORA الحالي — لا تحتاج إلى حساب شات منفصل.</p>
+   <p class="nx-chat-muted">المزامنة بين الأجهزة غير متاحة في هذه المرحلة.</p>
+  </div>`;
+ }else if(active){
+  const other=accounts.find(a=>a.id===active);
+  const conversation=messages.filter(m=>(m.from===me.id&&m.to===active)||(m.from===active&&m.to===me.id));
+  body=`<div class="nx-chat-panel">
+   <button class="nx-chat-btn" onclick="nxChatStart('')">رجوع</button>
+   <h3>${escapeHtml(other?.name||'مستخدم')}</h3><div class="nx-chat-muted">${otherUser(active)}</div>
+   <div style="min-height:180px;padding:10px 0">
+   ${conversation.length?conversation.map(m=>`<div class="nx-chat-message ${m.from===me.id?'mine':''}">${escapeHtml(m.text)}<div class="nx-chat-muted">${escapeHtml(new Date(m.time).toLocaleTimeString())}</div></div>`).join(''):'<div class="nx-chat-empty">ابدأ المحادثة برسالة جديدة.</div>'}
+   </div>
+   <input id="nxChatMessage" class="nx-chat-input" placeholder="اكتب رسالتك..." maxlength="2000">
+   <button class="nx-chat-btn primary" onclick="nxChatSend()">إرسال</button>
+  </div>`;
+ }else{
+  const ids=[...new Set(messages.filter(m=>m.from===me.id||m.to===me.id).map(m=>m.from===me.id?m.to:m.from))];
+  body=`<div class="nx-chat-panel"><h3>المحادثات</h3>
+   ${ids.length?ids.map(id=>`<div class="nx-chat-row"><div class="nx-chat-avatar">${otherName(id).slice(0,1)}</div><div style="flex:1"><b>${otherName(id)}</b><div class="nx-chat-muted">${otherUser(id)}</div></div><button class="nx-chat-btn" onclick="nxChatStart('${escapeHtml(id)}')">فتح</button></div>`).join(''):'<div class="nx-chat-empty">لا توجد محادثات بعد.<br>اكتشف حسابًا محليًا لبدء محادثة.</div>'}
+  </div>`;
+ }
+ return `<div class="nx-chat">
+  <div class="nx-chat-head"><div><div class="nx-chat-brand">◈ NEXORA CHAT</div><div class="nx-chat-sub">تواصل • لحظات • اكتشاف</div></div><div class="nx-chat-muted">@${escapeHtml(myProfile.username)}</div></div>
+  <div class="nx-chat-tabs">
+   <button class="nx-chat-tab ${tab==='chats'?'active':''}" onclick="nxChatTab('chats')">المحادثات</button>
+   <button class="nx-chat-tab ${tab==='moments'?'active':''}" onclick="nxChatTab('moments')">اللحظات</button>
+   <button class="nx-chat-tab ${tab==='discover'?'active':''}" onclick="nxChatTab('discover')">اكتشف</button>
+   <button class="nx-chat-tab ${tab==='profile'?'active':''}" onclick="nxChatTab('profile')">ملفي</button>
+  </div>
+  ${body}
+  <div class="nx-chat-muted" style="text-align:center;margin-top:15px">نسخة محلية تجريبية — لا يوجد إرسال بين الأجهزة بعد.</div>
+ </div>`;
+}
+
 function omnixAI(){return `<div class="panel" style="text-align:center"><div class="ai-orb">✦</div><h3>NEXORA AI</h3><p>${en?'Your smart assistant for learning, coding, translation and ideas.':'مساعدك الذكي للتعلم والبرمجة والترجمة والأفكار.'}</p></div>
 <div class="panel"><div class="chat-log" id="aiChat"><div class="chat-msg bot">${en?'Hello! I am NEXORA AI. The chat interface is ready. Connect a secure AI server to enable real answers.':'أهلًا! أنا NEXORA AI. واجهة المحادثة جاهزة. لبدء الردود الذكية الحقيقية نحتاج ربط خادم AI آمن.'}</div></div>
 <div class="chat-compose"><input id="aiInput" placeholder="${en?'Ask NEXORA AI...':'اسأل NEXORA AI...'}" onkeydown="if(event.key==='Enter')sendAI()"><button onclick="sendAI()">${en?'Send':'إرسال'}</button></div>
